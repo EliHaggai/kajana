@@ -3,703 +3,202 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise · Management System</title>
-    <!-- Font Awesome & Google Fonts -->
+    <title>Kajana Enterprise · Complete Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-    <!-- Chart.js for advanced reporting -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ── Reset & Variables ── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        :root {
-            --black: #1a1a1a;
-            --yellow: #f9d71c;
-            --red: #d71921;
-            --gold-light: #fef2c0;
-            --bg: #f5f3f0;
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.15);
-            --radius: 28px;
-            --transition: 0.25s ease;
-        }
-        body {
-            background: var(--bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
-        .hidden {
-            display: none !important;
-        }
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--yellow);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e8c815;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        :root { --black: #1a1a1a; --yellow: #f9d71c; --red: #d71921; --gold-light: #fef2c0; --bg: #f5f3f0; --shadow: 0 8px 24px rgba(0,0,0,0.08); --shadow-hover: 0 12px 32px rgba(0,0,0,0.15); --radius: 28px; --transition: 0.25s ease; }
+        body { background: var(--bg); color: var(--black); min-height: 100vh; }
+        .hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--yellow); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e8c815; }
 
-        /* ── LOGIN ── */
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 1rem;
-        }
-        .login-card {
-            background: #fff;
-            padding: 2.8rem 3.2rem;
-            border-radius: 60px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            max-width: 440px;
-            width: 100%;
-            border-top: 8px solid var(--yellow);
-        }
-        .login-card h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .login-card h1 span {
-            background: var(--yellow);
-            padding: 0.1rem 0.8rem;
-            border-radius: 40px;
-            font-size: 1rem;
-        }
-        .login-card .sub {
-            color: #555;
-            margin-bottom: 1.8rem;
-            font-weight: 500;
-        }
-        .login-card label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: block;
-            margin-top: 1rem;
-        }
-        .login-card input,
-        .login-card select {
-            width: 100%;
-            padding: 0.75rem 1.2rem;
-            border-radius: 60px;
-            border: 1px solid #d6d2cc;
-            background: #fcfbf9;
-            margin-top: 0.2rem;
-            font-size: 0.95rem;
-        }
-        .login-card input:focus,
-        .login-card select:focus {
-            outline: 2px solid var(--yellow);
-            border-color: var(--yellow);
-        }
-        .login-btn {
-            background: var(--black);
-            color: #fff;
-            border: none;
-            padding: 0.9rem;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-top: 1.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            width: 100%;
-        }
-        .login-btn:hover {
-            background: var(--red);
-            transform: translateY(-2px);
-        }
-        .flag-stripes {
-            display: flex;
-            gap: 4px;
-            margin-top: 1.5rem;
-            justify-content: center;
-        }
-        .flag-stripes span {
-            width: 48px;
-            height: 8px;
-            border-radius: 6px;
-        }
-        .flag-stripes .b {
-            background: var(--black);
-        }
-        .flag-stripes .y {
-            background: var(--yellow);
-        }
-        .flag-stripes .r {
-            background: var(--red);
-        }
-        .demo-creds {
-            font-size: 0.7rem;
-            color: #888;
-            margin-top: 1rem;
-            text-align: center;
-            line-height: 1.7;
-        }
+        /* LOGIN */
+        .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%); padding: 1rem; }
+        .login-card { background: #fff; padding: 2.8rem 3.2rem; border-radius: 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-width: 400px; width: 100%; border-top: 8px solid var(--yellow); }
+        .login-card h1 { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .login-card h1 span { background: var(--yellow); padding: 0.1rem 0.8rem; border-radius: 40px; font-size: 1rem; }
+        .login-card .sub { color: #555; margin-bottom: 1.8rem; font-weight: 500; }
+        .login-card label { font-weight: 600; font-size: 0.85rem; display: block; margin-top: 1rem; }
+        .login-card input { width: 100%; padding: 0.75rem 1.2rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; margin-top: 0.2rem; font-size: 0.95rem; }
+        .login-card input:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
+        .login-btn { background: var(--black); color: #fff; border: none; padding: 0.9rem; border-radius: 60px; font-weight: 700; font-size: 1rem; margin-top: 1.8rem; cursor: pointer; transition: var(--transition); width: 100%; }
+        .login-btn:hover { background: var(--red); transform: translateY(-2px); }
+        .flag-stripes { display: flex; gap: 4px; margin-top: 1.5rem; justify-content: center; }
+        .flag-stripes span { width: 48px; height: 8px; border-radius: 6px; }
+        .flag-stripes .b { background: var(--black); }
+        .flag-stripes .y { background: var(--yellow); }
+        .flag-stripes .r { background: var(--red); }
+        .demo-creds { font-size: 0.7rem; color: #888; margin-top: 1rem; text-align: center; line-height: 1.7; }
 
-        /* ── LAYOUT ── */
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 1.5rem 2rem;
-        }
+        /* LAYOUT */
+        .container { max-width: 1440px; margin: 0 auto; padding: 1.5rem 2rem; }
 
-        /* ── HEADER ── */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 0 1.2rem 0;
-            border-bottom: 3px solid var(--yellow);
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .logo h1 {
-            font-weight: 700;
-            font-size: 1.9rem;
-            letter-spacing: -0.5px;
-        }
-        .logo h1 span {
-            color: var(--red);
-            background: var(--yellow);
-            padding: 0.1rem 0.8rem;
-            border-radius: 40px;
-            font-size: 1rem;
-            margin-left: 0.3rem;
-        }
-        .logo .subtitle {
-            font-size: 0.7rem;
-            color: #555;
-            margin-top: 0.1rem;
-        }
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            background: #fff;
-            padding: 0.3rem 1.5rem 0.3rem 1.2rem;
-            border-radius: 60px;
-            box-shadow: var(--shadow);
-            flex-wrap: wrap;
-        }
-        .user-badge i {
-            color: var(--red);
-            font-size: 1.3rem;
-        }
-        .user-badge .role-tag {
-            background: var(--black);
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.2rem 0.9rem;
-            border-radius: 30px;
-        }
-        .user-badge .site-tag {
-            background: var(--yellow);
-            color: var(--black);
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.2rem 0.9rem;
-            border-radius: 30px;
-        }
-        .user-badge .logout-btn {
-            color: var(--red);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: var(--transition);
-        }
-        .user-badge .logout-btn:hover {
-            transform: scale(1.15);
-        }
+        /* HEADER */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0 1.2rem 0; border-bottom: 3px solid var(--yellow); flex-wrap: wrap; gap: 1rem; }
+        .logo h1 { font-weight: 700; font-size: 1.9rem; letter-spacing: -0.5px; }
+        .logo h1 span { color: var(--red); background: var(--yellow); padding: 0.1rem 0.8rem; border-radius: 40px; font-size: 1rem; margin-left: 0.3rem; }
+        .logo .subtitle { font-size: 0.7rem; color: #555; margin-top: 0.1rem; }
+        .user-badge { display: flex; align-items: center; gap: 1.2rem; background: #fff; padding: 0.3rem 1.5rem 0.3rem 1.2rem; border-radius: 60px; box-shadow: var(--shadow); flex-wrap: wrap; }
+        .user-badge i { color: var(--red); font-size: 1.3rem; }
+        .user-badge .role-tag { background: var(--black); color: #fff; font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.9rem; border-radius: 30px; }
+        .user-badge .site-tag { background: var(--yellow); color: var(--black); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.9rem; border-radius: 30px; }
+        .user-badge .logout-btn { color: var(--red); cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
+        .user-badge .logout-btn:hover { transform: scale(1.15); }
 
-        /* ── SITE SELECTOR ── */
-        .site-selector {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            margin: 1.2rem 0 1.8rem 0;
-            background: #fff;
-            padding: 0.5rem 1.2rem;
-            border-radius: 80px;
-            box-shadow: var(--shadow);
-        }
-        .site-btn {
-            background: transparent;
-            border: none;
-            padding: 0.5rem 1.4rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #3a3a3a;
-            transition: var(--transition);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .site-btn i {
-            color: var(--red);
-        }
-        .site-btn.active {
-            background: var(--black);
-            color: #fff;
-        }
-        .site-btn.active i {
-            color: var(--yellow);
-        }
-        .site-btn:hover:not(.active) {
-            background: #ecebe7;
-        }
+        /* SITE SELECTOR */
+        .site-selector { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.2rem 0 1.8rem 0; background: #fff; padding: 0.5rem 1.2rem; border-radius: 80px; box-shadow: var(--shadow); }
+        .site-selector.hidden { display: none; }
+        .site-btn { background: transparent; border: none; padding: 0.5rem 1.4rem; border-radius: 40px; font-weight: 600; font-size: 0.9rem; color: #3a3a3a; transition: var(--transition); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .site-btn i { color: var(--red); }
+        .site-btn.active { background: var(--black); color: #fff; }
+        .site-btn.active i { color: var(--yellow); }
+        .site-btn:hover:not(.active) { background: #ecebe7; }
 
-        /* ── STATS ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 1.8rem;
-        }
-        .stat-card {
-            background: #fff;
-            padding: 1rem 1.5rem;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            border-left: 6px solid var(--yellow);
-            transition: var(--transition);
-        }
-        .stat-card:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-3px);
-        }
-        .stat-card .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            color: #5a5a5a;
-        }
-        .stat-card .value {
-            font-weight: 700;
-            font-size: 1.5rem;
-            margin-top: 0.1rem;
-        }
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem; }
+        .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: pointer; }
+        .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+        .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; color: #5a5a5a; }
+        .stat-card .value { font-weight: 700; font-size: 1.5rem; margin-top: 0.1rem; }
+        .stat-card .sub { font-size: 0.7rem; color: #888; }
 
-        /* ── TOOLBAR ── */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin: 1.5rem 0 1.2rem 0;
-            gap: 0.8rem;
-        }
-        .toolbar .left {
-            display: flex;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-        }
-        .btn {
-            background: #fff;
-            border: 1px solid #d0ceca;
-            padding: 0.45rem 1.3rem;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-        .btn-primary {
-            background: var(--black);
-            border-color: var(--black);
-            color: #fff;
-        }
-        .btn-primary i {
-            color: var(--yellow);
-        }
-        .btn-primary:hover {
-            background: #2c2c2c;
-        }
-        .btn-outline-red {
-            border-color: var(--red);
-            color: var(--red);
-            background: transparent;
-        }
-        .btn-outline-red:hover {
-            background: var(--red);
-            color: #fff;
-        }
-        .btn-yellow {
-            background: var(--yellow);
-            border-color: var(--yellow);
-            color: var(--black);
-            font-weight: 600;
-        }
-        .btn-yellow:hover {
-            background: #e8c815;
-        }
-        .btn-success {
-            background: #1a7a3a;
-            border-color: #1a7a3a;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #0f5e2c;
-        }
-        .btn-danger {
-            background: var(--red);
-            border-color: var(--red);
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background: #b3151d;
-        }
-        .btn-outline-primary {
-            border-color: var(--black);
-            color: var(--black);
-            background: transparent;
-        }
-        .btn-outline-primary:hover {
-            background: var(--black);
-            color: #fff;
-        }
+        /* TOOLBAR */
+        .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin: 1.5rem 0 1.2rem 0; gap: 0.8rem; }
+        .toolbar .left { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .btn { background: #fff; border: 1px solid #d0ceca; padding: 0.45rem 1.3rem; border-radius: 40px; font-weight: 500; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-primary { background: var(--black); border-color: var(--black); color: #fff; }
+        .btn-primary i { color: var(--yellow); }
+        .btn-primary:hover { background: #2c2c2c; }
+        .btn-outline-red { border-color: var(--red); color: var(--red); background: transparent; }
+        .btn-outline-red:hover { background: var(--red); color: #fff; }
+        .btn-yellow { background: var(--yellow); border-color: var(--yellow); color: var(--black); font-weight: 600; }
+        .btn-yellow:hover { background: #e8c815; }
+        .btn-success { background: #1a7a3a; border-color: #1a7a3a; color: #fff; }
+        .btn-success:hover { background: #0f5e2c; }
+        .btn-danger { background: var(--red); border-color: var(--red); color: #fff; }
+        .btn-danger:hover { background: #b3151d; }
+        .btn-outline-primary { border-color: var(--black); color: var(--black); background: transparent; }
+        .btn-outline-primary:hover { background: var(--black); color: #fff; }
+        .btn-purple { background: #6f42c1; border-color: #6f42c1; color: #fff; }
+        .btn-purple:hover { background: #5a32a3; }
+        .btn-teal { background: #20c997; border-color: #20c997; color: #fff; }
+        .btn-teal:hover { background: #1aa87d; }
+        .btn-orange { background: #fd7e14; border-color: #fd7e14; color: #fff; }
+        .btn-orange:hover { background: #e06b0a; }
 
-        /* ── TABLE ── */
-        .table-wrap {
-            background: #fff;
-            border-radius: var(--radius);
-            padding: 0.2rem;
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-            min-width: 900px;
-        }
-        th {
-            text-align: left;
-            padding: 0.9rem 1rem 0.5rem 1rem;
-            color: #3d3d3d;
-            font-weight: 600;
-            border-bottom: 2px solid #efedea;
-            background: #faf8f5;
-        }
-        td {
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid #f1efeb;
-            vertical-align: middle;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        tr:hover td {
-            background: #faf8f5;
-        }
+        /* TABLE */
+        .table-wrap { background: #fff; border-radius: var(--radius); padding: 0.2rem; box-shadow: var(--shadow); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 700px; }
+        th { text-align: left; padding: 0.9rem 1rem 0.5rem 1rem; color: #3d3d3d; font-weight: 600; border-bottom: 2px solid #efedea; background: #faf8f5; }
+        td { padding: 0.6rem 1rem; border-bottom: 1px solid #f1efeb; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #faf8f5; }
 
-        /* badges */
-        .badge-site {
-            padding: 0.15rem 0.9rem;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .badge-site.main {
-            background: var(--yellow);
-            color: var(--black);
-        }
-        .badge-site.ngetta {
-            background: #d9d2c0;
-        }
-        .badge-site.adyel {
-            background: #c7beb0;
-        }
-        .badge-status {
-            padding: 0.15rem 0.7rem;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .badge-status.pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .badge-status.cleared {
-            background: #d4edda;
-            color: #155724;
-        }
-        .badge-status.completed {
-            background: #cce5ff;
-            color: #004085;
-        }
-        .badge-status.expense {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .badge-status.partial {
-            background: #d6d8db;
-            color: #383d41;
-        }
-        .action-icons i {
-            margin: 0 3px;
-            color: #5f5f5f;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-        .action-icons i:hover {
-            color: var(--red);
-            transform: scale(1.2);
-        }
-        .action-icons i.text-success:hover {
-            color: #1a7a3a;
-        }
+        .badge-site { padding: 0.15rem 0.9rem; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .badge-site.workshop { background: var(--yellow); color: var(--black); }
+        .badge-site.ngetta { background: #d9d2c0; }
+        .badge-site.adyel { background: #c7beb0; }
+        .badge-status { padding: 0.15rem 0.7rem; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .badge-status.pending { background: #fff3cd; color: #856404; }
+        .badge-status.cleared { background: #d4edda; color: #155724; }
+        .badge-status.completed { background: #cce5ff; color: #004085; }
+        .badge-status.expense { background: #f8d7da; color: #721c24; }
+        .badge-status.partial { background: #d6d8db; color: #383d41; }
+        .action-icons i { margin: 0 3px; color: #5f5f5f; cursor: pointer; transition: var(--transition); font-size: 1rem; }
+        .action-icons i:hover { color: var(--red); transform: scale(1.2); }
+        .action-icons i.text-success:hover { color: #1a7a3a; }
 
-        /* ── MODAL ── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 1rem;
-        }
-        .modal-card {
-            background: #fff;
-            max-width: 720px;
-            width: 100%;
-            padding: 2rem 2.5rem;
-            border-radius: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            border-top: 8px solid var(--yellow);
-            max-height: 92vh;
-            overflow-y: auto;
-        }
-        .modal-card h3 {
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .modal-card label {
-            font-weight: 500;
-            font-size: 0.8rem;
-            display: block;
-            margin-top: 0.8rem;
-        }
-        .modal-card input,
-        .modal-card select,
-        .modal-card textarea {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border-radius: 60px;
-            border: 1px solid #d6d2cc;
-            background: #fcfbf9;
-            margin-top: 0.15rem;
-            font-size: 0.9rem;
-        }
-        .modal-card input:focus,
-        .modal-card select:focus,
-        .modal-card textarea:focus {
-            outline: 2px solid var(--yellow);
-            border-color: var(--yellow);
-        }
-        .modal-card .row2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.8rem;
-            margin-top: 2rem;
-        }
-        .modal-card .help-text {
-            font-size: 0.7rem;
-            color: #888;
-            margin-top: 0.2rem;
-        }
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 999; padding: 1rem; }
+        .modal-card { background: #fff; max-width: 760px; width: 100%; padding: 2rem 2.5rem; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-top: 8px solid var(--yellow); max-height: 92vh; overflow-y: auto; }
+        .modal-card h3 { font-weight: 700; margin-bottom: 1.5rem; display: flex; gap: 10px; align-items: center; }
+        .modal-card label { font-weight: 500; font-size: 0.8rem; display: block; margin-top: 0.8rem; }
+        .modal-card input, .modal-card select, .modal-card textarea { width: 100%; padding: 0.6rem 1rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; margin-top: 0.15rem; font-size: 0.9rem; }
+        .modal-card input:focus, .modal-card select:focus, .modal-card textarea:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
+        .modal-card .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 2rem; }
 
-        /* ── FOOTER ── */
-        .footer-flag {
-            margin-top: 2.5rem;
-            padding: 1rem 0;
-            border-top: 2px solid var(--yellow);
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            font-size: 0.8rem;
-            color: #3c3c3c;
-        }
-        .flag-stripes-mini {
-            display: flex;
-            gap: 2px;
-        }
-        .flag-stripes-mini span {
-            width: 36px;
-            height: 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        .flag-stripes-mini .b {
-            background: var(--black);
-        }
-        .flag-stripes-mini .y {
-            background: var(--yellow);
-        }
-        .flag-stripes-mini .r {
-            background: var(--red);
-        }
+        /* INVENTORY INTERACTIVE CARDS */
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .inventory-item { background: #fff; padding: 1rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center; border-left: 4px solid var(--yellow); cursor: pointer; transition: var(--transition); }
+        .inventory-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .inventory-item .name { font-weight: 600; font-size: 0.9rem; }
+        .inventory-item .qty { font-size: 1.8rem; font-weight: 700; color: var(--black); margin: 0.3rem 0; }
+        .inventory-item .unit { font-size: 0.7rem; color: #888; }
+        .inventory-item .min-stock { font-size: 0.65rem; color: #999; }
+        .inventory-item .site-distribution { font-size: 0.65rem; color: #666; margin-top: 0.3rem; border-top: 1px solid #eee; padding-top: 0.3rem; }
+        .inventory-item.low-stock { border-left-color: var(--red); background: #fef5f5; }
+        .inventory-item .stock-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+        .stock-dot.green { background: #28a745; }
+        .stock-dot.yellow { background: #ffc107; }
+        .stock-dot.red { background: var(--red); }
 
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            .login-card {
-                padding: 2rem 1.5rem;
-            }
-            .modal-card {
-                padding: 1.5rem;
-            }
-            .modal-card .row2 {
-                grid-template-columns: 1fr;
-            }
-            .header {
-                flex-direction: column;
-                align-items: start;
-            }
-            .user-badge {
-                width: 100%;
-                justify-content: center;
-            }
-            .site-selector {
-                border-radius: 20px;
-                justify-content: center;
-            }
-            .toolbar .left {
-                width: 100%;
-                justify-content: center;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* FOOTER */
+        .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
+        .flag-stripes-mini { display: flex; gap: 2px; }
+        .flag-stripes-mini span { width: 36px; height: 10px; border-radius: 6px; display: inline-block; }
+        .flag-stripes-mini .b { background: var(--black); }
+        .flag-stripes-mini .y { background: var(--yellow); }
+        .flag-stripes-mini .r { background: var(--red); }
 
-        /* ── TOAST ── */
-        .toast-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-        .toast {
-            padding: 0.9rem 1.8rem;
-            border-radius: 60px;
-            background: var(--black);
-            color: #fff;
-            box-shadow: var(--shadow-hover);
-            font-weight: 500;
-            font-size: 0.9rem;
-            animation: slideIn 0.3s ease;
-            max-width: 400px;
-        }
-        .toast.success {
-            background: #1a7a3a;
-        }
-        .toast.error {
-            background: var(--red);
-        }
-        .toast.warning {
-            background: #b8870a;
-        }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(60px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+        /* TOAST */
+        .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.6rem; }
+        .toast { padding: 0.9rem 1.8rem; border-radius: 60px; background: var(--black); color: #fff; box-shadow: var(--shadow-hover); font-weight: 500; font-size: 0.9rem; animation: slideIn 0.3s ease; max-width: 400px; }
+        .toast.success { background: #1a7a3a; }
+        .toast.error { background: var(--red); }
+        .toast.warning { background: #b8870a; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* CHARTS */
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .chart-box { background: #fff; padding: 1.2rem; border-radius: 20px; box-shadow: var(--shadow); }
+        .chart-box h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
+        .chart-box canvas { max-height: 200px; width: 100% !important; }
+        @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
+
+        .audit-entry { padding: 0.4rem 0.8rem; border-bottom: 1px solid #efedea; font-size: 0.8rem; }
+        .audit-entry .time { color: #888; font-size: 0.7rem; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) { .container { padding: 1rem; } .login-card { padding: 2rem 1.5rem; } .modal-card { padding: 1.5rem; } .modal-card .row2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: start; } .user-badge { width: 100%; justify-content: center; } .site-selector { border-radius: 20px; justify-content: center; } .toolbar .left { width: 100%; justify-content: center; } .stats-grid { grid-template-columns: 1fr 1fr; } .inventory-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
+        @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <!-- ─── LOGIN ─── -->
+    <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
             <h1>⛰️ Kajana <span>Enterprise</span></h1>
-            <div class="sub">Concrete &amp; Stone Mining ·  Production</div>
+            <div class="sub">Concrete &amp; Stone Mining · Complete Management</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
                 <input type="text" id="loginUser" value="gm@kajana.com" placeholder="Enter username" />
                 <label><i class="fas fa-lock"></i> Password</label>
                 <input type="password" id="loginPass" value="password" placeholder="••••••••" />
-                <label><i class="fas fa-building"></i> Site (if applicable)</label>
-                <select id="loginSite">
-                    <option value="main">Main Office</option>
-                    <option value="ngetta">Ngetta Site</option>
-                    <option value="adyel">Adyel Site</option>
-                </select>
                 <button type="submit" class="login-btn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
             </form>
             <div class="flag-stripes"><span class="b"></span><span class="y"></span><span class="r"></span></div>
             <div class="demo-creds">
                 <strong>Demo Credentials:</strong><br />
-                GM: gm@kajana.com / password &nbsp;|&nbsp; Manager: manager@main / password<br />
-                Cashier: cashier@main / password &nbsp;|&nbsp; Dispatch: dispatch@main / password
+                GM: gm@kajana.com / password &nbsp;|&nbsp; Manager: manager@workshop / password<br />
+                Accountant: accountant@workshop / password &nbsp;|&nbsp; Cashier: cashier@workshop / password<br />
+                Sales: sales@workshop / password &nbsp;|&nbsp; Dispatch: dispatch@workshop / password
             </div>
         </div>
     </div>
 
-    <!-- ─── MAIN APP ─── -->
+    <!-- MAIN APP -->
     <div id="appContainer" class="container hidden">
-        <!-- Header -->
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · Production</div>
+                <div class="subtitle">concrete · stone · mining · complete management</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -710,31 +209,38 @@
             </div>
         </div>
 
-        <!-- Site Selector -->
         <div class="site-selector" id="siteSelector">
-            <button class="site-btn active" data-site="main"><i class="fas fa-building"></i> Main Office</button>
+            <button class="site-btn active" data-site="workshop"><i class="fas fa-building"></i> Workshop</button>
             <button class="site-btn" data-site="ngetta"><i class="fas fa-truck"></i> Ngetta Site</button>
             <button class="site-btn" data-site="adyel"><i class="fas fa-warehouse"></i> Adyel Site</button>
         </div>
 
-        <!-- Stats -->
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div></div>
-            <div class="stat-card"><div class="label">Month Sales</div><div class="value" id="monthSales">UGX 0</div></div>
-            <div class="stat-card"><div class="label">Month Expenses</div><div class="value" id="monthExp">UGX 0</div></div>
-            <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value" id="pendingDispatch">0</div></div>
-            <div class="stat-card"><div class="label">Credit Balances</div><div class="value" id="creditBalance">UGX 0</div></div>
+            <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div><div class="sub" id="todaySalesSub">+0%</div></div>
+            <div class="stat-card"><div class="label">Month Sales</div><div class="value" id="monthSales">UGX 0</div><div class="sub" id="monthSalesSub">0 invoices</div></div>
+            <div class="stat-card"><div class="label">Month Expenses</div><div class="value" id="monthExp">UGX 0</div><div class="sub" id="monthExpSub">0 entries</div></div>
+            <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value" id="pendingDispatch">0</div><div class="sub" id="pendingDispatchSub">Ready for loading</div></div>
+            <div class="stat-card"><div class="label">Credit Balances</div><div class="value" id="creditBalance">UGX 0</div><div class="sub" id="creditBalanceSub">Total outstanding</div></div>
+            <div class="stat-card" onclick="openModal('stockview')"><div class="label">📦 Stock Items</div><div class="value" id="stockItems">0</div><div class="sub" id="stockItemsSub">Click to view all</div></div>
         </div>
 
-        <!-- Toolbar -->
+        <div id="dashboardCharts" class="hidden chart-grid">
+            <div class="chart-box"><h4>📊 Daily Sales Trend</h4><canvas id="salesChart"></canvas></div>
+            <div class="chart-box"><h4>📦 Site Performance</h4><canvas id="siteChart"></canvas></div>
+        </div>
+
         <div class="toolbar">
             <div class="left">
                 <button class="btn btn-primary" id="btnNewSale" onclick="openModal('sale')"><i class="fas fa-plus-circle"></i> New Sale</button>
                 <button class="btn btn-outline-red" id="btnExpense" onclick="openModal('expense')"><i class="fas fa-receipt"></i> Expense</button>
                 <button class="btn btn-success" id="btnDispatch" onclick="openModal('dispatch')"><i class="fas fa-truck"></i> Dispatch</button>
+                <button class="btn btn-purple" id="btnInventory" onclick="openModal('inventory')"><i class="fas fa-boxes"></i> Manage Stock</button>
+                <button class="btn btn-orange" id="btnProduction" onclick="openModal('production')"><i class="fas fa-industry"></i> Production & Materials</button>
                 <button class="btn btn-yellow" onclick="openModal('report')"><i class="fas fa-chart-bar"></i> Reports</button>
-                <button class="btn btn-outline-primary" onclick="openModal('users')"><i class="fas fa-users-cog"></i> Users</button>
-                <button class="btn btn-outline-primary" onclick="openModal('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+                <button class="btn btn-outline-primary" id="btnUsers" onclick="openModal('users')"><i class="fas fa-users-cog"></i> Users</button>
+                <button class="btn btn-outline-primary" id="btnClients" onclick="openModal('clients')"><i class="fas fa-user-tie"></i> Credit Clients</button>
+                <button class="btn btn-outline-primary" id="btnAudit" onclick="openModal('audit')"><i class="fas fa-history"></i> Audit</button>
+                <button class="btn btn-teal" id="btnClearInvoice" onclick="openModal('clear')"><i class="fas fa-check-double"></i> Clear Invoice</button>
             </div>
             <div>
                 <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
@@ -742,19 +248,14 @@
             </div>
         </div>
 
-        <!-- Table -->
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Date</th>
-                        <th>Site</th>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
+                    <tr id="tableHeaders">
+                        <th>#</th><th>Date</th><th>Site</th><th>Item</th><th>Qty</th>
+                        <th class="financial-col">Amount</th>
                         <th>Customer</th>
-                        <th>Payment</th>
+                        <th class="financial-col">Payment</th>
                         <th>Receipt</th>
                         <th>Status</th>
                         <th style="text-align:center;">Actions</th>
@@ -765,85 +266,99 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v3.0 · Data persists in LocalStorage</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.0 · Sales Agents can manage production & materials</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
 
-    <!-- ─── MODAL CONTAINER ─── -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card" id="modalCard"></div>
     </div>
 
-    <!-- ─── TOAST CONTAINER ─── -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ──────────────────────────────────────────────────────────────── -->
     <script>
-        // ════════════════════════════════════════════════════════════
-        //  DATA LAYER with LocalStorage persistence
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // DATA LAYER
+        // ═══════════════════════════════════════════════════════════════
 
-        const STORAGE_KEY = 'kajana_data';
+        const STORAGE_KEY = 'kajana_data_v8';
         let transactions = [];
+        let auditLog = [];
         let nextId = 100;
-        let currentSite = 'main';
+        let currentSite = 'workshop';
         let currentUser = null;
         let inventoryItems = {};
+        let creditClients = [];
+        let userPermissions = {};
+        let productionLog = [];
 
-        // Default inventory
         const DEFAULT_INVENTORY = {
-            main: [
-                { name: 'Pavers', price: 20000 },
-                { name: 'Slabs', price: 35000 },
-                { name: 'Road Cubs', price: 9000 },
-                { name: 'Concrete Blocks', price: 12000 },
-                { name: 'Hollow Section', price: 14000 }
+            workshop: [
+                { name: 'Pavers', price: 20000, stock: 500, minStock: 100 },
+                { name: 'Slabs', price: 35000, stock: 200, minStock: 50 },
+                { name: 'Road Cubs', price: 9000, stock: 800, minStock: 200 },
+                { name: 'Concrete Blocks', price: 12000, stock: 1000, minStock: 300 },
+                { name: 'Hollow Section', price: 14000, stock: 300, minStock: 80 }
             ],
             ngetta: [
-                { name: 'Stone Dust', price: 170000 },
-                { name: 'Gravel 5t', price: 600000 },
-                { name: 'Gravel 10t', price: 1200000 },
-                { name: 'Aggregate', price: 850000 }
+                { name: 'Stone Dust', price: 170000, stock: 100, minStock: 20 },
+                { name: 'Gravel 5t', price: 600000, stock: 50, minStock: 10 },
+                { name: 'Gravel 10t', price: 1200000, stock: 30, minStock: 5 },
+                { name: 'Aggregate', price: 850000, stock: 80, minStock: 15 }
             ],
             adyel: [
-                { name: 'Pavers', price: 22000 },
-                { name: 'Slabs', price: 38000 },
-                { name: 'Road Cubs', price: 10000 },
-                { name: 'Concrete Blocks', price: 13000 },
-                { name: 'Hollow Section', price: 15000 }
+                { name: 'Pavers', price: 22000, stock: 400, minStock: 80 },
+                { name: 'Slabs', price: 38000, stock: 150, minStock: 30 },
+                { name: 'Road Cubs', price: 10000, stock: 600, minStock: 150 },
+                { name: 'Concrete Blocks', price: 13000, stock: 800, minStock: 200 },
+                { name: 'Hollow Section', price: 15000, stock: 200, minStock: 50 }
             ]
         };
 
-        // Default users
         const DEFAULT_USERS = [
-            { username: 'gm@kajana.com', password: 'password', role: 'gm', name: 'General Manager', sites: ['main', 'ngetta',
-                    'adyel'
-                ] },
-            { username: 'manager@main', password: 'password', role: 'manager', name: 'Manager Main', sites: ['main'] },
+            { username: 'gm@kajana.com', password: 'password', role: 'gm', name: 'General Manager', sites: ['workshop', 'ngetta', 'adyel'] },
+            { username: 'manager@workshop', password: 'password', role: 'manager', name: 'Manager Workshop', sites: ['workshop'] },
             { username: 'manager@ngetta', password: 'password', role: 'manager', name: 'Manager Ngetta', sites: ['ngetta'] },
             { username: 'manager@adyel', password: 'password', role: 'manager', name: 'Manager Adyel', sites: ['adyel'] },
-            { username: 'cashier@main', password: 'password', role: 'cashier', name: 'Cashier Main', sites: ['main'] },
+            { username: 'accountant@workshop', password: 'password', role: 'accountant', name: 'Accountant Workshop', sites: ['workshop'] },
+            { username: 'accountant@ngetta', password: 'password', role: 'accountant', name: 'Accountant Ngetta', sites: ['ngetta'] },
+            { username: 'accountant@adyel', password: 'password', role: 'accountant', name: 'Accountant Adyel', sites: ['adyel'] },
+            { username: 'cashier@workshop', password: 'password', role: 'cashier', name: 'Cashier Workshop', sites: ['workshop'] },
             { username: 'cashier@ngetta', password: 'password', role: 'cashier', name: 'Cashier Ngetta', sites: ['ngetta'] },
             { username: 'cashier@adyel', password: 'password', role: 'cashier', name: 'Cashier Adyel', sites: ['adyel'] },
-            { username: 'dispatch@main', password: 'password', role: 'dispatch', name: 'Dispatch Main', sites: ['main'] },
-            { username: 'dispatch@ngetta', password: 'password', role: 'dispatch', name: 'Dispatch Ngetta',
-            sites: ['ngetta'] },
+            { username: 'sales@workshop', password: 'password', role: 'sales', name: 'Sales Agent Workshop', sites: ['workshop'] },
+            { username: 'sales@ngetta', password: 'password', role: 'sales', name: 'Sales Agent Ngetta', sites: ['ngetta'] },
+            { username: 'sales@adyel', password: 'password', role: 'sales', name: 'Sales Agent Adyel', sites: ['adyel'] },
+            { username: 'dispatch@workshop', password: 'password', role: 'dispatch', name: 'Dispatch Workshop', sites: ['workshop'] },
+            { username: 'dispatch@ngetta', password: 'password', role: 'dispatch', name: 'Dispatch Ngetta', sites: ['ngetta'] },
             { username: 'dispatch@adyel', password: 'password', role: 'dispatch', name: 'Dispatch Adyel', sites: ['adyel'] },
         ];
 
-        let users = [...DEFAULT_USERS];
+        const DEFAULT_CLIENTS = [
+            { name: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd', creditLimit: 5000000 },
+            { name: 'Mary Smith', contact: '+256 700 222', address: 'Ngetta', company: '', creditLimit: 3000000 },
+            { name: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc', creditLimit: 4000000 },
+            { name: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '', creditLimit: 8000000 },
+            { name: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt', creditLimit: 10000000 },
+            { name: 'David Otieno', contact: '+256 700 666', address: 'Adyel', company: 'Otieno Constructions', creditLimit: 2500000 },
+        ];
 
-        // ── Load / Save ──
+        let users = [];
+
         function loadData() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
                     const data = JSON.parse(raw);
                     transactions = data.transactions || [];
+                    auditLog = data.auditLog || [];
+                    productionLog = data.productionLog || [];
                     nextId = data.nextId || 100;
                     inventoryItems = data.inventory || JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
                     users = data.users || [...DEFAULT_USERS];
+                    creditClients = data.creditClients || [...DEFAULT_CLIENTS];
+                    userPermissions = data.userPermissions || {};
                     return true;
                 }
             } catch (e) { console.warn('Load error', e); }
@@ -852,132 +367,171 @@
 
         function saveData() {
             try {
-                const data = { transactions, nextId, inventory: inventoryItems, users };
+                const data = { transactions, auditLog, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) { console.warn('Save error', e); }
         }
 
-        // ── Seed initial data ──
+        function addAudit(action, details) {
+            auditLog.push({
+                timestamp: new Date().toISOString(),
+                user: currentUser ? currentUser.username : 'system',
+                action,
+                details,
+                site: currentSite
+            });
+            saveData();
+        }
+
         function seedData() {
             if (loadData()) return;
             inventoryItems = JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
             users = [...DEFAULT_USERS];
+            creditClients = [...DEFAULT_CLIENTS];
+            productionLog = [];
             const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
             transactions = [
-                { id: nextId++, date: d(0), site: 'main', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
+                { id: nextId++, date: d(0), site: 'workshop', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
                     customer: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd',
                     payment: 'cash', deposit: 0, balance: 0, receipt: 'R-001', status: 'completed',
-                    dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120,
-                        balanceQty: 0 } },
+                    dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120, balanceQty: 0 } },
                 { id: nextId++, date: d(1), site: 'ngetta', item: 'Stone Dust', qty: 5, price: 170000, amount: 850000,
                     customer: 'Mary Smith', contact: '+256 700 222', address: 'Ngetta', company: '', payment: 'credit',
                     deposit: 300000, balance: 550000, receipt: 'R-002', status: 'pending', dispatch: { loaded: false } },
                 { id: nextId++, date: d(2), site: 'adyel', item: 'Hollow Section', qty: 80, price: 14000, amount: 1120000,
                     customer: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc',
                     payment: 'cash', deposit: 0, balance: 0, receipt: 'R-003', status: 'completed',
-                    dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80,
-                        balanceQty: 0 } },
-                { id: nextId++, date: d(0), site: 'main', item: 'Fuel', qty: 1, price: 450000, amount: 450000,
+                    dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80, balanceQty: 0 } },
+                { id: nextId++, date: d(0), site: 'workshop', item: 'Fuel', qty: 1, price: 450000, amount: 450000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
                     receipt: 'E-001', status: 'expense', dispatch: {} },
                 { id: nextId++, date: d(3), site: 'ngetta', item: 'Gravel 10t', qty: 10, price: 120000, amount: 1200000,
                     customer: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '',
-                    payment: 'credit', deposit: 500000, balance: 700000, receipt: 'R-004', status: 'pending',
-                    dispatch: { loaded: false } },
+                    payment: 'credit', deposit: 500000, balance: 700000, receipt: 'R-004', status: 'pending', dispatch: { loaded: false } },
                 { id: nextId++, date: d(1), site: 'adyel', item: 'Road Cubs', qty: 200, price: 9000, amount: 1800000,
                     customer: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt',
                     payment: 'cash', deposit: 0, balance: 0, receipt: 'R-005', status: 'completed',
-                    dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200,
-                        balanceQty: 0 } },
-                { id: nextId++, date: d(0), site: 'main', item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
+                    dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200, balanceQty: 0 } },
+                { id: nextId++, date: d(0), site: 'workshop', item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
                     receipt: 'E-002', status: 'expense', dispatch: {} },
                 { id: nextId++, date: d(2), site: 'adyel', item: 'Concrete Blocks', qty: 50, price: 12000, amount: 600000,
                     customer: 'David Otieno', contact: '+256 700 666', address: 'Adyel', company: 'Otieno Constructions',
-                    payment: 'credit', deposit: 200000, balance: 400000, receipt: 'R-006', status: 'pending',
-                    dispatch: { loaded: false } },
+                    payment: 'credit', deposit: 200000, balance: 400000, receipt: 'R-006', status: 'pending', dispatch: { loaded: false } },
             ];
+            auditLog = [{ timestamp: new Date().toISOString(), user: 'system', action: 'System Init', details: 'Database seeded', site: 'workshop' }];
             saveData();
         }
         seedData();
 
         // ── Helpers ──
-        function getItemsForSite(site) {
-            return inventoryItems[site] || [];
+        function getItemsForSite(site) { return inventoryItems[site] || []; }
+        function getItemPrice(site, name) { const found = getItemsForSite(site).find(i => i.name === name); return found ? found.price : 0; }
+        function getItemStock(site, name) { const found = getItemsForSite(site).find(i => i.name === name); return found ? found.stock || 0 : 0; }
+        function updateStock(site, name, qty, operation = 'subtract') {
+            const found = getItemsForSite(site).find(i => i.name === name);
+            if (found) {
+                if (operation === 'subtract') { found.stock = Math.max(0, (found.stock || 0) - qty); }
+                else { found.stock = (found.stock || 0) + qty; }
+                if (found.stock <= (found.minStock || 0)) {
+                    toast(`⚠️ Low stock alert: ${found.name} (${found.stock} units remaining)`, 'warning');
+                }
+                saveData();
+                return true;
+            }
+            return false;
         }
-
-        function getItemPrice(site, name) {
-            const items = getItemsForSite(site);
-            const found = items.find(i => i.name === name);
-            return found ? found.price : 0;
-        }
-
-        function generateReceipt() {
-            return 'R-' + String(nextId).padStart(4, '0');
-        }
-
+        function generateReceipt() { return 'R-' + String(nextId).padStart(4, '0'); }
         function toast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const el = document.createElement('div');
             el.className = `toast ${type}`;
             el.textContent = message;
             container.appendChild(el);
-            setTimeout(() => { el.remove(); }, 3500);
+            setTimeout(() => { el.remove(); }, 4000);
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  LOGIN
-        // ════════════════════════════════════════════════════════════
+        // ── Role Detection ──
+        function getUserRole() { return currentUser ? currentUser.role : null; }
+        function isGM() { return getUserRole() === 'gm'; }
+        function isManager() { return getUserRole() === 'manager'; }
+        function isAccountant() { return getUserRole() === 'accountant'; }
+        function isCashier() { return getUserRole() === 'cashier'; }
+        function isSales() { return getUserRole() === 'sales'; }
+        function isDispatch() { return getUserRole() === 'dispatch'; }
+        function canViewFinancials() { return !isDispatch(); }
+
+        // ── Permissions ──
+        function canCreateSale() { return isGM() || isManager() || isCashier() || isSales(); }
+        function canCreateExpense() { return isGM() || isManager() || isAccountant(); }
+        function canClearInvoice() { return isGM() || isManager() || isAccountant(); }
+        function canDispatch() { return isGM() || isManager() || isDispatch(); }
+        function canManageInventory() { return isGM() || isManager() || isDispatch() || isSales(); }
+        function canManageUsers() { return isGM(); }
+        function canManageClients() { return isGM() || isManager(); }
+        function canViewAudit() { return isGM() || isManager() || isAccountant(); }
+        function canDeleteTransaction() { return isGM() || isManager(); }
+        function canEditTransaction() { return isGM() || isManager(); }
+        function canViewReports() { return isGM() || isManager() || isAccountant(); }
+
+        // ═══════════════════════════════════════════════════════════════
+        // LOGIN
+        // ═══════════════════════════════════════════════════════════════
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('loginUser').value.trim();
             const password = document.getElementById('loginPass').value.trim();
-            const site = document.getElementById('loginSite').value;
             const user = users.find(u => u.username === username && u.password === password);
-            if (!user) {
-                toast('Invalid credentials', 'error');
-                return;
-            }
-            if (!user.sites.includes(site) && user.role !== 'gm') {
-                toast('You do not have access to this site', 'error');
-                return;
-            }
+            if (!user) { toast('Invalid credentials', 'error'); return; }
+
+            let site = user.sites[0] || 'workshop';
             currentUser = { ...user, currentSite: site };
+            currentSite = site;
+
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
             document.getElementById('currentUserDisplay').textContent = user.name;
             document.getElementById('currentRoleDisplay').textContent = user.role.toUpperCase();
             document.getElementById('currentSiteDisplay').textContent = site.toUpperCase();
 
-            const isGM = user.role === 'gm';
-            const isManager = user.role === 'manager';
-            const isCashier = user.role === 'cashier';
-            const isDispatch = user.role === 'dispatch';
-
-            document.getElementById('btnNewSale').style.display = (isGM || isManager || isCashier) ? 'inline-flex' :
-            'none';
-            document.getElementById('btnExpense').style.display = (isGM || isManager) ? 'inline-flex' : 'none';
-            document.getElementById('btnDispatch').style.display = (isGM || isDispatch || isManager) ? 'inline-flex' :
-                'none';
+            const hasMultipleSites = user.sites.length > 1 || isGM();
+            const siteSelector = document.getElementById('siteSelector');
+            if (hasMultipleSites) {
+                siteSelector.classList.remove('hidden');
+                document.querySelectorAll('.site-btn').forEach(b => {
+                    b.style.display = (isGM() || user.sites.includes(b.dataset.site)) ? 'inline-flex' : 'none';
+                });
+            } else {
+                siteSelector.classList.add('hidden');
+            }
 
             document.querySelectorAll('.site-btn').forEach(b => {
-                b.style.display = (isGM || user.sites.includes(b.dataset.site)) ? 'inline-flex' : 'none';
+                b.classList.toggle('active', b.dataset.site === currentSite);
             });
 
-            if (!isGM && user.sites.length === 1) {
-                currentSite = user.sites[0];
-                document.querySelectorAll('.site-btn').forEach(b => {
-                    b.classList.toggle('active', b.dataset.site === currentSite);
-                });
-                document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
-            }
+            // Show/hide buttons based on role
+            document.getElementById('btnNewSale').style.display = canCreateSale() ? 'inline-flex' : 'none';
+            document.getElementById('btnExpense').style.display = canCreateExpense() ? 'inline-flex' : 'none';
+            document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
+            document.getElementById('btnInventory').style.display = canManageInventory() ? 'inline-flex' : 'none';
+            document.getElementById('btnProduction').style.display = canManageInventory() ? 'inline-flex' : 'none';
+            document.getElementById('btnUsers').style.display = canManageUsers() ? 'inline-flex' : 'none';
+            document.getElementById('btnClients').style.display = canManageClients() ? 'inline-flex' : 'none';
+            document.getElementById('btnAudit').style.display = canViewAudit() ? 'inline-flex' : 'none';
+            document.getElementById('btnClearInvoice').style.display = canClearInvoice() ? 'inline-flex' : 'none';
+
+            document.getElementById('dashboardCharts').classList.toggle('hidden', !isGM());
+
             renderTable();
+            if (isGM()) renderCharts();
+            addAudit('Login', `User ${user.name} logged in`);
             toast('Welcome ' + user.name + '!', 'success');
         });
 
         function logout() {
             if (confirm('Logout?')) {
+                addAudit('Logout', `User ${currentUser?.name} logged out`);
                 currentUser = null;
                 document.getElementById('loginPage').classList.remove('hidden');
                 document.getElementById('appContainer').classList.add('hidden');
@@ -985,16 +539,21 @@
             }
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  RENDER
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // RENDER
+        // ═══════════════════════════════════════════════════════════════
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
+            const hideFinancials = isDispatch();
+            
+            document.querySelectorAll('.financial-col').forEach(el => {
+                el.style.display = hideFinancials ? 'none' : '';
+            });
+
             const filtered = transactions.filter(t => t.site === currentSite);
             if (!filtered.length) {
-                tbody.innerHTML =
-                    `<tr><td colspan="11" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${hideFinancials ? 9 : 11}" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
                 updateStats();
                 return;
             }
@@ -1007,53 +566,259 @@
             };
             tbody.innerHTML = filtered.map((t, i) => {
                 const st = t.status || 'pending';
-                const canClear = (currentUser && (currentUser.role === 'gm' || currentUser.role === 'manager' ||
-                    currentUser.role === 'cashier')) &&
-                    (st === 'pending' || st === 'partial');
-                const canDelete = (currentUser && (currentUser.role === 'gm' || currentUser.role === 'manager'));
+                const canClear = canClearInvoice() && (st === 'pending' || st === 'partial');
+                const canDelete = canDeleteTransaction();
+                const canEdit = canEditTransaction();
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
               <td><span class="badge-site ${t.site}">${t.site.toUpperCase()}</span></td>
               <td>${t.item}</td>
               <td>${t.qty}</td>
-              <td>${Number(t.amount).toLocaleString()}</td>
+              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : Number(t.amount).toLocaleString()}</td>
               <td>${t.customer || '-'}</td>
-              <td>${t.payment || 'cash'}</td>
+              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : (t.payment || 'cash')}</td>
               <td>${t.receipt || '-'}</td>
               <td>${statusMap[st] || statusMap.pending}</td>
               <td class="action-icons" style="text-align:center;">
-                ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear"></i>` : ''}
+                ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear Invoice"></i>` : ''}
                 ${canDelete ? `<i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})" title="Delete"></i>` : ''}
+                ${canEdit ? `<i class="fas fa-edit" onclick="editTrans(${t.id})" title="Edit"></i>` : ''}
                 ${t.dispatch?.loaded ? `<i class="fas fa-truck" style="color:#1a7a3a;" title="Dispatched"></i>` : ''}
               </td>
             </tr>`;
             }).join('');
             updateStats();
+            if (isGM()) renderCharts();
         }
 
         function updateStats() {
             const siteData = transactions.filter(t => t.site === currentSite);
             const today = new Date().toISOString().split('T')[0];
             const month = today.slice(0, 7);
-            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense').reduce((s, o) => s + o.amount,
-                0);
-            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').reduce((s, o) => s + o
-                .amount, 0);
-            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o
-                .amount, 0);
+            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
             const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
-            document.getElementById('todaySales').textContent = 'UGX ' + todaySales.toLocaleString();
-            document.getElementById('monthSales').textContent = 'UGX ' + monthSales.toLocaleString();
-            document.getElementById('monthExp').textContent = 'UGX ' + monthExp.toLocaleString();
+            const items = getItemsForSite(currentSite);
+            const totalStock = items.reduce((s, i) => s + (i.stock || 0), 0);
+
+            document.getElementById('todaySales').textContent = isDispatch() ? '—' : 'UGX ' + todaySales.toLocaleString();
+            document.getElementById('monthSales').textContent = isDispatch() ? '—' : 'UGX ' + monthSales.toLocaleString();
+            document.getElementById('monthExp').textContent = isDispatch() ? '—' : 'UGX ' + monthExp.toLocaleString();
             document.getElementById('pendingDispatch').textContent = pending;
-            document.getElementById('creditBalance').textContent = 'UGX ' + creditBal.toLocaleString();
+            document.getElementById('creditBalance').textContent = isDispatch() ? '—' : 'UGX ' + creditBal.toLocaleString();
+            document.getElementById('stockItems').textContent = totalStock;
+
+            document.getElementById('todaySalesSub').textContent = isDispatch() ? 'Hidden from dispatch' : (todaySales > 0 ? '📈 +' + Math.round((todaySales/100000)*100)/100 + '%' : 'No sales today');
+            document.getElementById('monthSalesSub').textContent = isDispatch() ? '—' : siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').length + ' invoices';
+            document.getElementById('monthExpSub').textContent = isDispatch() ? '—' : siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').length + ' entries';
+            document.getElementById('pendingDispatchSub').textContent = pending > 0 ? pending + ' ready for loading' : 'All dispatched';
+            document.getElementById('creditBalanceSub').textContent = isDispatch() ? '—' : (creditBal > 0 ? creditBal.toLocaleString() + ' outstanding' : 'No credit balances');
+            document.getElementById('stockItemsSub').textContent = items.length + ' product types · Click to view all';
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  MODAL SYSTEM
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // CHARTS
+        // ═══════════════════════════════════════════════════════════════
+
+        let chartInstances = {};
+
+        function renderCharts() {
+            const dates = [];
+            const salesData = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0];
+                dates.push(d);
+                const dayTotal = transactions.filter(t => t.date === d && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+                salesData.push(dayTotal);
+            }
+            const ctx1 = document.getElementById('salesChart').getContext('2d');
+            if (chartInstances.sales) chartInstances.sales.destroy();
+            chartInstances.sales = new Chart(ctx1, {
+                type: 'bar',
+                data: { labels: dates, datasets: [{ label: 'Sales (UGX)', data: salesData, backgroundColor: '#f9d71c', borderColor: '#1a1a1a', borderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+            });
+
+            const sites = ['workshop', 'ngetta', 'adyel'];
+            const siteLabels = ['Workshop', 'Ngetta', 'Adyel'];
+            const siteTotals = sites.map(s => transactions.filter(t => t.site === s && t.status !== 'expense').reduce((sum, o) => sum + o.amount, 0));
+            const ctx2 = document.getElementById('siteChart').getContext('2d');
+            if (chartInstances.site) chartInstances.site.destroy();
+            chartInstances.site = new Chart(ctx2, {
+                type: 'doughnut',
+                data: { labels: siteLabels, datasets: [{ data: siteTotals, backgroundColor: ['#f9d71c', '#d9d2c0', '#c7beb0'], borderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // STOCK VIEW MODAL
+        // ═══════════════════════════════════════════════════════════════
+
+        function buildStockViewModal(card) {
+            const allSites = ['workshop', 'ngetta', 'adyel'];
+            const siteLabels = { workshop: 'Workshop', ngetta: 'Ngetta', adyel: 'Adyel' };
+            
+            const allItems = new Set();
+            allSites.forEach(site => {
+                getItemsForSite(site).forEach(item => allItems.add(item.name));
+            });
+
+            let html = `<h3><i class="fas fa-boxes"></i> Global Stock Overview</h3>
+            <div style="margin-bottom:1rem;font-size:0.85rem;color:#555;">Click any item to see detailed distribution across all sites</div>
+            <div class="inventory-grid" id="stockViewGrid">`;
+
+            allItems.forEach(itemName => {
+                const siteStocks = allSites.map(site => {
+                    const found = getItemsForSite(site).find(i => i.name === itemName);
+                    return { site, stock: found ? found.stock || 0 : 0, price: found ? found.price : 0 };
+                });
+                const totalStock = siteStocks.reduce((sum, s) => sum + s.stock, 0);
+                const isLow = totalStock < 50;
+
+                html += `
+                <div class="inventory-item ${isLow ? 'low-stock' : ''}" onclick="showItemDistribution('${itemName}')" style="cursor:pointer;">
+                    <div class="name">${itemName}</div>
+                    <div class="qty">${totalStock}</div>
+                    <div class="unit">total units</div>
+                    <div class="site-distribution">
+                        ${siteStocks.map(s => `
+                            <span style="display:inline-block;margin:0 4px;">
+                                <span class="stock-dot ${s.stock > 0 ? 'green' : 'red'}"></span>
+                                ${siteLabels[s.site]}: ${s.stock}
+                            </span>
+                        `).join('')}
+                    </div>
+                    ${isLow ? '<div style="color:var(--red);font-size:0.7rem;font-weight:600;">⚠️ Low stock</div>' : ''}
+                </div>`;
+            });
+
+            html += `</div>
+            <div id="itemDetailView" style="margin-top:1rem;padding:1rem;background:#f5f3f0;border-radius:16px;display:none;"></div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            window.showItemDistribution = function(itemName) {
+                const detailView = document.getElementById('itemDetailView');
+                const allSites = ['workshop', 'ngetta', 'adyel'];
+                const siteLabels = { workshop: 'Workshop', ngetta: 'Ngetta', adyel: 'Adyel' };
+                
+                let details = `<h4 style="margin-bottom:0.5rem;">📊 ${itemName} - Distribution</h4>`;
+                details += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">`;
+                
+                allSites.forEach(site => {
+                    const found = getItemsForSite(site).find(i => i.name === itemName);
+                    const stock = found ? found.stock || 0 : 0;
+                    const price = found ? found.price : 0;
+                    const minStock = found ? found.minStock || 0 : 0;
+                    details += `
+                        <div style="background:white;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid ${stock > 0 ? '#28a745' : 'var(--red)'};">
+                            <strong>${siteLabels[site]}</strong>
+                            <div style="font-size:1.5rem;font-weight:700;">${stock}</div>
+                            <div style="font-size:0.7rem;color:#888;">units ${price > 0 ? '· UGX ' + price.toLocaleString() : ''}</div>
+                            <div style="font-size:0.65rem;color:#999;">Min: ${minStock}</div>
+                        </div>
+                    `;
+                });
+                details += `</div>`;
+                detailView.innerHTML = details;
+                detailView.style.display = 'block';
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // PRODUCTION & MATERIALS MODAL (Sales Agents can access)
+        // ═══════════════════════════════════════════════════════════════
+
+        function buildProductionModal(card) {
+            if (!canManageInventory()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage production.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const siteItems = getItemsForSite(currentSite);
+            const recentProd = productionLog.filter(p => p.site === currentSite).slice(-10).reverse();
+
+            let html = `<h3><i class="fas fa-industry"></i> Production & Materials - ${currentSite.toUpperCase()}</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
+                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📦 Record Production</h4>
+                    <div class="row2" style="gap:0.5rem;">
+                        <select id="prodItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;">
+                            <option value="">-- Select Item --</option>
+                            ${siteItems.map(i => `<option value="${i.name}">${i.name}</option>`).join('')}
+                        </select>
+                        <input id="prodQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    </div>
+                    <button class="btn btn-primary" onclick="recordProductionStock()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-plus"></i> Add Production</button>
+                </div>
+                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
+                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📥 Materials Received</h4>
+                    <div class="row2" style="gap:0.5rem;">
+                        <input id="matName" placeholder="Material name" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                        <input id="matQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    </div>
+                    <button class="btn btn-success" onclick="recordMaterialsReceived()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-box"></i> Record Received</button>
+                </div>
+            </div>
+            <div style="max-height:200px;overflow-y:auto;border-top:1px solid #efedea;padding-top:0.5rem;">
+                <h4 style="font-size:0.8rem;color:#555;margin-bottom:0.3rem;">📋 Recent Activity</h4>
+                ${recentProd.length ? recentProd.map(p => `
+                    <div class="audit-entry" style="font-size:0.8rem;">
+                        <span class="time">${new Date(p.timestamp).toLocaleString()}</span>
+                        <strong>${p.type}</strong>: ${p.item} x${p.qty}
+                        ${p.note ? `(${p.note})` : ''}
+                    </div>
+                `).join('') : '<div style="color:#888;font-size:0.8rem;padding:0.5rem;">No recent activity</div>'}
+            </div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+
+            card.innerHTML = html;
+
+            window.recordProductionStock = function() {
+                const item = document.getElementById('prodItemSelect').value;
+                const qty = parseFloat(document.getElementById('prodQty').value);
+                if (!item || !qty || qty <= 0) { toast('Select item and enter quantity', 'error'); return; }
+                const found = getItemsForSite(currentSite).find(i => i.name === item);
+                if (found) {
+                    found.stock = (found.stock || 0) + qty;
+                    productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Production', item, qty, note: 'Added to stock' });
+                    saveData();
+                    addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
+                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
+                    buildProductionModal(card);
+                    renderTable();
+                } else {
+                    toast('Item not found in inventory', 'error');
+                }
+            };
+
+            window.recordMaterialsReceived = function() {
+                const name = document.getElementById('matName').value.trim();
+                const qty = parseFloat(document.getElementById('matQty').value);
+                if (!name || !qty || qty <= 0) { toast('Enter material name and quantity', 'error'); return; }
+                const items = inventoryItems[currentSite];
+                let found = items.find(i => i.name.toLowerCase() === name.toLowerCase());
+                if (found) {
+                    found.stock = (found.stock || 0) + qty;
+                } else {
+                    items.push({ name: name, price: 0, stock: qty, minStock: 0 });
+                }
+                productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Materials Received', item: name, qty, note: 'Added to inventory' });
+                saveData();
+                addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
+                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
+                buildProductionModal(card);
+                renderTable();
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // MODAL SYSTEM
+        // ═══════════════════════════════════════════════════════════════
 
         function openModal(type) {
             const overlay = document.getElementById('modalOverlay');
@@ -1067,21 +832,29 @@
             else if (type === 'report') buildReportModal(card);
             else if (type === 'users') buildUsersModal(card);
             else if (type === 'inventory') buildInventoryModal(card);
+            else if (type === 'production') buildProductionModal(card);
+            else if (type === 'clients') buildClientsModal(card);
+            else if (type === 'audit') buildAuditModal(card);
+            else if (type === 'clear') buildClearModal(card);
+            else if (type === 'stockview') buildStockViewModal(card);
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
         // ── SALE Modal ──
         function buildSaleModal(card) {
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            const clientOptions = creditClients.map(c => `<option value="${c.name}">${c.name} (${c.company || 'Individual'})</option>`).join('');
+
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
             <form id="modalForm">
               <div class="row2">
-                <div><label>Site</label><select id="modalSite" required>
-                  <option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>
-                </select></div>
+                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
                 <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
               </div>
               <div class="row2">
@@ -1093,7 +866,12 @@
                 <div><label>Payment</label><select id="modalPayment" onchange="toggleCredit()"><option value="cash">Cash</option><option value="credit">Credit</option></select></div>
               </div>
               <div class="row2">
-                <div><label>Customer Name *</label><input id="modalCustomer" placeholder="Full name" required /></div>
+                <div><label>Customer</label>
+                  <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
+                    <option value="">-- New Customer --</option>
+                    ${clientOptions}
+                  </select>
+                </div>
                 <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
               </div>
               <div class="row2">
@@ -1111,24 +889,45 @@
               </div>
             </form>
           `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
-                saveTransaction('sale'); };
-            document.getElementById('modalSite').value = currentSite;
-            document.getElementById('modalSite').onchange = function() { populateItems(this.value); };
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('sale'); };
+            const siteField = document.getElementById('modalSite');
+            if (!canChooseSite) siteField.value = currentSite;
+            siteField.onchange = function() { populateItems(this.value); };
             populateItems(currentSite);
             document.getElementById('modalItemSelect').onchange = updatePrice;
             toggleCredit();
-            // set default receipt
             document.getElementById('modalReceipt').value = generateReceipt();
+
+            window.fillCustomerDetails = function() {
+                const sel = document.getElementById('modalCustomerSelect');
+                const val = sel.value;
+                if (val) {
+                    const client = creditClients.find(c => c.name === val);
+                    if (client) {
+                        document.getElementById('modalContact').value = client.contact || '';
+                        document.getElementById('modalAddress').value = client.address || '';
+                        document.getElementById('modalCompany').value = client.company || '';
+                    }
+                } else {
+                    document.getElementById('modalContact').value = '';
+                    document.getElementById('modalAddress').value = '';
+                    document.getElementById('modalCompany').value = '';
+                }
+            };
         }
 
         // ── EXPENSE Modal ──
         function buildExpenseModal(card) {
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
             card.innerHTML = `
             <h3><i class="fas fa-coins"></i> Add Expense</h3>
             <form id="modalForm">
               <div class="row2">
-                <div><label>Site</label><select id="modalSite" required><option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option></select></div>
+                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
                 <div><label>Description</label><input id="modalItem" placeholder="e.g. Fuel, Maintenance" required /></div>
               </div>
               <div class="row2">
@@ -1142,18 +941,79 @@
               </div>
             </form>
           `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
-                saveTransaction('expense'); };
-            document.getElementById('modalSite').value = currentSite;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('expense'); };
+            const siteField = document.getElementById('modalSite');
+            if (!canChooseSite) siteField.value = currentSite;
             document.getElementById('modalReceipt').value = 'E-' + String(nextId).padStart(4, '0');
+        }
+
+        // ── CLEAR INVOICE Modal ──
+        function buildClearModal(card) {
+            const pendingInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.status === 'pending' || t.status === 'partial') &&
+                t.status !== 'expense'
+            );
+
+            let options = '<option value="">-- Select Invoice to Clear --</option>';
+            pendingInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (${t.qty} units)</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-check-double"></i> Clear Invoice (Accountant)</h3>
+            <form id="modalForm">
+              <div><label>Select Pending Invoice</label>
+                <select id="clearInvoiceSelect" required>
+                  ${options}
+                </select>
+              </div>
+              <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear Invoice</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
+                if (!id) { toast('Select an invoice', 'error'); return; }
+                clearInvoice(id);
+                closeModal();
+            };
+            document.getElementById('clearInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('clearInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'}`;
+                }
+            };
         }
 
         // ── DISPATCH Modal ──
         function buildDispatchModal(card) {
+            const clearedInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.status === 'cleared' || t.status === 'partial') &&
+                t.dispatch?.loaded !== true
+            );
+
+            let options = '<option value="">-- Select Cleared Invoice --</option>';
+            clearedInvoices.forEach(t => {
+                options += `<option value="${t.receipt}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (${t.qty} units)</option>`;
+            });
+
             card.innerHTML = `
             <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
             <form id="modalForm">
-              <div><label>Receipt / Invoice #</label><input id="dispatchReceipt" placeholder="Enter receipt #" required oninput="updateDispatchInfo()" /></div>
+              <div><label>Cleared Invoice</label>
+                <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
+                  ${options}
+                </select>
+              </div>
               <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
               <div class="row2">
                 <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
@@ -1170,8 +1030,317 @@
               </div>
             </form>
           `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
-                confirmDispatch(); };
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
+        }
+
+        // ── INVENTORY Modal ──
+        function buildInventoryModal(card) {
+            if (!canManageInventory()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const isGMOrManager = isGM() || isManager();
+            const siteItems = getItemsForSite(currentSite);
+
+            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management - ${currentSite.toUpperCase()}</h3>
+            <div style="margin-bottom:1rem;">
+              <div class="inventory-grid" id="inventoryGrid">`;
+
+            siteItems.forEach((item, idx) => {
+                const isLow = item.stock <= (item.minStock || 0);
+                html += `
+              <div class="inventory-item ${isLow ? 'low-stock' : ''}">
+                <div class="name">${item.name} ${isLow ? '⚠️' : ''}</div>
+                <div class="qty">${item.stock || 0}</div>
+                <div class="unit">units (min: ${item.minStock || 0})</div>
+                <div style="font-size:0.7rem;color:#888;">UGX ${item.price.toLocaleString()}</div>
+                ${isGMOrManager ? `<button class="btn btn-danger" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.3rem;" onclick="deleteInventoryItem('${currentSite}',${idx})"><i class="fas fa-trash"></i></button>` : ''}
+              </div>`;
+            });
+
+            html += `</div>
+            ${isGMOrManager ? `
+              <button class="btn btn-primary" onclick="addInventoryItem()" style="margin-top:0.5rem;"><i class="fas fa-plus"></i> Add Item</button>
+              <div style="margin-top:0.8rem;">
+                <label>Update Stock</label>
+                <div class="row2">
+                  <select id="stockItemSelect"><option value="">-- Select Item --</option>${siteItems.map((i,idx) => `<option value="${idx}">${i.name}</option>`).join('')}</select>
+                  <div style="display:flex;gap:0.5rem;">
+                    <input id="stockQty" type="number" placeholder="Qty" style="flex:1;" />
+                    <button class="btn btn-success" onclick="updateStockItem()"><i class="fas fa-sync"></i> Update</button>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            card.innerHTML = html;
+
+            window.addInventoryItem = function() {
+                const name = prompt('Enter item name:');
+                if (!name) return;
+                const price = prompt('Enter unit price (UGX):');
+                if (price === null) return;
+                const p = parseFloat(price);
+                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
+                const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
+                if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
+                inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
+                saveData();
+                addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
+                toast('Item added!', 'success');
+                buildInventoryModal(card);
+            };
+
+            window.updateStockItem = function() {
+                const idx = parseInt(document.getElementById('stockItemSelect').value);
+                const qty = parseFloat(document.getElementById('stockQty').value);
+                if (isNaN(idx) || !qty || qty < 0) { toast('Invalid input', 'error'); return; }
+                const items = inventoryItems[currentSite];
+                if (items && items[idx]) {
+                    items[idx].stock = (items[idx].stock || 0) + qty;
+                    saveData();
+                    addAudit('Stock Update', `Updated ${items[idx].name}: +${qty} units`);
+                    toast(`Stock updated! ${items[idx].name}: ${items[idx].stock}`, 'success');
+                    buildInventoryModal(card);
+                }
+            };
+
+            window.deleteInventoryItem = function(site, idx) {
+                if (!confirm('Delete this item?')) return;
+                inventoryItems[site].splice(idx, 1);
+                saveData();
+                addAudit('Inventory Delete', `Deleted item from ${site}`);
+                toast('Item deleted', 'warning');
+                buildInventoryModal(card);
+            };
+        }
+
+        // ── CLIENTS Modal ──
+        function buildClientsModal(card) {
+            if (!canManageClients()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM and Manager can manage credit clients.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            let html = `<h3><i class="fas fa-user-tie"></i> Credit Clients</h3>
+            <form id="clientForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
+              <div class="row2">
+                <div><label>Client Name *</label><input id="clientName" placeholder="Full name" required /></div>
+                <div><label>Contact</label><input id="clientContact" placeholder="Phone/Email" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Address</label><input id="clientAddress" placeholder="Location" /></div>
+                <div><label>Company</label><input id="clientCompany" placeholder="Company name" /></div>
+              </div>
+              <div><label>Credit Limit (UGX)</label><input id="clientLimit" type="number" placeholder="0" value="1000000" /></div>
+              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add Client</button>
+            </form>
+            <div style="max-height:260px;overflow-y:auto;">
+              <table style="font-size:0.8rem;min-width:auto;">
+                <thead><tr><th>Name</th><th>Contact</th><th>Company</th><th>Limit</th><th style="text-align:center;">Action</th></tr></thead>
+                <tbody>
+          `;
+            creditClients.forEach((c, idx) => {
+                const totalOutstanding = transactions.filter(t => t.customer === c.name && t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
+                const overLimit = totalOutstanding > (c.creditLimit || 0);
+                html += `<tr style="${overLimit ? 'background:#fee;' : ''}">
+              <td>${c.name} ${overLimit ? '⚠️' : ''}</td>
+              <td>${c.contact || '-'}</td>
+              <td>${c.company || '-'}</td>
+              <td>UGX ${(c.creditLimit || 0).toLocaleString()}</td>
+              <td style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteClient(${idx})" style="cursor:pointer;color:var(--red);"></i></td>
+            </tr>`;
+            });
+            html += `</tbody></table></div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            document.getElementById('clientForm').onsubmit = function(e) {
+                e.preventDefault();
+                const name = document.getElementById('clientName').value.trim();
+                const contact = document.getElementById('clientContact').value.trim();
+                const address = document.getElementById('clientAddress').value.trim();
+                const company = document.getElementById('clientCompany').value.trim();
+                const limit = parseFloat(document.getElementById('clientLimit').value) || 1000000;
+                if (!name) { toast('Name required', 'error'); return; }
+                creditClients.push({ name, contact, address, company, creditLimit: limit });
+                saveData();
+                addAudit('Client Add', `Added credit client: ${name}`);
+                toast('Client added!', 'success');
+                buildClientsModal(card);
+            };
+
+            window.deleteClient = function(idx) {
+                if (!confirm('Delete this client?')) return;
+                creditClients.splice(idx, 1);
+                saveData();
+                addAudit('Client Delete', `Deleted credit client`);
+                toast('Client deleted', 'warning');
+                buildClientsModal(card);
+            };
+        }
+
+        // ── USERS Modal ──
+        function buildUsersModal(card) {
+            if (!canManageUsers()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            let html = `<h3><i class="fas fa-users-cog"></i> User Management</h3>
+            <form id="userForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
+              <div class="row2">
+                <div><label>Username</label><input id="userUsername" placeholder="username" required /></div>
+                <div><label>Password</label><input id="userPassword" placeholder="password" required /></div>
+              </div>
+              <div class="row2">
+                <div><label>Full Name</label><input id="userName" placeholder="Full name" required /></div>
+                <div><label>Role</label><select id="userRole">
+                  <option value="gm">General Manager</option>
+                  <option value="manager">Manager</option>
+                  <option value="accountant">Accountant</option>
+                  <option value="cashier">Cashier</option>
+                  <option value="sales">Sales Agent</option>
+                  <option value="dispatch">Dispatch Agent</option>
+                </select></div>
+              </div>
+              <div><label>Sites (comma separated: workshop,ngetta,adyel)</label><input id="userSites" placeholder="workshop,ngetta" value="workshop" /></div>
+              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
+            </form>
+
+            <h4 style="margin:1rem 0 0.5rem;">Permissions</h4>
+            <div style="max-height:200px;overflow-y:auto;margin-bottom:1rem;">
+              <table style="font-size:0.8rem;min-width:auto;">
+                <thead><tr><th>User</th><th>Role</th><th>Actions</th></tr></thead>
+                <tbody>
+          `;
+            users.forEach(u => {
+                const perms = userPermissions[u.username] || {};
+                html += `<tr><td>${u.username}</td><td>${u.role}</td>
+              <td>
+                <button class="btn" style="padding:0.1rem 0.6rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')"><i class="fas fa-cog"></i> Set</button>
+              </td></tr>`;
+            });
+            html += `</tbody></table></div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            document.getElementById('userForm').onsubmit = function(e) {
+                e.preventDefault();
+                const username = document.getElementById('userUsername').value.trim();
+                const password = document.getElementById('userPassword').value.trim();
+                const name = document.getElementById('userName').value.trim();
+                const role = document.getElementById('userRole').value;
+                const sites = document.getElementById('userSites').value.split(',').map(s => s.trim()).filter(Boolean);
+                if (!username || !password || !name || !sites.length) { toast('Fill all fields', 'error'); return; }
+                if (users.find(u => u.username === username)) { toast('Username exists', 'error'); return; }
+                users.push({ username, password, role, name, sites });
+                saveData();
+                addAudit('User Add', `Added user: ${username} (${role})`);
+                toast('User added!', 'success');
+                buildUsersModal(card);
+            };
+
+            window.editPermissions = function(username) {
+                const perms = userPermissions[username] || {};
+                const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_clients', 'view_reports',
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch'];
+                let msg = `Set permissions for ${username}:\n\n`;
+                actions.forEach(a => {
+                    const current = perms[a] ? '✅' : '❌';
+                    msg += `${current} ${a}\n`;
+                });
+                msg += '\nEnter which actions to enable (comma separated):\n' + actions.join(', ');
+                const input = prompt(msg, actions.filter(a => perms[a]).join(', '));
+                if (input !== null) {
+                    const enabled = input.split(',').map(s => s.trim());
+                    actions.forEach(a => { newPerms[a] = enabled.includes(a); });
+                    userPermissions[username] = newPerms;
+                    saveData();
+                    addAudit('Permissions Update', `Updated permissions for ${username}`);
+                    toast('Permissions updated!', 'success');
+                    buildUsersModal(card);
+                }
+            };
+        }
+
+        // ── AUDIT Modal ──
+        function buildAuditModal(card) {
+            if (!canViewAudit()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view audit logs.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const recentLogs = auditLog.slice(-50).reverse();
+            let html = `<h3><i class="fas fa-history"></i> Audit Log</h3>
+            <div style="max-height:400px;overflow-y:auto;">`;
+            recentLogs.forEach(log => {
+                html += `<div class="audit-entry">
+              <span class="time">${new Date(log.timestamp).toLocaleString()}</span>
+              <strong>${log.user}</strong> - ${log.action}
+              <span style="color:#888;font-size:0.8rem;">${log.details || ''}</span>
+              ${log.site ? `<span class="badge-site ${log.site}" style="font-size:0.6rem;">${log.site}</span>` : ''}
+            </div>`;
+            });
+            html += `</div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button>
+            ${isGM() ? `<button class="btn btn-danger" onclick="clearAudit()">Clear Log</button>` : ''}</div>`;
+            card.innerHTML = html;
+
+            window.clearAudit = function() {
+                if (confirm('Clear all audit logs?')) {
+                    auditLog = [];
+                    saveData();
+                    toast('Audit log cleared', 'warning');
+                    buildAuditModal(card);
+                }
+            };
+        }
+
+        // ── REPORT Modal ──
+        function buildReportModal(card) {
+            if (!canViewReports()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view reports.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            card.innerHTML = `
+            <h3><i class="fas fa-chart-bar"></i> Advanced Reports</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+              <div><label>From</label><input type="date" id="reportFrom" /></div>
+              <div><label>To</label><input type="date" id="reportTo" /></div>
+            </div>
+            <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+              <button class="btn btn-yellow" onclick="generateReport()"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn" onclick="generateCSV()"><i class="fas fa-file-excel"></i> CSV</button>
+              <button class="btn btn-primary" onclick="generateChart()"><i class="fas fa-chart-line"></i> Chart</button>
+            </div>
+            <div id="chartContainer" style="height:250px;margin:1rem 0;display:none;"><canvas id="reportChart"></canvas></div>
+            <div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            const now = new Date();
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            document.getElementById('reportFrom').value = from.toISOString().split('T')[0];
+            document.getElementById('reportTo').value = now.toISOString().split('T')[0];
+
+            window.generateChart = function() {
+                const container = document.getElementById('chartContainer');
+                container.style.display = 'block';
+                const from = document.getElementById('reportFrom').value;
+                const to = document.getElementById('reportTo').value;
+                const data = transactions.filter(t => t.site === currentSite && t.date >= from && t.date <= to && t.status !== 'expense');
+                const labels = [...new Set(data.map(t => t.date))].sort();
+                const values = labels.map(d => data.filter(t => t.date === d).reduce((s, o) => s + o.amount, 0));
+                const ctx = document.getElementById('reportChart').getContext('2d');
+                if (window._chart) window._chart.destroy();
+                window._chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Sales (UGX)', data: values, backgroundColor: '#f9d71c', borderColor: '#1a1a1a', borderWidth: 2 }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            };
         }
 
         // ── RECEIPT Modal ──
@@ -1193,172 +1362,16 @@
                 const email = document.getElementById('customerEmail').value.trim();
                 const trans = transactions.find(t => t.receipt === receipt);
                 if (!trans) { toast('Receipt not found!', 'error'); return; }
+                if (!email.includes('@')) { toast('Invalid email', 'error'); return; }
                 toast(`📧 E-receipt ${receipt} sent to ${email}`, 'success');
+                addAudit('E-Receipt', `Sent receipt ${receipt} to ${email}`);
                 closeModal();
             };
         }
 
-        // ── REPORT Modal ──
-        function buildReportModal(card) {
-            card.innerHTML = `
-            <h3><i class="fas fa-chart-bar"></i> Advanced Reports</h3>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
-              <div><label>From</label><input type="date" id="reportFrom" /></div>
-              <div><label>To</label><input type="date" id="reportTo" /></div>
-            </div>
-            <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.5rem;">
-              <button class="btn btn-yellow" onclick="generateReport()"><i class="fas fa-file-pdf"></i> PDF</button>
-              <button class="btn" onclick="generateCSV()"><i class="fas fa-file-excel"></i> CSV</button>
-              <button class="btn btn-primary" onclick="generateChart()"><i class="fas fa-chart-line"></i> Chart</button>
-            </div>
-            <div id="chartContainer" style="height:250px;margin:1rem 0;display:none;"><canvas id="reportChart"></canvas></div>
-            <div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Close</button></div>
-          `;
-            // Set default dates
-            const now = new Date();
-            const from = new Date(now.getFullYear(), now.getMonth(), 1);
-            document.getElementById('reportFrom').value = from.toISOString().split('T')[0];
-            document.getElementById('reportTo').value = now.toISOString().split('T')[0];
-            window.generateChart = function() {
-                const container = document.getElementById('chartContainer');
-                container.style.display = 'block';
-                const from = document.getElementById('reportFrom').value;
-                const to = document.getElementById('reportTo').value;
-                const data = transactions.filter(t => t.site === currentSite && t.date >= from && t.date <= to && t
-                .status !== 'expense');
-                const labels = [...new Set(data.map(t => t.date))].sort();
-                const values = labels.map(d => data.filter(t => t.date === d).reduce((s, o) => s + o.amount, 0));
-                const ctx = document.getElementById('reportChart').getContext('2d');
-                if (window._chart) window._chart.destroy();
-                window._chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: { labels, datasets: [{ label: 'Sales (UGX)', data: values, backgroundColor: '#f9d71c',
-                            borderColor: '#1a1a1a', borderWidth: 2 }] },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-            };
-        }
-
-        // ── USERS Modal ──
-        function buildUsersModal(card) {
-            if (currentUser?.role !== 'gm') {
-                card.innerHTML =
-                    `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-            let html = `<h3><i class="fas fa-users-cog"></i> User Management</h3>
-            <form id="userForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
-              <div class="row2">
-                <div><label>Username</label><input id="userUsername" placeholder="username" required /></div>
-                <div><label>Password</label><input id="userPassword" placeholder="password" required /></div>
-              </div>
-              <div class="row2">
-                <div><label>Full Name</label><input id="userName" placeholder="Full name" required /></div>
-                <div><label>Role</label><select id="userRole"><option value="gm">GM</option><option value="manager">Manager</option><option value="cashier">Cashier</option><option value="dispatch">Dispatch</option></select></div>
-              </div>
-              <div><label>Sites (comma separated: main,ngetta,adyel)</label><input id="userSites" placeholder="main,ngetta" value="main" /></div>
-              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
-            </form>
-            <div style="max-height:260px;overflow-y:auto;">
-              <table style="font-size:0.8rem;min-width:auto;">
-                <thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Sites</th><th style="text-align:center;">Action</th></tr></thead>
-                <tbody>
-          `;
-            users.forEach((u, idx) => {
-                html += `<tr>
-              <td>${u.username}</td><td>${u.name}</td><td>${u.role}</td>
-              <td>${u.sites.join(', ')}</td>
-              <td style="text-align:center;">${idx > 9 ? `<i class="fas fa-trash-alt" onclick="deleteUser('${u.username}')" style="cursor:pointer;color:var(--red);"></i>` : '🔒'}</td>
-            </tr>`;
-            });
-            html += `</tbody></table></div><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-            card.innerHTML = html;
-            document.getElementById('userForm').onsubmit = function(e) {
-                e.preventDefault();
-                const username = document.getElementById('userUsername').value.trim();
-                const password = document.getElementById('userPassword').value.trim();
-                const name = document.getElementById('userName').value.trim();
-                const role = document.getElementById('userRole').value;
-                const sites = document.getElementById('userSites').value.split(',').map(s => s.trim()).filter(Boolean);
-                if (!username || !password || !name || !sites.length) { toast('Fill all fields', 'error'); return; }
-                if (users.find(u => u.username === username)) { toast('Username exists', 'error'); return; }
-                users.push({ username, password, role, name, sites });
-                saveData();
-                toast('User added!', 'success');
-                buildUsersModal(card);
-            };
-            window.deleteUser = function(username) {
-                if (!confirm('Delete user ' + username + '?')) return;
-                users = users.filter(u => u.username !== username);
-                saveData();
-                toast('User deleted', 'warning');
-                buildUsersModal(card);
-            };
-        }
-
-        // ── INVENTORY Modal ──
-        function buildInventoryModal(card) {
-            if (currentUser?.role !== 'gm') {
-                card.innerHTML =
-                    `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management</h3>
-            <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;">
-              <select id="invSiteSelect" style="flex:1;min-width:150px;padding:0.6rem 1rem;border-radius:60px;border:1px solid #d6d2cc;">
-                <option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>
-              </select>
-              <button class="btn btn-primary" onclick="addInventoryItem()"><i class="fas fa-plus"></i> Add Item</button>
-            </div>
-            <div style="max-height:300px;overflow-y:auto;" id="inventoryList"></div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
-          `;
-            card.innerHTML = html;
-            renderInventoryList();
-            document.getElementById('invSiteSelect').onchange = renderInventoryList;
-
-            window.addInventoryItem = function() {
-                const site = document.getElementById('invSiteSelect').value;
-                const name = prompt('Enter item name:');
-                if (!name) return;
-                const price = prompt('Enter unit price (UGX):');
-                if (price === null) return;
-                const p = parseFloat(price);
-                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
-                if (!inventoryItems[site]) inventoryItems[site] = [];
-                inventoryItems[site].push({ name: name.trim(), price: p });
-                saveData();
-                toast('Item added!', 'success');
-                renderInventoryList();
-            };
-
-            window.deleteInventoryItem = function(site, idx) {
-                if (!confirm('Delete this item?')) return;
-                inventoryItems[site].splice(idx, 1);
-                saveData();
-                toast('Item deleted', 'warning');
-                renderInventoryList();
-            };
-
-            function renderInventoryList() {
-                const site = document.getElementById('invSiteSelect').value;
-                const list = document.getElementById('inventoryList');
-                const items = inventoryItems[site] || [];
-                if (!items.length) { list.innerHTML = '<p style="color:#888;padding:0.5rem 0;">No items for this site.</p>'; return; }
-                let html =
-                    `<table style="font-size:0.8rem;min-width:auto;"><thead><tr><th>Item</th><th>Price</th><th style="text-align:center;">Action</th></tr></thead><tbody>`;
-                items.forEach((item, idx) => {
-                    html +=
-                        `<tr><td>${item.name}</td><td>UGX ${item.price.toLocaleString()}</td><td style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteInventoryItem('${site}',${idx})" style="cursor:pointer;color:var(--red);"></i></td></tr>`;
-                });
-                html += `</tbody></table>`;
-                list.innerHTML = html;
-            }
-        }
-
-        // ════════════════════════════════════════════════════════════
-        //  HELPERS for modal forms
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // HELPERS
+        // ═══════════════════════════════════════════════════════════════
 
         function populateItems(site) {
             const sel = document.getElementById('modalItemSelect');
@@ -1366,8 +1379,8 @@
             const items = getItemsForSite(site || currentSite);
             sel.innerHTML = '<option value="">-- Select --</option>';
             items.forEach(item => {
-                sel.innerHTML +=
-                    `<option value="${item.name}" data-price="${item.price}">${item.name} (UGX ${item.price.toLocaleString()})</option>`;
+                const stock = item.stock || 0;
+                sel.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}">${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
             });
         }
 
@@ -1378,6 +1391,11 @@
                 const opt = sel.options[sel.selectedIndex];
                 priceField.value = opt?.dataset?.price || 0;
                 calcTotal();
+                const stock = parseInt(opt?.dataset?.stock) || 0;
+                const qty = parseFloat(document.getElementById('modalQty')?.value) || 0;
+                if (qty > stock && stock > 0) {
+                    toast(`⚠️ Stock: ${stock} units available`, 'warning');
+                }
             }
         }
 
@@ -1388,6 +1406,14 @@
             const amt = document.getElementById('modalAmount');
             if (amt) amt.value = total;
             calcBalance();
+            const sel = document.getElementById('modalItemSelect');
+            if (sel) {
+                const opt = sel.options[sel.selectedIndex];
+                const stock = parseInt(opt?.dataset?.stock) || 0;
+                if (qty > stock && stock > 0) {
+                    toast(`⚠️ Stock: ${stock} units available`, 'warning');
+                }
+            }
         }
 
         function calcBalance() {
@@ -1405,20 +1431,19 @@
         }
 
         function updateDispatchInfo() {
-            const receipt = document.getElementById('dispatchReceipt')?.value.trim();
+            const receipt = document.getElementById('dispatchReceipt')?.value;
             const info = document.getElementById('dispatchInfo');
-            if (!info) return;
+            if (!info || !receipt) { info.innerHTML = ''; return; }
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             if (trans) {
-                info.innerHTML =
-                    `<strong>${trans.item}</strong> | Qty: ${trans.qty} | Customer: ${trans.customer || 'N/A'} | Status: ${trans.status}`;
+                info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Status: ${trans.status}`;
             } else {
                 info.innerHTML = '❌ Invoice not found';
             }
         }
 
         function updateDispatchBalance() {
-            const receipt = document.getElementById('dispatchReceipt')?.value.trim();
+            const receipt = document.getElementById('dispatchReceipt')?.value;
             const loaded = parseFloat(document.getElementById('dispatchLoadedQty')?.value) || 0;
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             const balField = document.getElementById('dispatchBalanceQty');
@@ -1427,17 +1452,18 @@
             }
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  TRANSACTION OPERATIONS
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // TRANSACTION OPERATIONS
+        // ═══════════════════════════════════════════════════════════════
 
         function saveTransaction(type) {
-            const site = document.getElementById('modalSite').value;
+            const canChooseSite = isGM();
+            const site = canChooseSite ? document.getElementById('modalSite').value : currentSite;
             const item = document.getElementById('modalItem')?.value || document.getElementById('modalItemSelect')?.value;
             const qty = parseFloat(document.getElementById('modalQty').value);
             const amount = parseFloat(document.getElementById('modalAmount').value);
             const receipt = document.getElementById('modalReceipt').value.trim() || generateReceipt();
-            const customer = document.getElementById('modalCustomer')?.value || '';
+            const customer = document.getElementById('modalCustomerSelect')?.value || '';
             const contact = document.getElementById('modalContact')?.value || '';
             const address = document.getElementById('modalAddress')?.value || '';
             const company = document.getElementById('modalCompany')?.value || '';
@@ -1449,6 +1475,11 @@
             if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
             if (transactions.find(t => t.receipt === receipt)) { toast('Receipt # already exists!', 'error'); return; }
 
+            const stock = getItemStock(site, item);
+            if (type === 'sale' && qty > stock && stock > 0) {
+                if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
+            }
+
             const trans = {
                 id: nextId++,
                 date: new Date().toISOString().split('T')[0],
@@ -1457,7 +1488,7 @@
                 qty,
                 price,
                 amount,
-                customer,
+                customer: customer || 'Walk-in Customer',
                 contact,
                 address,
                 company,
@@ -1469,7 +1500,14 @@
                 dispatch: { loaded: false }
             };
             transactions.push(trans);
+
+            if (type === 'sale') {
+                updateStock(site, item, qty, 'subtract');
+            }
+
             saveData();
+            addAudit(type === 'expense' ? 'Expense Added' : 'Sale Created',
+                `${type === 'expense' ? 'Expense' : 'Sale'}: ${receipt} - ${item} x${qty} = UGX ${amount}`);
             renderTable();
             closeModal();
             toast(`${type === 'expense' ? 'Expense' : 'Invoice'} saved! Receipt: ${receipt}`, 'success');
@@ -1482,46 +1520,70 @@
                 toast('Already cleared', 'warning');
                 return;
             }
-            if (confirm(`Clear invoice ${trans.receipt} for ${trans.customer || 'N/A'}?`)) {
-                trans.status = 'cleared';
-                saveData();
-                renderTable();
-                toast('Invoice cleared!', 'success');
-            }
+            if (trans.status === 'expense') { toast('Cannot clear expense', 'error'); return; }
+            trans.status = 'cleared';
+            saveData();
+            addAudit('Invoice Cleared', `Cleared ${trans.receipt} - ${trans.customer} by ${currentUser?.name}`);
+            renderTable();
+            toast(`✅ Invoice ${trans.receipt} cleared! Ready for dispatch.`, 'success');
         }
 
         function deleteTrans(id) {
             if (!confirm('Delete this transaction?')) return;
+            const trans = transactions.find(t => t.id === id);
             transactions = transactions.filter(t => t.id !== id);
             saveData();
+            addAudit('Transaction Deleted', `Deleted ${trans?.receipt || 'unknown'}`);
             renderTable();
             toast('Deleted', 'warning');
         }
 
+        function editTrans(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            const newQty = prompt('Edit quantity:', trans.qty);
+            if (newQty === null) return;
+            const qty = parseFloat(newQty);
+            if (isNaN(qty) || qty < 0) { toast('Invalid quantity', 'error'); return; }
+            const newAmount = prompt('Edit amount (UGX):', trans.amount);
+            if (newAmount === null) return;
+            const amount = parseFloat(newAmount);
+            if (isNaN(amount) || amount < 0) { toast('Invalid amount', 'error'); return; }
+            trans.qty = qty;
+            trans.amount = amount;
+            trans.price = qty > 0 ? amount / qty : 0;
+            saveData();
+            addAudit('Transaction Edited', `Edited ${trans.receipt} - ${trans.item}`);
+            renderTable();
+            toast('Transaction updated!', 'success');
+        }
+
         function confirmDispatch() {
-            const receipt = document.getElementById('dispatchReceipt').value.trim();
+            const receipt = document.getElementById('dispatchReceipt').value;
             const vehicle = document.getElementById('dispatchVehicle').value.trim();
             const plate = document.getElementById('dispatchPlate').value.trim();
             const driver = document.getElementById('dispatchDriver').value.trim();
             const loadedQty = parseFloat(document.getElementById('dispatchLoadedQty').value);
 
-            if (!receipt || !loadedQty || loadedQty <= 0) { toast('Enter receipt & quantity', 'error'); return; }
+            if (!receipt || !loadedQty || loadedQty <= 0) { toast('Select invoice and enter quantity', 'error'); return; }
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             if (!trans) { toast('Invoice not found', 'error'); return; }
             if (trans.status === 'expense') { toast('Cannot dispatch expense', 'error'); return; }
+            if (trans.dispatch?.loaded) { toast('Already dispatched', 'warning'); return; }
 
             const balanceQty = Math.max(0, trans.qty - loadedQty);
             trans.dispatch = { loaded: true, vehicle, plate, driver, loadedQty, balanceQty };
             trans.status = balanceQty === 0 ? 'completed' : 'partial';
             saveData();
+            addAudit('Dispatch', `Dispatched ${trans.receipt} - ${trans.item} x${loadedQty} (Balance: ${balanceQty})`);
             renderTable();
             closeModal();
-            toast(`Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  REPORTING
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // REPORTING
+        // ═══════════════════════════════════════════════════════════════
 
         function getReportData() {
             const from = document.getElementById('reportFrom')?.value;
@@ -1534,12 +1596,10 @@
 
         function generateReport() {
             const data = getReportData();
-            let txt =
-                `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Item | Qty | Amount | Customer | Status\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
-                txt +=
-                    `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status}\n`;
+                txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status}\n`;
             });
             const sales = data.filter(t => t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
             const exp = data.filter(t => t.status === 'expense').reduce((s, o) => s + o.amount, 0);
@@ -1548,10 +1608,10 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download =
-                `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.pdf`;
+            a.download = `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.pdf`;
             a.click();
             URL.revokeObjectURL(url);
+            addAudit('Report Generated', `PDF report for ${currentSite}`);
             toast('PDF report generated', 'success');
         }
 
@@ -1559,26 +1619,25 @@
             const data = getReportData();
             let csv = 'Date,Site,Item,Qty,Amount,Price,Customer,Payment,Receipt,Status\n';
             data.forEach(t => {
-                csv +=
-                    `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.price||0},${t.customer||''},${t.payment||'cash'},${t.receipt||''},${t.status}\n`;
+                csv += `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.price||0},${t.customer||''},${t.payment||'cash'},${t.receipt||''},${t.status}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download =
-                `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
             URL.revokeObjectURL(url);
+            addAudit('Report Generated', `CSV report for ${currentSite}`);
             toast('CSV report generated', 'success');
         }
 
-        // ════════════════════════════════════════════════════════════
-        //  BACKUP
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // BACKUP
+        // ═══════════════════════════════════════════════════════════════
 
         function exportBackup() {
-            const data = { transactions, nextId, inventory: inventoryItems, users, exportedAt: new Date().toISOString() };
+            const data = { transactions, auditLog, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1586,15 +1645,13 @@
             a.download = `kajana_backup_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
+            addAudit('Backup', 'Full system backup downloaded');
             toast('Backup downloaded!', 'success');
         }
 
-        // ── Import backup (hidden feature: drag & drop or file input) ──
-        // (can be added via a hidden file input)
-
-        // ════════════════════════════════════════════════════════════
-        //  SITE SWITCHER
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // SITE SWITCHER
+        // ═══════════════════════════════════════════════════════════════
 
         document.querySelectorAll('.site-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -1603,14 +1660,14 @@
                 currentSite = this.dataset.site;
                 document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
                 renderTable();
+                if (isGM()) renderCharts();
             });
         });
 
-        // ════════════════════════════════════════════════════════════
-        //  INIT
-        // ════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════════
 
-        // Expose globals
         window.openModal = openModal;
         window.closeModal = closeModal;
         window.calcTotal = calcTotal;
@@ -1621,22 +1678,45 @@
         window.updateDispatchBalance = updateDispatchBalance;
         window.clearInvoice = clearInvoice;
         window.deleteTrans = deleteTrans;
+        window.editTrans = editTrans;
         window.generateReport = generateReport;
         window.generateCSV = generateCSV;
         window.exportBackup = exportBackup;
         window.logout = logout;
         window.populateItems = populateItems;
-        window.addInventoryItem = addInventoryItem;
-        window.deleteInventoryItem = deleteInventoryItem;
+        window.fillCustomerDetails = window.fillCustomerDetails || function() {};
+        window.showItemDistribution = window.showItemDistribution || function() {};
+        window.recordProductionStock = window.recordProductionStock || function() {};
+        window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
+
+        window.addInventoryItem = function() {
+            const name = prompt('Enter item name:');
+            if (!name) return;
+            const price = prompt('Enter unit price (UGX):');
+            if (price === null) return;
+            const p = parseFloat(price);
+            if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
+            const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
+            if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
+            inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
+            saveData();
+            addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
+            toast('Item added!', 'success');
+            renderTable();
+        };
+
+        window.deleteInventoryItem = function(site, idx) {
+            if (!confirm('Delete this item?')) return;
+            inventoryItems[site].splice(idx, 1);
+            saveData();
+            addAudit('Inventory Delete', `Deleted item from ${site}`);
+            toast('Item deleted', 'warning');
+            renderTable();
+        };
 
         renderTable();
-
-        // ── Auto-save on any change ──
-        const origPush = Array.prototype.push;
-        // Not needed since we call saveData() on every operation
-
-        console.log('✅ Kajana Enterprise System v3.0 loaded');
-        console.log(`📊 ${transactions.length} transactions, ${users.length} users`);
+        console.log('✅ Kajana Enterprise System v8.0 loaded - Sales Agents can manage production & materials');
+        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
 </html>
