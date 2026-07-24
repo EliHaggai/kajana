@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise · Complete Management System</title>
+    <title>Kajana Enterprises · Limited</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -173,7 +173,7 @@
     <div id="loginPage" class="login-page">
         <div class="login-card">
             <h1>⛰️ Kajana <span>Enterprise</span></h1>
-            <div class="sub">Concrete &amp; Stone Mining · Complete Management</div>
+            <div class="sub">Concrete &amp; Stone Mining ·  Production</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
                 <input type="text" id="loginUser" value="gm@kajana.com" placeholder="Enter username" />
@@ -196,7 +196,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management</div>
+                <div class="subtitle">concrete · stone · mining · production</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -610,7 +610,7 @@
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
                     <div class="stat-card"><div class="label">📦 Total Stock</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
-                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
                 `;
             } else {
                 // GM, Manager, Accountant: Full financial view
@@ -663,8 +663,8 @@
             }
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
-                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
-                completed: '<span class="badge-status completed">✅ Completed</span>',
+                cleared: '<span class="badge-status cleared">✔️ Cleared</span>',
+                completed: '<span class="badge-status completed">✔️ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
                 partial: '<span class="badge-status partial">📦 Partial</span>',
                 refund: '<span class="badge-status refund">🔄 Refund</span>'
@@ -674,7 +674,7 @@
                 const canClear = canClearInvoice() && (st === 'pending' || st === 'partial');
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
-                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
+                const paidStatus = t.paid ? '<span class="badge-status paid">✔️ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
@@ -953,7 +953,7 @@
                 addAudit('Refund', `Refunded ${receipt} - ${reason} - UGX ${amount}`);
                 renderTable();
                 closeModal();
-                toast(`✅ Refund processed for ${receipt}`, 'success');
+                toast(`✔️ Refund processed for ${receipt}`, 'success');
             };
         }
 
@@ -1194,7 +1194,7 @@
                     productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Production', item, qty, note: 'Added to stock' });
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
-                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -1216,7 +1216,7 @@
                 productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Materials Received', item: name, qty, note: 'Added to inventory' });
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
-                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
             };
@@ -1371,7 +1371,7 @@
                     'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'handle_refund'];
                 let msg = `Set permissions for ${username}:\n\n`;
                 actions.forEach(a => {
-                    const current = perms[a] ? '✅' : '❌';
+                    const current = perms[a] ? '✔️' : '❌';
                     msg += `${current} ${a}\n`;
                 });
                 msg += '\nEnter which actions to enable (comma separated):\n' + actions.join(', ');
@@ -1662,7 +1662,7 @@
             saveData();
             addAudit('Invoice Cleared', `Cleared ${trans.receipt} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
             renderTable();
-            toast(`✅ Invoice ${trans.receipt} cleared!`, 'success');
+            toast(`✔️ Invoice ${trans.receipt} cleared!`, 'success');
         }
 
         function deleteTrans(id) {
@@ -1737,7 +1737,7 @@
             addAudit('Dispatch', `Dispatched ${trans.receipt} - ${trans.item} x${loadedQty} (Balance: ${balanceQty})`);
             renderTable();
             closeModal();
-            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1850,7 +1850,7 @@
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
 
         renderTable();
-        console.log('✅ Kajana Enterprise System v10.0 loaded - Complete Role Management');
+        console.log('✔️ Kajana Enterprise System v10.0 loaded - Complete Role Management');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
