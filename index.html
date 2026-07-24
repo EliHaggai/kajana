@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kajana Enterprise · Management System</title>
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: #f5f3f0;
+      color: #1e1e1e;
+      min-height: 100vh;
+    }
+    /* Ugandan flag inspired palette */
+    :root {
+      --black: #1a1a1a;
+      --yellow: #f9d71c;
+      --red: #d71921;
+      --gold-light: #fef2c0;
+      --bg-light: #faf8f5;
+      --card-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+    /* header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0 1.5rem 0;
+      border-bottom: 3px solid var(--yellow);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo h1 {
+      font-weight: 700;
+      font-size: 1.9rem;
+      letter-spacing: -0.5px;
+      color: var(--black);
+    }
+    .logo span {
+      color: var(--red);
+      background: var(--yellow);
+      padding: 0.1rem 0.8rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      margin-left: 0.3rem;
+    }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: white;
+      padding: 0.5rem 1.5rem 0.5rem 1.2rem;
+      border-radius: 60px;
+      box-shadow: var(--card-shadow);
+    }
+    .user-badge i {
+      color: var(--red);
+      font-size: 1.3rem;
+    }
+    .user-badge .role-tag {
+      background: var(--black);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.9rem;
+      border-radius: 30px;
+      letter-spacing: 0.3px;
+    }
+    .site-selector {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin: 1.2rem 0 1.8rem 0;
+      background: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 80px;
+      box-shadow: var(--card-shadow);
+    }
+    .site-btn {
+      background: transparent;
+      border: none;
+      padding: 0.5rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #3a3a3a;
+      transition: 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .site-btn i {
+      color: var(--red);
+    }
+    .site-btn.active {
+      background: var(--black);
+      color: white;
+    }
+    .site-btn.active i {
+      color: var(--yellow);
+    }
+    .site-btn:hover:not(.active) {
+      background: #ecebe7;
+    }
+    /* cards grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      padding: 1.2rem 1.5rem;
+      border-radius: 24px;
+      box-shadow: var(--card-shadow);
+      border-left: 6px solid var(--yellow);
+    }
+    .stat-card .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #5a5a5a;
+    }
+    .stat-card .value {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-top: 0.3rem;
+      color: var(--black);
+    }
+    .stat-card .sub {
+      color: var(--red);
+      font-size: 0.8rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0 1.5rem 0;
+      gap: 1rem;
+    }
+    .toolbar .left {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: white;
+      border: 1px solid #d0ceca;
+      padding: 0.5rem 1.3rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .btn-primary {
+      background: var(--black);
+      border: 1px solid var(--black);
+      color: white;
+    }
+    .btn-primary i {
+      color: var(--yellow);
+    }
+    .btn-primary:hover {
+      background: #2c2c2c;
+    }
+    .btn-outline-red {
+      border: 1px solid var(--red);
+      color: var(--red);
+      background: transparent;
+    }
+    .btn-outline-red:hover {
+      background: var(--red);
+      color: white;
+    }
+    .btn-yellow {
+      background: var(--yellow);
+      border: 1px solid var(--yellow);
+      color: var(--black);
+      font-weight: 600;
+    }
+    .btn-yellow:hover {
+      background: #e8c815;
+    }
+    .table-wrap {
+      background: white;
+      border-radius: 28px;
+      padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+      box-shadow: var(--card-shadow);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      min-width: 700px;
+    }
+    th {
+      text-align: left;
+      padding: 1.2rem 1rem 0.8rem 1rem;
+      color: #3d3d3d;
+      font-weight: 600;
+      border-bottom: 2px solid #efedea;
+    }
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #f1efeb;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .badge-site {
+      background: #f1efe8;
+      padding: 0.2rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-site.main { background: var(--yellow); color: var(--black); }
+    .badge-site.ngetta { background: #d9d2c0; }
+    .badge-site.adyel { background: #c7beb0; }
+    .action-icons i {
+      margin: 0 4px;
+      color: #5f5f5f;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .action-icons i:hover { color: var(--red); }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-card {
+      background: white;
+      max-width: 580px;
+      width: 95%;
+      padding: 2rem 2.2rem;
+      border-radius: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      border-top: 8px solid var(--yellow);
+    }
+    .modal-card h3 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .modal-card label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: block;
+      margin-top: 0.8rem;
+    }
+    .modal-card input, .modal-card select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 60px;
+      border: 1px solid #d6d2cc;
+      background: #fcfbf9;
+      margin-top: 0.2rem;
+      font-size: 0.95rem;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: 2rem;
+    }
+    .footer-flag {
+      margin-top: 3rem;
+      padding: 1rem 0;
+      border-top: 2px solid var(--yellow);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+      color: #3c3c3c;
+    }
+    .flag-stripes {
+      display: flex;
+      gap: 2px;
+    }
+    .flag-stripes span {
+      width: 40px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 6px;
+    }
+    .flag-stripes .b { background: var(--black); }
+    .flag-stripes .y { background: var(--yellow); }
+    .flag-stripes .r { background: var(--red); }
+    @media (max-width: 700px) {
+      .container { padding: 1rem; }
+      .header { flex-direction: column; align-items: start; }
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="app">
+  <!-- header -->
+  <div class="header">
+    <div class="logo">
+      <h1>⛰️ Kajana <span>Enterprise</span></h1>
+      <div style="font-size:0.75rem; color:#444; margin-top: 0.2rem;">concrete · stone · mining</div>
+    </div>
+    <div class="user-badge">
+      <i class="fas fa-user-circle"></i>
+      <span id="currentUserDisplay">General Manager</span>
+      <span class="role-tag" id="currentRoleDisplay">GM</span>
+      <i class="fas fa-sign-out-alt" style="color:var(--red); cursor:pointer;" onclick="logout()"></i>
+    </div>
+  </div>
+
+  <!-- site selector -->
+  <div class="site-selector" id="siteSelector">
+    <button class="site-btn active" data-site="main"><i class="fas fa-building"></i> Main Office</button>
+    <button class="site-btn" data-site="ngetta"><i class="fas fa-truck"></i> Ngetta Site</button>
+    <button class="site-btn" data-site="adyel"><i class="fas fa-warehouse"></i> Adyel Site</button>
+  </div>
+
+  <!-- stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div><div class="sub">+12%</div></div>
+    <div class="stat-card"><div class="label">This Month</div><div class="value" id="monthSales">UGX 0</div><div class="sub">3 invoices</div></div>
+    <div class="stat-card"><div class="label">Expenditures (month)</div><div class="value" id="monthExp">UGX 0</div><div class="sub">+2%</div></div>
+    <div class="stat-card"><div class="label">Active Sites</div><div class="value" id="activeSites">3</div><div class="sub">all production</div></div>
+  </div>
+
+  <!-- toolbar -->
+  <div class="toolbar">
+    <div class="left">
+      <button class="btn btn-primary" onclick="openModal('sale')"><i class="fas fa-plus-circle"></i> New Sale</button>
+      <button class="btn btn-outline-red" onclick="openModal('expense')"><i class="fas fa-receipt"></i> Add Expense</button>
+      <button class="btn btn-yellow" onclick="generateReport()"><i class="fas fa-file-pdf"></i> PDF Report</button>
+      <button class="btn" onclick="generateCSV()"><i class="fas fa-file-excel"></i> CSV</button>
+    </div>
+    <div>
+      <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="table-wrap">
+    <table id="transactionTable">
+      <thead>
+        <tr><th>#</th><th>Date</th><th>Site</th><th>Item</th><th>Qty</th><th>Amount (UGX)</th><th>Receipt#</th><th>Type</th><th style="text-align:center;">Actions</th></tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- dynamic -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- modal overlay -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card">
+      <h3 id="modalTitle"><i class="fas fa-pen"></i> New Entry</h3>
+      <form id="modalForm">
+        <label>Site</label>
+        <select id="modalSite" required><option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option></select>
+        <label>Item / Description</label>
+        <input id="modalItem" placeholder="e.g. Pavers, stone dust 5t" required>
+        <label>Quantity</label>
+        <input id="modalQty" type="number" step="any" placeholder="0" required>
+        <label>Amount (UGX)</label>
+        <input id="modalAmount" type="number" step="any" placeholder="0" required>
+        <label>Receipt Number (optional)</label>
+        <input id="modalReceipt" placeholder="manual receipt #">
+        <input type="hidden" id="modalType" value="sale">
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background:var(--red); border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer-flag">
+    <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · all sites active</div>
+    <div class="flag-stripes"><span class="b"></span><span class="y"></span><span class="r"></span></div>
+  </div>
+</div>
+<script>
+  // ---------- DATA LAYER ----------
+  let transactions = [];
+  let currentSite = 'main';
+  let currentUser = { name: 'General Manager', role: 'gm' };
+
+  // dummy login / users (for demo)
+  const users = [
+    { name: 'General Manager', role: 'gm', sites: ['main','ngetta','adyel'] },
+    { name: 'Admin Main', role: 'admin', sites: ['main'] },
+    { name: 'Admin Ngetta', role: 'admin', sites: ['ngetta'] },
+    { name: 'Admin Adyel', role: 'admin', sites: ['adyel'] },
+    { name: 'Manager Main', role: 'manager', sites: ['main'] },
+  ];
+
+  // seed transactions
+  function seedData() {
+    const now = new Date();
+    const d = (d) => new Date(now.getFullYear(), now.getMonth(), now.getDate()-d);
+    transactions = [
+      { id: 1, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Concrete Pavers', qty: 120, amount: 2400000, receipt: 'R-001', type: 'sale' },
+      { id: 2, date: d(1).toISOString().split('T')[0], site: 'ngetta', item: 'Stone dust 5t', qty: 5, amount: 850000, receipt: 'R-002', type: 'sale' },
+      { id: 3, date: d(2).toISOString().split('T')[0], site: 'adyel', item: 'Hollow blocks', qty: 80, amount: 1120000, receipt: 'R-003', type: 'sale' },
+      { id: 4, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Fuel (generator)', qty: 1, amount: 450000, receipt: 'E-001', type: 'expense' },
+      { id: 5, date: d(3).toISOString().split('T')[0], site: 'ngetta', item: 'Gravel 10t', qty: 10, amount: 1200000, receipt: 'R-004', type: 'sale' },
+      { id: 6, date: d(1).toISOString().split('T')[0], site: 'adyel', item: 'Road cubs', qty: 200, amount: 1800000, receipt: 'R-005', type: 'sale' },
+      { id: 7, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Maintenance drill', qty: 1, amount: 320000, receipt: 'E-002', type: 'expense' },
+    ];
+  }
+  seedData();
+  let nextId = 8;
+
+  // render table
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const filtered = transactions.filter(t => t.site === currentSite);
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:#777;">No transactions for this site</td></tr>`;
+    } else {
+      tbody.innerHTML = filtered.map((t,i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td>${t.date}</td>
+          <td><span class="badge-site ${t.site}">${t.site.toUpperCase()}</span></td>
+          <td>${t.item}</td>
+          <td>${t.qty}</td>
+          <td>${Number(t.amount).toLocaleString()}</td>
+          <td>${t.receipt || '-'}</td>
+          <td><span style="background:${t.type==='sale'?'#d4edda':'#f8d7da'}; padding:0.2rem 0.8rem; border-radius:20px;">${t.type}</span></td>
+          <td class="action-icons" style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})"></i></td>
+        </tr>
+      `).join('');
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    const all = transactions;
+    const today = new Date().toISOString().split('T')[0];
+    const month = today.slice(0,7);
+    const siteTotal = all.filter(t => t.site === currentSite);
+    const todaySales = siteTotal.filter(t => t.date === today && t.type==='sale').reduce((s,o) => s+o.amount, 0);
+    const monthSales = siteTotal.filter(t => t.date.startsWith(month) && t.type==='sale').reduce((s,o) => s+o.amount, 0);
+    const monthExp = siteTotal.filter(t => t.date.startsWith(month) && t.type==='expense').reduce((s,o) => s+o.amount, 0);
+    document.getElementById('todaySales').innerText = 'UGX ' + todaySales.toLocaleString();
+    document.getElementById('monthSales').innerText = 'UGX ' + monthSales.toLocaleString();
+    document.getElementById('monthExp').innerText = 'UGX ' + monthExp.toLocaleString();
+    document.getElementById('activeSites').innerText = '3';
+  }
+
+  // site switcher
+  document.querySelectorAll('.site-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.site-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentSite = this.dataset.site;
+      renderTable();
+    });
+  });
+
+  // modal
+  function openModal(type) {
+    document.getElementById('modalOverlay').style.display = 'flex';
+    document.getElementById('modalTitle').innerHTML = type==='sale' ? '<i class="fas fa-cart-plus"></i> New Sale' : type==='expense' ? '<i class="fas fa-coins"></i> Add Expense' : '<i class="fas fa-envelope"></i> Send E-receipt';
+    document.getElementById('modalType').value = type;
+    if (type==='receipt') {
+      document.getElementById('modalItem').placeholder = 'enter receipt # to email';
+      document.querySelector('#modalForm button[type="submit"]').innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+    } else {
+      document.querySelector('#modalForm button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Save';
+    }
+  }
+  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+
+  document.getElementById('modalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const type = document.getElementById('modalType').value;
+    if (type === 'receipt') {
+      alert('📧 E-receipt sent to customer (demo) for receipt #' + document.getElementById('modalReceipt').value);
+      closeModal();
+      return;
+    }
+    const site = document.getElementById('modalSite').value;
+    const item = document.getElementById('modalItem').value.trim();
+    const qty = parseFloat(document.getElementById('modalQty').value);
+    const amount = parseFloat(document.getElementById('modalAmount').value);
+    const receipt = document.getElementById('modalReceipt').value.trim() || 'R-'+String(nextId).padStart(3,'0');
+    if (!item || !qty || !amount) { alert('Please fill all fields'); return; }
+    const newTrans = {
+      id: nextId++,
+      date: new Date().toISOString().split('T')[0],
+      site: site,
+      item: item,
+      qty: qty,
+      amount: amount,
+      receipt: receipt,
+      type: type
+    };
+    transactions.push(newTrans);
+    renderTable();
+    closeModal();
+    this.reset();
+  });
+
+  // delete
+  function deleteTrans(id) {
+    if (confirm('Delete this entry?')) {
+      transactions = transactions.filter(t => t.id !== id);
+      renderTable();
+    }
+  }
+  window.deleteTrans = deleteTrans;
+
+  // reports (pdf/csv)
+  function generateReport() {
+    const site = currentSite;
+    const siteData = transactions.filter(t => t.site === site);
+    let txt = `Kajana Enterprise · ${site.toUpperCase()} SITE REPORT\n`;
+    txt += `Date: ${new Date().toISOString().split('T')[0]}\n------------------------------------\n`;
+    siteData.forEach(t => {
+      txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount} | ${t.type}\n`;
+    });
+    const total = siteData.reduce((s,o) => s+o.amount, 0);
+    txt += `\nTOTAL: UGX ${total.toLocaleString()}`;
+    const blob = new Blob([txt], {type: 'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Kajana_${site}_report.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  window.generateReport = generateReport;
+
+  function generateCSV() {
+    const site = currentSite;
+    const siteData = transactions.filter(t => t.site === site);
+    let csv = 'Date,Site,Item,Qty,Amount,Receipt,Type\n';
+    siteData.forEach(t => {
+      csv += `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.receipt||''},${t.type}\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Kajana_${site}_report.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  window.generateCSV = generateCSV;
+
+  // logout dummy
+  function logout() {
+    alert('Logged out (demo)');
+    location.reload();
+  }
+  window.logout = logout;
+
+  // init
+  renderTable();
+</script>
+</body>
+</html>
