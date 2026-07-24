@@ -1,594 +1,1642 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kajana Enterprise · Management System</title>
-  <!-- Font Awesome & Google Fonts -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-    body {
-      background: #f5f3f0;
-      color: #1e1e1e;
-      min-height: 100vh;
-    }
-    /* Ugandan flag inspired palette */
-    :root {
-      --black: #1a1a1a;
-      --yellow: #f9d71c;
-      --red: #d71921;
-      --gold-light: #fef2c0;
-      --bg-light: #faf8f5;
-      --card-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 1.5rem 2rem;
-    }
-    /* header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 0 1.5rem 0;
-      border-bottom: 3px solid var(--yellow);
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .logo h1 {
-      font-weight: 700;
-      font-size: 1.9rem;
-      letter-spacing: -0.5px;
-      color: var(--black);
-    }
-    .logo span {
-      color: var(--red);
-      background: var(--yellow);
-      padding: 0.1rem 0.8rem;
-      border-radius: 40px;
-      font-size: 1rem;
-      margin-left: 0.3rem;
-    }
-    .user-badge {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      background: white;
-      padding: 0.5rem 1.5rem 0.5rem 1.2rem;
-      border-radius: 60px;
-      box-shadow: var(--card-shadow);
-    }
-    .user-badge i {
-      color: var(--red);
-      font-size: 1.3rem;
-    }
-    .user-badge .role-tag {
-      background: var(--black);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 0.2rem 0.9rem;
-      border-radius: 30px;
-      letter-spacing: 0.3px;
-    }
-    .site-selector {
-      display: flex;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-      margin: 1.2rem 0 1.8rem 0;
-      background: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 80px;
-      box-shadow: var(--card-shadow);
-    }
-    .site-btn {
-      background: transparent;
-      border: none;
-      padding: 0.5rem 1.4rem;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #3a3a3a;
-      transition: 0.2s;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .site-btn i {
-      color: var(--red);
-    }
-    .site-btn.active {
-      background: var(--black);
-      color: white;
-    }
-    .site-btn.active i {
-      color: var(--yellow);
-    }
-    .site-btn:hover:not(.active) {
-      background: #ecebe7;
-    }
-    /* cards grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 2rem;
-    }
-    .stat-card {
-      background: white;
-      padding: 1.2rem 1.5rem;
-      border-radius: 24px;
-      box-shadow: var(--card-shadow);
-      border-left: 6px solid var(--yellow);
-    }
-    .stat-card .label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #5a5a5a;
-    }
-    .stat-card .value {
-      font-weight: 700;
-      font-size: 1.8rem;
-      margin-top: 0.3rem;
-      color: var(--black);
-    }
-    .stat-card .sub {
-      color: var(--red);
-      font-size: 0.8rem;
-    }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      margin: 2rem 0 1.5rem 0;
-      gap: 1rem;
-    }
-    .toolbar .left {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-    .btn {
-      background: white;
-      border: 1px solid #d0ceca;
-      padding: 0.5rem 1.3rem;
-      border-radius: 40px;
-      font-weight: 500;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .btn-primary {
-      background: var(--black);
-      border: 1px solid var(--black);
-      color: white;
-    }
-    .btn-primary i {
-      color: var(--yellow);
-    }
-    .btn-primary:hover {
-      background: #2c2c2c;
-    }
-    .btn-outline-red {
-      border: 1px solid var(--red);
-      color: var(--red);
-      background: transparent;
-    }
-    .btn-outline-red:hover {
-      background: var(--red);
-      color: white;
-    }
-    .btn-yellow {
-      background: var(--yellow);
-      border: 1px solid var(--yellow);
-      color: var(--black);
-      font-weight: 600;
-    }
-    .btn-yellow:hover {
-      background: #e8c815;
-    }
-    .table-wrap {
-      background: white;
-      border-radius: 28px;
-      padding: 0.2rem 0.2rem 0.2rem 0.2rem;
-      box-shadow: var(--card-shadow);
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      min-width: 700px;
-    }
-    th {
-      text-align: left;
-      padding: 1.2rem 1rem 0.8rem 1rem;
-      color: #3d3d3d;
-      font-weight: 600;
-      border-bottom: 2px solid #efedea;
-    }
-    td {
-      padding: 0.9rem 1rem;
-      border-bottom: 1px solid #f1efeb;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    .badge-site {
-      background: #f1efe8;
-      padding: 0.2rem 0.9rem;
-      border-radius: 30px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .badge-site.main { background: var(--yellow); color: var(--black); }
-    .badge-site.ngetta { background: #d9d2c0; }
-    .badge-site.adyel { background: #c7beb0; }
-    .action-icons i {
-      margin: 0 4px;
-      color: #5f5f5f;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .action-icons i:hover { color: var(--red); }
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-    .modal-card {
-      background: white;
-      max-width: 580px;
-      width: 95%;
-      padding: 2rem 2.2rem;
-      border-radius: 40px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      border-top: 8px solid var(--yellow);
-    }
-    .modal-card h3 {
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .modal-card label {
-      font-weight: 500;
-      font-size: 0.9rem;
-      display: block;
-      margin-top: 0.8rem;
-    }
-    .modal-card input, .modal-card select {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border-radius: 60px;
-      border: 1px solid #d6d2cc;
-      background: #fcfbf9;
-      margin-top: 0.2rem;
-      font-size: 0.95rem;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.8rem;
-      margin-top: 2rem;
-    }
-    .footer-flag {
-      margin-top: 3rem;
-      padding: 1rem 0;
-      border-top: 2px solid var(--yellow);
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      font-size: 0.8rem;
-      color: #3c3c3c;
-    }
-    .flag-stripes {
-      display: flex;
-      gap: 2px;
-    }
-    .flag-stripes span {
-      width: 40px;
-      height: 10px;
-      display: inline-block;
-      border-radius: 6px;
-    }
-    .flag-stripes .b { background: var(--black); }
-    .flag-stripes .y { background: var(--yellow); }
-    .flag-stripes .r { background: var(--red); }
-    @media (max-width: 700px) {
-      .container { padding: 1rem; }
-      .header { flex-direction: column; align-items: start; }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kajana Enterprise · Management System</title>
+    <!-- Font Awesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <!-- Chart.js for advanced reporting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ── Reset & Variables ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        :root {
+            --black: #1a1a1a;
+            --yellow: #f9d71c;
+            --red: #d71921;
+            --gold-light: #fef2c0;
+            --bg: #f5f3f0;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --radius: 28px;
+            --transition: 0.25s ease;
+        }
+        body {
+            background: var(--bg);
+            color: var(--black);
+            min-height: 100vh;
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--yellow);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e8c815;
+        }
+
+        /* ── LOGIN ── */
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 1rem;
+        }
+        .login-card {
+            background: #fff;
+            padding: 2.8rem 3.2rem;
+            border-radius: 60px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            max-width: 440px;
+            width: 100%;
+            border-top: 8px solid var(--yellow);
+        }
+        .login-card h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .login-card h1 span {
+            background: var(--yellow);
+            padding: 0.1rem 0.8rem;
+            border-radius: 40px;
+            font-size: 1rem;
+        }
+        .login-card .sub {
+            color: #555;
+            margin-bottom: 1.8rem;
+            font-weight: 500;
+        }
+        .login-card label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 1rem;
+        }
+        .login-card input,
+        .login-card select {
+            width: 100%;
+            padding: 0.75rem 1.2rem;
+            border-radius: 60px;
+            border: 1px solid #d6d2cc;
+            background: #fcfbf9;
+            margin-top: 0.2rem;
+            font-size: 0.95rem;
+        }
+        .login-card input:focus,
+        .login-card select:focus {
+            outline: 2px solid var(--yellow);
+            border-color: var(--yellow);
+        }
+        .login-btn {
+            background: var(--black);
+            color: #fff;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 1.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+        .login-btn:hover {
+            background: var(--red);
+            transform: translateY(-2px);
+        }
+        .flag-stripes {
+            display: flex;
+            gap: 4px;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        .flag-stripes span {
+            width: 48px;
+            height: 8px;
+            border-radius: 6px;
+        }
+        .flag-stripes .b {
+            background: var(--black);
+        }
+        .flag-stripes .y {
+            background: var(--yellow);
+        }
+        .flag-stripes .r {
+            background: var(--red);
+        }
+        .demo-creds {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 1rem;
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        /* ── LAYOUT ── */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0 1.2rem 0;
+            border-bottom: 3px solid var(--yellow);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo h1 {
+            font-weight: 700;
+            font-size: 1.9rem;
+            letter-spacing: -0.5px;
+        }
+        .logo h1 span {
+            color: var(--red);
+            background: var(--yellow);
+            padding: 0.1rem 0.8rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            margin-left: 0.3rem;
+        }
+        .logo .subtitle {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 0.1rem;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            background: #fff;
+            padding: 0.3rem 1.5rem 0.3rem 1.2rem;
+            border-radius: 60px;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+        }
+        .user-badge i {
+            color: var(--red);
+            font-size: 1.3rem;
+        }
+        .user-badge .role-tag {
+            background: var(--black);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+        }
+        .user-badge .site-tag {
+            background: var(--yellow);
+            color: var(--black);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+        }
+        .user-badge .logout-btn {
+            color: var(--red);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        .user-badge .logout-btn:hover {
+            transform: scale(1.15);
+        }
+
+        /* ── SITE SELECTOR ── */
+        .site-selector {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin: 1.2rem 0 1.8rem 0;
+            background: #fff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 80px;
+            box-shadow: var(--shadow);
+        }
+        .site-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #3a3a3a;
+            transition: var(--transition);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .site-btn i {
+            color: var(--red);
+        }
+        .site-btn.active {
+            background: var(--black);
+            color: #fff;
+        }
+        .site-btn.active i {
+            color: var(--yellow);
+        }
+        .site-btn:hover:not(.active) {
+            background: #ecebe7;
+        }
+
+        /* ── STATS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.8rem;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            border-left: 6px solid var(--yellow);
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-3px);
+        }
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #5a5a5a;
+        }
+        .stat-card .value {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-top: 0.1rem;
+        }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0 1.2rem 0;
+            gap: 0.8rem;
+        }
+        .toolbar .left {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #fff;
+            border: 1px solid #d0ceca;
+            padding: 0.45rem 1.3rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .btn-primary {
+            background: var(--black);
+            border-color: var(--black);
+            color: #fff;
+        }
+        .btn-primary i {
+            color: var(--yellow);
+        }
+        .btn-primary:hover {
+            background: #2c2c2c;
+        }
+        .btn-outline-red {
+            border-color: var(--red);
+            color: var(--red);
+            background: transparent;
+        }
+        .btn-outline-red:hover {
+            background: var(--red);
+            color: #fff;
+        }
+        .btn-yellow {
+            background: var(--yellow);
+            border-color: var(--yellow);
+            color: var(--black);
+            font-weight: 600;
+        }
+        .btn-yellow:hover {
+            background: #e8c815;
+        }
+        .btn-success {
+            background: #1a7a3a;
+            border-color: #1a7a3a;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #0f5e2c;
+        }
+        .btn-danger {
+            background: var(--red);
+            border-color: var(--red);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #b3151d;
+        }
+        .btn-outline-primary {
+            border-color: var(--black);
+            color: var(--black);
+            background: transparent;
+        }
+        .btn-outline-primary:hover {
+            background: var(--black);
+            color: #fff;
+        }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 0.2rem;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            min-width: 900px;
+        }
+        th {
+            text-align: left;
+            padding: 0.9rem 1rem 0.5rem 1rem;
+            color: #3d3d3d;
+            font-weight: 600;
+            border-bottom: 2px solid #efedea;
+            background: #faf8f5;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #f1efeb;
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: #faf8f5;
+        }
+
+        /* badges */
+        .badge-site {
+            padding: 0.15rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-site.main {
+            background: var(--yellow);
+            color: var(--black);
+        }
+        .badge-site.ngetta {
+            background: #d9d2c0;
+        }
+        .badge-site.adyel {
+            background: #c7beb0;
+        }
+        .badge-status {
+            padding: 0.15rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-status.cleared {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-status.completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .badge-status.expense {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .badge-status.partial {
+            background: #d6d8db;
+            color: #383d41;
+        }
+        .action-icons i {
+            margin: 0 3px;
+            color: #5f5f5f;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+        .action-icons i:hover {
+            color: var(--red);
+            transform: scale(1.2);
+        }
+        .action-icons i.text-success:hover {
+            color: #1a7a3a;
+        }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 1rem;
+        }
+        .modal-card {
+            background: #fff;
+            max-width: 720px;
+            width: 100%;
+            padding: 2rem 2.5rem;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-top: 8px solid var(--yellow);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+        .modal-card h3 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .modal-card label {
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.8rem;
+        }
+        .modal-card input,
+        .modal-card select,
+        .modal-card textarea {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #d6d2cc;
+            background: #fcfbf9;
+            margin-top: 0.15rem;
+            font-size: 0.9rem;
+        }
+        .modal-card input:focus,
+        .modal-card select:focus,
+        .modal-card textarea:focus {
+            outline: 2px solid var(--yellow);
+            border-color: var(--yellow);
+        }
+        .modal-card .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 2rem;
+        }
+        .modal-card .help-text {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 0.2rem;
+        }
+
+        /* ── FOOTER ── */
+        .footer-flag {
+            margin-top: 2.5rem;
+            padding: 1rem 0;
+            border-top: 2px solid var(--yellow);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: #3c3c3c;
+        }
+        .flag-stripes-mini {
+            display: flex;
+            gap: 2px;
+        }
+        .flag-stripes-mini span {
+            width: 36px;
+            height: 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .flag-stripes-mini .b {
+            background: var(--black);
+        }
+        .flag-stripes-mini .y {
+            background: var(--yellow);
+        }
+        .flag-stripes-mini .r {
+            background: var(--red);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+            .modal-card {
+                padding: 1.5rem;
+            }
+            .modal-card .row2 {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                align-items: start;
+            }
+            .user-badge {
+                width: 100%;
+                justify-content: center;
+            }
+            .site-selector {
+                border-radius: 20px;
+                justify-content: center;
+            }
+            .toolbar .left {
+                width: 100%;
+                justify-content: center;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── TOAST ── */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .toast {
+            padding: 0.9rem 1.8rem;
+            border-radius: 60px;
+            background: var(--black);
+            color: #fff;
+            box-shadow: var(--shadow-hover);
+            font-weight: 500;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+        .toast.success {
+            background: #1a7a3a;
+        }
+        .toast.error {
+            background: var(--red);
+        }
+        .toast.warning {
+            background: #b8870a;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container" id="app">
-  <!-- header -->
-  <div class="header">
-    <div class="logo">
-      <h1>⛰️ Kajana <span>Enterprise</span></h1>
-      <div style="font-size:0.75rem; color:#444; margin-top: 0.2rem;">concrete · stone · mining</div>
-    </div>
-    <div class="user-badge">
-      <i class="fas fa-user-circle"></i>
-      <span id="currentUserDisplay">General Manager</span>
-      <span class="role-tag" id="currentRoleDisplay">GM</span>
-      <i class="fas fa-sign-out-alt" style="color:var(--red); cursor:pointer;" onclick="logout()"></i>
-    </div>
-  </div>
-
-  <!-- site selector -->
-  <div class="site-selector" id="siteSelector">
-    <button class="site-btn active" data-site="main"><i class="fas fa-building"></i> Main Office</button>
-    <button class="site-btn" data-site="ngetta"><i class="fas fa-truck"></i> Ngetta Site</button>
-    <button class="site-btn" data-site="adyel"><i class="fas fa-warehouse"></i> Adyel Site</button>
-  </div>
-
-  <!-- stats -->
-  <div class="stats-grid" id="statsGrid">
-    <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div><div class="sub">+12%</div></div>
-    <div class="stat-card"><div class="label">This Month</div><div class="value" id="monthSales">UGX 0</div><div class="sub">3 invoices</div></div>
-    <div class="stat-card"><div class="label">Expenditures (month)</div><div class="value" id="monthExp">UGX 0</div><div class="sub">+2%</div></div>
-    <div class="stat-card"><div class="label">Active Sites</div><div class="value" id="activeSites">3</div><div class="sub">all production</div></div>
-  </div>
-
-  <!-- toolbar -->
-  <div class="toolbar">
-    <div class="left">
-      <button class="btn btn-primary" onclick="openModal('sale')"><i class="fas fa-plus-circle"></i> New Sale</button>
-      <button class="btn btn-outline-red" onclick="openModal('expense')"><i class="fas fa-receipt"></i> Add Expense</button>
-      <button class="btn btn-yellow" onclick="generateReport()"><i class="fas fa-file-pdf"></i> PDF Report</button>
-      <button class="btn" onclick="generateCSV()"><i class="fas fa-file-excel"></i> CSV</button>
-    </div>
-    <div>
-      <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
-    </div>
-  </div>
-
-  <!-- table -->
-  <div class="table-wrap">
-    <table id="transactionTable">
-      <thead>
-        <tr><th>#</th><th>Date</th><th>Site</th><th>Item</th><th>Qty</th><th>Amount (UGX)</th><th>Receipt#</th><th>Type</th><th style="text-align:center;">Actions</th></tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- dynamic -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- modal overlay -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-card">
-      <h3 id="modalTitle"><i class="fas fa-pen"></i> New Entry</h3>
-      <form id="modalForm">
-        <label>Site</label>
-        <select id="modalSite" required><option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option></select>
-        <label>Item / Description</label>
-        <input id="modalItem" placeholder="e.g. Pavers, stone dust 5t" required>
-        <label>Quantity</label>
-        <input id="modalQty" type="number" step="any" placeholder="0" required>
-        <label>Amount (UGX)</label>
-        <input id="modalAmount" type="number" step="any" placeholder="0" required>
-        <label>Receipt Number (optional)</label>
-        <input id="modalReceipt" placeholder="manual receipt #">
-        <input type="hidden" id="modalType" value="sale">
-        <div class="modal-actions">
-          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="background:var(--red); border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+    <!-- ─── LOGIN ─── -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <h1>⛰️ Kajana <span>Enterprise</span></h1>
+            <div class="sub">Concrete &amp; Stone Mining ·  Production</div>
+            <form id="loginForm">
+                <label><i class="fas fa-user"></i> Username / Email</label>
+                <input type="text" id="loginUser" value="gm@kajana.com" placeholder="Enter username" />
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="loginPass" value="password" placeholder="••••••••" />
+                <label><i class="fas fa-building"></i> Site (if applicable)</label>
+                <select id="loginSite">
+                    <option value="main">Main Office</option>
+                    <option value="ngetta">Ngetta Site</option>
+                    <option value="adyel">Adyel Site</option>
+                </select>
+                <button type="submit" class="login-btn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            </form>
+            <div class="flag-stripes"><span class="b"></span><span class="y"></span><span class="r"></span></div>
+            <div class="demo-creds">
+                <strong>Demo Credentials:</strong><br />
+                GM: gm@kajana.com / password &nbsp;|&nbsp; Manager: manager@main / password<br />
+                Cashier: cashier@main / password &nbsp;|&nbsp; Dispatch: dispatch@main / password
+            </div>
         </div>
-      </form>
     </div>
-  </div>
 
-  <div class="footer-flag">
-    <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · all sites active</div>
-    <div class="flag-stripes"><span class="b"></span><span class="y"></span><span class="r"></span></div>
-  </div>
-</div>
-<script>
-  // ---------- DATA LAYER ----------
-  let transactions = [];
-  let currentSite = 'main';
-  let currentUser = { name: 'General Manager', role: 'gm' };
+    <!-- ─── MAIN APP ─── -->
+    <div id="appContainer" class="container hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <h1>⛰️ Kajana <span>Enterprise</span></h1>
+                <div class="subtitle">concrete · stone · mining · Production</div>
+            </div>
+            <div class="user-badge">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentUserDisplay">User</span>
+                <span class="role-tag" id="currentRoleDisplay">ROLE</span>
+                <span class="site-tag" id="currentSiteDisplay">Site</span>
+                <span class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></span>
+            </div>
+        </div>
 
-  // dummy login / users (for demo)
-  const users = [
-    { name: 'General Manager', role: 'gm', sites: ['main','ngetta','adyel'] },
-    { name: 'Admin Main', role: 'admin', sites: ['main'] },
-    { name: 'Admin Ngetta', role: 'admin', sites: ['ngetta'] },
-    { name: 'Admin Adyel', role: 'admin', sites: ['adyel'] },
-    { name: 'Manager Main', role: 'manager', sites: ['main'] },
-  ];
+        <!-- Site Selector -->
+        <div class="site-selector" id="siteSelector">
+            <button class="site-btn active" data-site="main"><i class="fas fa-building"></i> Main Office</button>
+            <button class="site-btn" data-site="ngetta"><i class="fas fa-truck"></i> Ngetta Site</button>
+            <button class="site-btn" data-site="adyel"><i class="fas fa-warehouse"></i> Adyel Site</button>
+        </div>
 
-  // seed transactions
-  function seedData() {
-    const now = new Date();
-    const d = (d) => new Date(now.getFullYear(), now.getMonth(), now.getDate()-d);
-    transactions = [
-      { id: 1, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Concrete Pavers', qty: 120, amount: 2400000, receipt: 'R-001', type: 'sale' },
-      { id: 2, date: d(1).toISOString().split('T')[0], site: 'ngetta', item: 'Stone dust 5t', qty: 5, amount: 850000, receipt: 'R-002', type: 'sale' },
-      { id: 3, date: d(2).toISOString().split('T')[0], site: 'adyel', item: 'Hollow blocks', qty: 80, amount: 1120000, receipt: 'R-003', type: 'sale' },
-      { id: 4, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Fuel (generator)', qty: 1, amount: 450000, receipt: 'E-001', type: 'expense' },
-      { id: 5, date: d(3).toISOString().split('T')[0], site: 'ngetta', item: 'Gravel 10t', qty: 10, amount: 1200000, receipt: 'R-004', type: 'sale' },
-      { id: 6, date: d(1).toISOString().split('T')[0], site: 'adyel', item: 'Road cubs', qty: 200, amount: 1800000, receipt: 'R-005', type: 'sale' },
-      { id: 7, date: d(0).toISOString().split('T')[0], site: 'main', item: 'Maintenance drill', qty: 1, amount: 320000, receipt: 'E-002', type: 'expense' },
-    ];
-  }
-  seedData();
-  let nextId = 8;
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div></div>
+            <div class="stat-card"><div class="label">Month Sales</div><div class="value" id="monthSales">UGX 0</div></div>
+            <div class="stat-card"><div class="label">Month Expenses</div><div class="value" id="monthExp">UGX 0</div></div>
+            <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value" id="pendingDispatch">0</div></div>
+            <div class="stat-card"><div class="label">Credit Balances</div><div class="value" id="creditBalance">UGX 0</div></div>
+        </div>
 
-  // render table
-  function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    const filtered = transactions.filter(t => t.site === currentSite);
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:#777;">No transactions for this site</td></tr>`;
-    } else {
-      tbody.innerHTML = filtered.map((t,i) => `
-        <tr>
-          <td>${i+1}</td>
-          <td>${t.date}</td>
-          <td><span class="badge-site ${t.site}">${t.site.toUpperCase()}</span></td>
-          <td>${t.item}</td>
-          <td>${t.qty}</td>
-          <td>${Number(t.amount).toLocaleString()}</td>
-          <td>${t.receipt || '-'}</td>
-          <td><span style="background:${t.type==='sale'?'#d4edda':'#f8d7da'}; padding:0.2rem 0.8rem; border-radius:20px;">${t.type}</span></td>
-          <td class="action-icons" style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})"></i></td>
-        </tr>
-      `).join('');
-    }
-    updateStats();
-  }
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="left">
+                <button class="btn btn-primary" id="btnNewSale" onclick="openModal('sale')"><i class="fas fa-plus-circle"></i> New Sale</button>
+                <button class="btn btn-outline-red" id="btnExpense" onclick="openModal('expense')"><i class="fas fa-receipt"></i> Expense</button>
+                <button class="btn btn-success" id="btnDispatch" onclick="openModal('dispatch')"><i class="fas fa-truck"></i> Dispatch</button>
+                <button class="btn btn-yellow" onclick="openModal('report')"><i class="fas fa-chart-bar"></i> Reports</button>
+                <button class="btn btn-outline-primary" onclick="openModal('users')"><i class="fas fa-users-cog"></i> Users</button>
+                <button class="btn btn-outline-primary" onclick="openModal('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+            </div>
+            <div>
+                <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
+                <button class="btn" onclick="exportBackup()"><i class="fas fa-download"></i> Backup</button>
+            </div>
+        </div>
 
-  function updateStats() {
-    const all = transactions;
-    const today = new Date().toISOString().split('T')[0];
-    const month = today.slice(0,7);
-    const siteTotal = all.filter(t => t.site === currentSite);
-    const todaySales = siteTotal.filter(t => t.date === today && t.type==='sale').reduce((s,o) => s+o.amount, 0);
-    const monthSales = siteTotal.filter(t => t.date.startsWith(month) && t.type==='sale').reduce((s,o) => s+o.amount, 0);
-    const monthExp = siteTotal.filter(t => t.date.startsWith(month) && t.type==='expense').reduce((s,o) => s+o.amount, 0);
-    document.getElementById('todaySales').innerText = 'UGX ' + todaySales.toLocaleString();
-    document.getElementById('monthSales').innerText = 'UGX ' + monthSales.toLocaleString();
-    document.getElementById('monthExp').innerText = 'UGX ' + monthExp.toLocaleString();
-    document.getElementById('activeSites').innerText = '3';
-  }
+        <!-- Table -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Site</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Amount</th>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Receipt</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
 
-  // site switcher
-  document.querySelectorAll('.site-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.site-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      currentSite = this.dataset.site;
-      renderTable();
-    });
-  });
+        <div class="footer-flag">
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v3.0 · Data persists in LocalStorage</div>
+            <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
+        </div>
+    </div>
 
-  // modal
-  function openModal(type) {
-    document.getElementById('modalOverlay').style.display = 'flex';
-    document.getElementById('modalTitle').innerHTML = type==='sale' ? '<i class="fas fa-cart-plus"></i> New Sale' : type==='expense' ? '<i class="fas fa-coins"></i> Add Expense' : '<i class="fas fa-envelope"></i> Send E-receipt';
-    document.getElementById('modalType').value = type;
-    if (type==='receipt') {
-      document.getElementById('modalItem').placeholder = 'enter receipt # to email';
-      document.querySelector('#modalForm button[type="submit"]').innerHTML = '<i class="fas fa-paper-plane"></i> Send';
-    } else {
-      document.querySelector('#modalForm button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Save';
-    }
-  }
-  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-  window.openModal = openModal;
-  window.closeModal = closeModal;
+    <!-- ─── MODAL CONTAINER ─── -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card" id="modalCard"></div>
+    </div>
 
-  document.getElementById('modalForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const type = document.getElementById('modalType').value;
-    if (type === 'receipt') {
-      alert('📧 E-receipt sent to customer (demo) for receipt #' + document.getElementById('modalReceipt').value);
-      closeModal();
-      return;
-    }
-    const site = document.getElementById('modalSite').value;
-    const item = document.getElementById('modalItem').value.trim();
-    const qty = parseFloat(document.getElementById('modalQty').value);
-    const amount = parseFloat(document.getElementById('modalAmount').value);
-    const receipt = document.getElementById('modalReceipt').value.trim() || 'R-'+String(nextId).padStart(3,'0');
-    if (!item || !qty || !amount) { alert('Please fill all fields'); return; }
-    const newTrans = {
-      id: nextId++,
-      date: new Date().toISOString().split('T')[0],
-      site: site,
-      item: item,
-      qty: qty,
-      amount: amount,
-      receipt: receipt,
-      type: type
-    };
-    transactions.push(newTrans);
-    renderTable();
-    closeModal();
-    this.reset();
-  });
+    <!-- ─── TOAST CONTAINER ─── -->
+    <div class="toast-container" id="toastContainer"></div>
 
-  // delete
-  function deleteTrans(id) {
-    if (confirm('Delete this entry?')) {
-      transactions = transactions.filter(t => t.id !== id);
-      renderTable();
-    }
-  }
-  window.deleteTrans = deleteTrans;
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <script>
+        // ════════════════════════════════════════════════════════════
+        //  DATA LAYER with LocalStorage persistence
+        // ════════════════════════════════════════════════════════════
 
-  // reports (pdf/csv)
-  function generateReport() {
-    const site = currentSite;
-    const siteData = transactions.filter(t => t.site === site);
-    let txt = `Kajana Enterprise · ${site.toUpperCase()} SITE REPORT\n`;
-    txt += `Date: ${new Date().toISOString().split('T')[0]}\n------------------------------------\n`;
-    siteData.forEach(t => {
-      txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount} | ${t.type}\n`;
-    });
-    const total = siteData.reduce((s,o) => s+o.amount, 0);
-    txt += `\nTOTAL: UGX ${total.toLocaleString()}`;
-    const blob = new Blob([txt], {type: 'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Kajana_${site}_report.pdf`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-  window.generateReport = generateReport;
+        const STORAGE_KEY = 'kajana_data';
+        let transactions = [];
+        let nextId = 100;
+        let currentSite = 'main';
+        let currentUser = null;
+        let inventoryItems = {};
 
-  function generateCSV() {
-    const site = currentSite;
-    const siteData = transactions.filter(t => t.site === site);
-    let csv = 'Date,Site,Item,Qty,Amount,Receipt,Type\n';
-    siteData.forEach(t => {
-      csv += `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.receipt||''},${t.type}\n`;
-    });
-    const blob = new Blob([csv], {type: 'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Kajana_${site}_report.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-  window.generateCSV = generateCSV;
+        // Default inventory
+        const DEFAULT_INVENTORY = {
+            main: [
+                { name: 'Pavers', price: 20000 },
+                { name: 'Slabs', price: 35000 },
+                { name: 'Road Cubs', price: 9000 },
+                { name: 'Concrete Blocks', price: 12000 },
+                { name: 'Hollow Section', price: 14000 }
+            ],
+            ngetta: [
+                { name: 'Stone Dust', price: 170000 },
+                { name: 'Gravel 5t', price: 600000 },
+                { name: 'Gravel 10t', price: 1200000 },
+                { name: 'Aggregate', price: 850000 }
+            ],
+            adyel: [
+                { name: 'Pavers', price: 22000 },
+                { name: 'Slabs', price: 38000 },
+                { name: 'Road Cubs', price: 10000 },
+                { name: 'Concrete Blocks', price: 13000 },
+                { name: 'Hollow Section', price: 15000 }
+            ]
+        };
 
-  // logout dummy
-  function logout() {
-    alert('Logged out (demo)');
-    location.reload();
-  }
-  window.logout = logout;
+        // Default users
+        const DEFAULT_USERS = [
+            { username: 'gm@kajana.com', password: 'password', role: 'gm', name: 'General Manager', sites: ['main', 'ngetta',
+                    'adyel'
+                ] },
+            { username: 'manager@main', password: 'password', role: 'manager', name: 'Manager Main', sites: ['main'] },
+            { username: 'manager@ngetta', password: 'password', role: 'manager', name: 'Manager Ngetta', sites: ['ngetta'] },
+            { username: 'manager@adyel', password: 'password', role: 'manager', name: 'Manager Adyel', sites: ['adyel'] },
+            { username: 'cashier@main', password: 'password', role: 'cashier', name: 'Cashier Main', sites: ['main'] },
+            { username: 'cashier@ngetta', password: 'password', role: 'cashier', name: 'Cashier Ngetta', sites: ['ngetta'] },
+            { username: 'cashier@adyel', password: 'password', role: 'cashier', name: 'Cashier Adyel', sites: ['adyel'] },
+            { username: 'dispatch@main', password: 'password', role: 'dispatch', name: 'Dispatch Main', sites: ['main'] },
+            { username: 'dispatch@ngetta', password: 'password', role: 'dispatch', name: 'Dispatch Ngetta',
+            sites: ['ngetta'] },
+            { username: 'dispatch@adyel', password: 'password', role: 'dispatch', name: 'Dispatch Adyel', sites: ['adyel'] },
+        ];
 
-  // init
-  renderTable();
-</script>
+        let users = [...DEFAULT_USERS];
+
+        // ── Load / Save ──
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    transactions = data.transactions || [];
+                    nextId = data.nextId || 100;
+                    inventoryItems = data.inventory || JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
+                    users = data.users || [...DEFAULT_USERS];
+                    return true;
+                }
+            } catch (e) { console.warn('Load error', e); }
+            return false;
+        }
+
+        function saveData() {
+            try {
+                const data = { transactions, nextId, inventory: inventoryItems, users };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) { console.warn('Save error', e); }
+        }
+
+        // ── Seed initial data ──
+        function seedData() {
+            if (loadData()) return;
+            inventoryItems = JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
+            users = [...DEFAULT_USERS];
+            const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
+            transactions = [
+                { id: nextId++, date: d(0), site: 'main', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
+                    customer: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-001', status: 'completed',
+                    dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120,
+                        balanceQty: 0 } },
+                { id: nextId++, date: d(1), site: 'ngetta', item: 'Stone Dust', qty: 5, price: 170000, amount: 850000,
+                    customer: 'Mary Smith', contact: '+256 700 222', address: 'Ngetta', company: '', payment: 'credit',
+                    deposit: 300000, balance: 550000, receipt: 'R-002', status: 'pending', dispatch: { loaded: false } },
+                { id: nextId++, date: d(2), site: 'adyel', item: 'Hollow Section', qty: 80, price: 14000, amount: 1120000,
+                    customer: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-003', status: 'completed',
+                    dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80,
+                        balanceQty: 0 } },
+                { id: nextId++, date: d(0), site: 'main', item: 'Fuel', qty: 1, price: 450000, amount: 450000,
+                    customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
+                    receipt: 'E-001', status: 'expense', dispatch: {} },
+                { id: nextId++, date: d(3), site: 'ngetta', item: 'Gravel 10t', qty: 10, price: 120000, amount: 1200000,
+                    customer: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '',
+                    payment: 'credit', deposit: 500000, balance: 700000, receipt: 'R-004', status: 'pending',
+                    dispatch: { loaded: false } },
+                { id: nextId++, date: d(1), site: 'adyel', item: 'Road Cubs', qty: 200, price: 9000, amount: 1800000,
+                    customer: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-005', status: 'completed',
+                    dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200,
+                        balanceQty: 0 } },
+                { id: nextId++, date: d(0), site: 'main', item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
+                    customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
+                    receipt: 'E-002', status: 'expense', dispatch: {} },
+                { id: nextId++, date: d(2), site: 'adyel', item: 'Concrete Blocks', qty: 50, price: 12000, amount: 600000,
+                    customer: 'David Otieno', contact: '+256 700 666', address: 'Adyel', company: 'Otieno Constructions',
+                    payment: 'credit', deposit: 200000, balance: 400000, receipt: 'R-006', status: 'pending',
+                    dispatch: { loaded: false } },
+            ];
+            saveData();
+        }
+        seedData();
+
+        // ── Helpers ──
+        function getItemsForSite(site) {
+            return inventoryItems[site] || [];
+        }
+
+        function getItemPrice(site, name) {
+            const items = getItemsForSite(site);
+            const found = items.find(i => i.name === name);
+            return found ? found.price : 0;
+        }
+
+        function generateReceipt() {
+            return 'R-' + String(nextId).padStart(4, '0');
+        }
+
+        function toast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => { el.remove(); }, 3500);
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  LOGIN
+        // ════════════════════════════════════════════════════════════
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            const site = document.getElementById('loginSite').value;
+            const user = users.find(u => u.username === username && u.password === password);
+            if (!user) {
+                toast('Invalid credentials', 'error');
+                return;
+            }
+            if (!user.sites.includes(site) && user.role !== 'gm') {
+                toast('You do not have access to this site', 'error');
+                return;
+            }
+            currentUser = { ...user, currentSite: site };
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('currentUserDisplay').textContent = user.name;
+            document.getElementById('currentRoleDisplay').textContent = user.role.toUpperCase();
+            document.getElementById('currentSiteDisplay').textContent = site.toUpperCase();
+
+            const isGM = user.role === 'gm';
+            const isManager = user.role === 'manager';
+            const isCashier = user.role === 'cashier';
+            const isDispatch = user.role === 'dispatch';
+
+            document.getElementById('btnNewSale').style.display = (isGM || isManager || isCashier) ? 'inline-flex' :
+            'none';
+            document.getElementById('btnExpense').style.display = (isGM || isManager) ? 'inline-flex' : 'none';
+            document.getElementById('btnDispatch').style.display = (isGM || isDispatch || isManager) ? 'inline-flex' :
+                'none';
+
+            document.querySelectorAll('.site-btn').forEach(b => {
+                b.style.display = (isGM || user.sites.includes(b.dataset.site)) ? 'inline-flex' : 'none';
+            });
+
+            if (!isGM && user.sites.length === 1) {
+                currentSite = user.sites[0];
+                document.querySelectorAll('.site-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.site === currentSite);
+                });
+                document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
+            }
+            renderTable();
+            toast('Welcome ' + user.name + '!', 'success');
+        });
+
+        function logout() {
+            if (confirm('Logout?')) {
+                currentUser = null;
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('appContainer').classList.add('hidden');
+                location.reload();
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  RENDER
+        // ════════════════════════════════════════════════════════════
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const filtered = transactions.filter(t => t.site === currentSite);
+            if (!filtered.length) {
+                tbody.innerHTML =
+                    `<tr><td colspan="11" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
+                updateStats();
+                return;
+            }
+            const statusMap = {
+                pending: '<span class="badge-status pending">⏳ Pending</span>',
+                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
+                completed: '<span class="badge-status completed">✅ Completed</span>',
+                expense: '<span class="badge-status expense">💰 Expense</span>',
+                partial: '<span class="badge-status partial">📦 Partial</span>'
+            };
+            tbody.innerHTML = filtered.map((t, i) => {
+                const st = t.status || 'pending';
+                const canClear = (currentUser && (currentUser.role === 'gm' || currentUser.role === 'manager' ||
+                    currentUser.role === 'cashier')) &&
+                    (st === 'pending' || st === 'partial');
+                const canDelete = (currentUser && (currentUser.role === 'gm' || currentUser.role === 'manager'));
+                return `<tr>
+              <td>${i+1}</td>
+              <td>${t.date}</td>
+              <td><span class="badge-site ${t.site}">${t.site.toUpperCase()}</span></td>
+              <td>${t.item}</td>
+              <td>${t.qty}</td>
+              <td>${Number(t.amount).toLocaleString()}</td>
+              <td>${t.customer || '-'}</td>
+              <td>${t.payment || 'cash'}</td>
+              <td>${t.receipt || '-'}</td>
+              <td>${statusMap[st] || statusMap.pending}</td>
+              <td class="action-icons" style="text-align:center;">
+                ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear"></i>` : ''}
+                ${canDelete ? `<i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})" title="Delete"></i>` : ''}
+                ${t.dispatch?.loaded ? `<i class="fas fa-truck" style="color:#1a7a3a;" title="Dispatched"></i>` : ''}
+              </td>
+            </tr>`;
+            }).join('');
+            updateStats();
+        }
+
+        function updateStats() {
+            const siteData = transactions.filter(t => t.site === currentSite);
+            const today = new Date().toISOString().split('T')[0];
+            const month = today.slice(0, 7);
+            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense').reduce((s, o) => s + o.amount,
+                0);
+            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').reduce((s, o) => s + o
+                .amount, 0);
+            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o
+                .amount, 0);
+            const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
+            const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
+            document.getElementById('todaySales').textContent = 'UGX ' + todaySales.toLocaleString();
+            document.getElementById('monthSales').textContent = 'UGX ' + monthSales.toLocaleString();
+            document.getElementById('monthExp').textContent = 'UGX ' + monthExp.toLocaleString();
+            document.getElementById('pendingDispatch').textContent = pending;
+            document.getElementById('creditBalance').textContent = 'UGX ' + creditBal.toLocaleString();
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  MODAL SYSTEM
+        // ════════════════════════════════════════════════════════════
+
+        function openModal(type) {
+            const overlay = document.getElementById('modalOverlay');
+            const card = document.getElementById('modalCard');
+            overlay.style.display = 'flex';
+
+            if (type === 'sale') buildSaleModal(card);
+            else if (type === 'expense') buildExpenseModal(card);
+            else if (type === 'dispatch') buildDispatchModal(card);
+            else if (type === 'receipt') buildReceiptModal(card);
+            else if (type === 'report') buildReportModal(card);
+            else if (type === 'users') buildUsersModal(card);
+            else if (type === 'inventory') buildInventoryModal(card);
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        // ── SALE Modal ──
+        function buildSaleModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
+            <form id="modalForm">
+              <div class="row2">
+                <div><label>Site</label><select id="modalSite" required>
+                  <option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>
+                </select></div>
+                <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
+              </div>
+              <div class="row2">
+                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+                <div><label>Unit Price (UGX)</label><input id="modalPrice" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
+                <div><label>Payment</label><select id="modalPayment" onchange="toggleCredit()"><option value="cash">Cash</option><option value="credit">Credit</option></select></div>
+              </div>
+              <div class="row2">
+                <div><label>Customer Name *</label><input id="modalCustomer" placeholder="Full name" required /></div>
+                <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
+                <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
+              </div>
+              <div class="row2" id="creditFields" style="display:none;">
+                <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
+                <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
+              </div>
+              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
+                saveTransaction('sale'); };
+            document.getElementById('modalSite').value = currentSite;
+            document.getElementById('modalSite').onchange = function() { populateItems(this.value); };
+            populateItems(currentSite);
+            document.getElementById('modalItemSelect').onchange = updatePrice;
+            toggleCredit();
+            // set default receipt
+            document.getElementById('modalReceipt').value = generateReceipt();
+        }
+
+        // ── EXPENSE Modal ──
+        function buildExpenseModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-coins"></i> Add Expense</h3>
+            <form id="modalForm">
+              <div class="row2">
+                <div><label>Site</label><select id="modalSite" required><option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option></select></div>
+                <div><label>Description</label><input id="modalItem" placeholder="e.g. Fuel, Maintenance" required /></div>
+              </div>
+              <div class="row2">
+                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="1" value="1" /></div>
+                <div><label>Amount (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" required /></div>
+              </div>
+              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Manual or auto" /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
+                saveTransaction('expense'); };
+            document.getElementById('modalSite').value = currentSite;
+            document.getElementById('modalReceipt').value = 'E-' + String(nextId).padStart(4, '0');
+        }
+
+        // ── DISPATCH Modal ──
+        function buildDispatchModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
+            <form id="modalForm">
+              <div><label>Receipt / Invoice #</label><input id="dispatchReceipt" placeholder="Enter receipt #" required oninput="updateDispatchInfo()" /></div>
+              <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+              <div class="row2">
+                <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
+                <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
+                <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
+              </div>
+              <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault();
+                confirmDispatch(); };
+        }
+
+        // ── RECEIPT Modal ──
+        function buildReceiptModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-envelope"></i> Send E-Receipt</h3>
+            <form id="modalForm">
+              <div><label>Receipt Number</label><input id="receiptNumber" placeholder="Enter receipt #" required /></div>
+              <div><label>Customer Email</label><input id="customerEmail" placeholder="customer@example.com" required /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-paper-plane"></i> Send</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const receipt = document.getElementById('receiptNumber').value.trim();
+                const email = document.getElementById('customerEmail').value.trim();
+                const trans = transactions.find(t => t.receipt === receipt);
+                if (!trans) { toast('Receipt not found!', 'error'); return; }
+                toast(`📧 E-receipt ${receipt} sent to ${email}`, 'success');
+                closeModal();
+            };
+        }
+
+        // ── REPORT Modal ──
+        function buildReportModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-chart-bar"></i> Advanced Reports</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+              <div><label>From</label><input type="date" id="reportFrom" /></div>
+              <div><label>To</label><input type="date" id="reportTo" /></div>
+            </div>
+            <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+              <button class="btn btn-yellow" onclick="generateReport()"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn" onclick="generateCSV()"><i class="fas fa-file-excel"></i> CSV</button>
+              <button class="btn btn-primary" onclick="generateChart()"><i class="fas fa-chart-line"></i> Chart</button>
+            </div>
+            <div id="chartContainer" style="height:250px;margin:1rem 0;display:none;"><canvas id="reportChart"></canvas></div>
+            <div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            // Set default dates
+            const now = new Date();
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            document.getElementById('reportFrom').value = from.toISOString().split('T')[0];
+            document.getElementById('reportTo').value = now.toISOString().split('T')[0];
+            window.generateChart = function() {
+                const container = document.getElementById('chartContainer');
+                container.style.display = 'block';
+                const from = document.getElementById('reportFrom').value;
+                const to = document.getElementById('reportTo').value;
+                const data = transactions.filter(t => t.site === currentSite && t.date >= from && t.date <= to && t
+                .status !== 'expense');
+                const labels = [...new Set(data.map(t => t.date))].sort();
+                const values = labels.map(d => data.filter(t => t.date === d).reduce((s, o) => s + o.amount, 0));
+                const ctx = document.getElementById('reportChart').getContext('2d');
+                if (window._chart) window._chart.destroy();
+                window._chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Sales (UGX)', data: values, backgroundColor: '#f9d71c',
+                            borderColor: '#1a1a1a', borderWidth: 2 }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            };
+        }
+
+        // ── USERS Modal ──
+        function buildUsersModal(card) {
+            if (currentUser?.role !== 'gm') {
+                card.innerHTML =
+                    `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+            let html = `<h3><i class="fas fa-users-cog"></i> User Management</h3>
+            <form id="userForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
+              <div class="row2">
+                <div><label>Username</label><input id="userUsername" placeholder="username" required /></div>
+                <div><label>Password</label><input id="userPassword" placeholder="password" required /></div>
+              </div>
+              <div class="row2">
+                <div><label>Full Name</label><input id="userName" placeholder="Full name" required /></div>
+                <div><label>Role</label><select id="userRole"><option value="gm">GM</option><option value="manager">Manager</option><option value="cashier">Cashier</option><option value="dispatch">Dispatch</option></select></div>
+              </div>
+              <div><label>Sites (comma separated: main,ngetta,adyel)</label><input id="userSites" placeholder="main,ngetta" value="main" /></div>
+              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
+            </form>
+            <div style="max-height:260px;overflow-y:auto;">
+              <table style="font-size:0.8rem;min-width:auto;">
+                <thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Sites</th><th style="text-align:center;">Action</th></tr></thead>
+                <tbody>
+          `;
+            users.forEach((u, idx) => {
+                html += `<tr>
+              <td>${u.username}</td><td>${u.name}</td><td>${u.role}</td>
+              <td>${u.sites.join(', ')}</td>
+              <td style="text-align:center;">${idx > 9 ? `<i class="fas fa-trash-alt" onclick="deleteUser('${u.username}')" style="cursor:pointer;color:var(--red);"></i>` : '🔒'}</td>
+            </tr>`;
+            });
+            html += `</tbody></table></div><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+            document.getElementById('userForm').onsubmit = function(e) {
+                e.preventDefault();
+                const username = document.getElementById('userUsername').value.trim();
+                const password = document.getElementById('userPassword').value.trim();
+                const name = document.getElementById('userName').value.trim();
+                const role = document.getElementById('userRole').value;
+                const sites = document.getElementById('userSites').value.split(',').map(s => s.trim()).filter(Boolean);
+                if (!username || !password || !name || !sites.length) { toast('Fill all fields', 'error'); return; }
+                if (users.find(u => u.username === username)) { toast('Username exists', 'error'); return; }
+                users.push({ username, password, role, name, sites });
+                saveData();
+                toast('User added!', 'success');
+                buildUsersModal(card);
+            };
+            window.deleteUser = function(username) {
+                if (!confirm('Delete user ' + username + '?')) return;
+                users = users.filter(u => u.username !== username);
+                saveData();
+                toast('User deleted', 'warning');
+                buildUsersModal(card);
+            };
+        }
+
+        // ── INVENTORY Modal ──
+        function buildInventoryModal(card) {
+            if (currentUser?.role !== 'gm') {
+                card.innerHTML =
+                    `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management</h3>
+            <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;">
+              <select id="invSiteSelect" style="flex:1;min-width:150px;padding:0.6rem 1rem;border-radius:60px;border:1px solid #d6d2cc;">
+                <option value="main">Main Office</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>
+              </select>
+              <button class="btn btn-primary" onclick="addInventoryItem()"><i class="fas fa-plus"></i> Add Item</button>
+            </div>
+            <div style="max-height:300px;overflow-y:auto;" id="inventoryList"></div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            card.innerHTML = html;
+            renderInventoryList();
+            document.getElementById('invSiteSelect').onchange = renderInventoryList;
+
+            window.addInventoryItem = function() {
+                const site = document.getElementById('invSiteSelect').value;
+                const name = prompt('Enter item name:');
+                if (!name) return;
+                const price = prompt('Enter unit price (UGX):');
+                if (price === null) return;
+                const p = parseFloat(price);
+                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
+                if (!inventoryItems[site]) inventoryItems[site] = [];
+                inventoryItems[site].push({ name: name.trim(), price: p });
+                saveData();
+                toast('Item added!', 'success');
+                renderInventoryList();
+            };
+
+            window.deleteInventoryItem = function(site, idx) {
+                if (!confirm('Delete this item?')) return;
+                inventoryItems[site].splice(idx, 1);
+                saveData();
+                toast('Item deleted', 'warning');
+                renderInventoryList();
+            };
+
+            function renderInventoryList() {
+                const site = document.getElementById('invSiteSelect').value;
+                const list = document.getElementById('inventoryList');
+                const items = inventoryItems[site] || [];
+                if (!items.length) { list.innerHTML = '<p style="color:#888;padding:0.5rem 0;">No items for this site.</p>'; return; }
+                let html =
+                    `<table style="font-size:0.8rem;min-width:auto;"><thead><tr><th>Item</th><th>Price</th><th style="text-align:center;">Action</th></tr></thead><tbody>`;
+                items.forEach((item, idx) => {
+                    html +=
+                        `<tr><td>${item.name}</td><td>UGX ${item.price.toLocaleString()}</td><td style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteInventoryItem('${site}',${idx})" style="cursor:pointer;color:var(--red);"></i></td></tr>`;
+                });
+                html += `</tbody></table>`;
+                list.innerHTML = html;
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  HELPERS for modal forms
+        // ════════════════════════════════════════════════════════════
+
+        function populateItems(site) {
+            const sel = document.getElementById('modalItemSelect');
+            if (!sel) return;
+            const items = getItemsForSite(site || currentSite);
+            sel.innerHTML = '<option value="">-- Select --</option>';
+            items.forEach(item => {
+                sel.innerHTML +=
+                    `<option value="${item.name}" data-price="${item.price}">${item.name} (UGX ${item.price.toLocaleString()})</option>`;
+            });
+        }
+
+        function updatePrice() {
+            const sel = document.getElementById('modalItemSelect');
+            const priceField = document.getElementById('modalPrice');
+            if (sel && priceField) {
+                const opt = sel.options[sel.selectedIndex];
+                priceField.value = opt?.dataset?.price || 0;
+                calcTotal();
+            }
+        }
+
+        function calcTotal() {
+            const qty = parseFloat(document.getElementById('modalQty')?.value) || 0;
+            const price = parseFloat(document.getElementById('modalPrice')?.value) || 0;
+            const total = qty * price;
+            const amt = document.getElementById('modalAmount');
+            if (amt) amt.value = total;
+            calcBalance();
+        }
+
+        function calcBalance() {
+            const amt = parseFloat(document.getElementById('modalAmount')?.value) || 0;
+            const dep = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
+            const bal = amt - dep;
+            const balField = document.getElementById('modalBalance');
+            if (balField) balField.value = Math.max(0, bal);
+        }
+
+        function toggleCredit() {
+            const payment = document.getElementById('modalPayment')?.value;
+            const fields = document.getElementById('creditFields');
+            if (fields) fields.style.display = payment === 'credit' ? 'grid' : 'none';
+        }
+
+        function updateDispatchInfo() {
+            const receipt = document.getElementById('dispatchReceipt')?.value.trim();
+            const info = document.getElementById('dispatchInfo');
+            if (!info) return;
+            const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
+            if (trans) {
+                info.innerHTML =
+                    `<strong>${trans.item}</strong> | Qty: ${trans.qty} | Customer: ${trans.customer || 'N/A'} | Status: ${trans.status}`;
+            } else {
+                info.innerHTML = '❌ Invoice not found';
+            }
+        }
+
+        function updateDispatchBalance() {
+            const receipt = document.getElementById('dispatchReceipt')?.value.trim();
+            const loaded = parseFloat(document.getElementById('dispatchLoadedQty')?.value) || 0;
+            const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
+            const balField = document.getElementById('dispatchBalanceQty');
+            if (trans && balField) {
+                balField.value = Math.max(0, trans.qty - loaded);
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  TRANSACTION OPERATIONS
+        // ════════════════════════════════════════════════════════════
+
+        function saveTransaction(type) {
+            const site = document.getElementById('modalSite').value;
+            const item = document.getElementById('modalItem')?.value || document.getElementById('modalItemSelect')?.value;
+            const qty = parseFloat(document.getElementById('modalQty').value);
+            const amount = parseFloat(document.getElementById('modalAmount').value);
+            const receipt = document.getElementById('modalReceipt').value.trim() || generateReceipt();
+            const customer = document.getElementById('modalCustomer')?.value || '';
+            const contact = document.getElementById('modalContact')?.value || '';
+            const address = document.getElementById('modalAddress')?.value || '';
+            const company = document.getElementById('modalCompany')?.value || '';
+            const payment = document.getElementById('modalPayment')?.value || 'cash';
+            const deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
+            const balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
+            const price = parseFloat(document.getElementById('modalPrice')?.value) || 0;
+
+            if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
+            if (transactions.find(t => t.receipt === receipt)) { toast('Receipt # already exists!', 'error'); return; }
+
+            const trans = {
+                id: nextId++,
+                date: new Date().toISOString().split('T')[0],
+                site,
+                item,
+                qty,
+                price,
+                amount,
+                customer,
+                contact,
+                address,
+                company,
+                payment,
+                deposit,
+                balance,
+                receipt,
+                status: type === 'expense' ? 'expense' : 'pending',
+                dispatch: { loaded: false }
+            };
+            transactions.push(trans);
+            saveData();
+            renderTable();
+            closeModal();
+            toast(`${type === 'expense' ? 'Expense' : 'Invoice'} saved! Receipt: ${receipt}`, 'success');
+        }
+
+        function clearInvoice(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            if (trans.status === 'cleared' || trans.status === 'completed') {
+                toast('Already cleared', 'warning');
+                return;
+            }
+            if (confirm(`Clear invoice ${trans.receipt} for ${trans.customer || 'N/A'}?`)) {
+                trans.status = 'cleared';
+                saveData();
+                renderTable();
+                toast('Invoice cleared!', 'success');
+            }
+        }
+
+        function deleteTrans(id) {
+            if (!confirm('Delete this transaction?')) return;
+            transactions = transactions.filter(t => t.id !== id);
+            saveData();
+            renderTable();
+            toast('Deleted', 'warning');
+        }
+
+        function confirmDispatch() {
+            const receipt = document.getElementById('dispatchReceipt').value.trim();
+            const vehicle = document.getElementById('dispatchVehicle').value.trim();
+            const plate = document.getElementById('dispatchPlate').value.trim();
+            const driver = document.getElementById('dispatchDriver').value.trim();
+            const loadedQty = parseFloat(document.getElementById('dispatchLoadedQty').value);
+
+            if (!receipt || !loadedQty || loadedQty <= 0) { toast('Enter receipt & quantity', 'error'); return; }
+            const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
+            if (!trans) { toast('Invoice not found', 'error'); return; }
+            if (trans.status === 'expense') { toast('Cannot dispatch expense', 'error'); return; }
+
+            const balanceQty = Math.max(0, trans.qty - loadedQty);
+            trans.dispatch = { loaded: true, vehicle, plate, driver, loadedQty, balanceQty };
+            trans.status = balanceQty === 0 ? 'completed' : 'partial';
+            saveData();
+            renderTable();
+            closeModal();
+            toast(`Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  REPORTING
+        // ════════════════════════════════════════════════════════════
+
+        function getReportData() {
+            const from = document.getElementById('reportFrom')?.value;
+            const to = document.getElementById('reportTo')?.value;
+            let data = transactions.filter(t => t.site === currentSite);
+            if (from) data = data.filter(t => t.date >= from);
+            if (to) data = data.filter(t => t.date <= to);
+            return data;
+        }
+
+        function generateReport() {
+            const data = getReportData();
+            let txt =
+                `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            txt += `Date | Item | Qty | Amount | Customer | Status\n${'-'.repeat(55)}\n`;
+            data.forEach(t => {
+                txt +=
+                    `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status}\n`;
+            });
+            const sales = data.filter(t => t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+            const exp = data.filter(t => t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+            txt += `\n${'='.repeat(55)}\nTOTAL SALES: UGX ${sales.toLocaleString()}\nTOTAL EXPENSES: UGX ${exp.toLocaleString()}\nNET: UGX ${(sales-exp).toLocaleString()}`;
+            const blob = new Blob([txt], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download =
+                `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast('PDF report generated', 'success');
+        }
+
+        function generateCSV() {
+            const data = getReportData();
+            let csv = 'Date,Site,Item,Qty,Amount,Price,Customer,Payment,Receipt,Status\n';
+            data.forEach(t => {
+                csv +=
+                    `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.price||0},${t.customer||''},${t.payment||'cash'},${t.receipt||''},${t.status}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download =
+                `Kajana_${currentSite}_report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast('CSV report generated', 'success');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  BACKUP
+        // ════════════════════════════════════════════════════════════
+
+        function exportBackup() {
+            const data = { transactions, nextId, inventory: inventoryItems, users, exportedAt: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kajana_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast('Backup downloaded!', 'success');
+        }
+
+        // ── Import backup (hidden feature: drag & drop or file input) ──
+        // (can be added via a hidden file input)
+
+        // ════════════════════════════════════════════════════════════
+        //  SITE SWITCHER
+        // ════════════════════════════════════════════════════════════
+
+        document.querySelectorAll('.site-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.site-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentSite = this.dataset.site;
+                document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
+                renderTable();
+            });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        //  INIT
+        // ════════════════════════════════════════════════════════════
+
+        // Expose globals
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.calcTotal = calcTotal;
+        window.calcBalance = calcBalance;
+        window.updatePrice = updatePrice;
+        window.toggleCredit = toggleCredit;
+        window.updateDispatchInfo = updateDispatchInfo;
+        window.updateDispatchBalance = updateDispatchBalance;
+        window.clearInvoice = clearInvoice;
+        window.deleteTrans = deleteTrans;
+        window.generateReport = generateReport;
+        window.generateCSV = generateCSV;
+        window.exportBackup = exportBackup;
+        window.logout = logout;
+        window.populateItems = populateItems;
+        window.addInventoryItem = addInventoryItem;
+        window.deleteInventoryItem = deleteInventoryItem;
+
+        renderTable();
+
+        // ── Auto-save on any change ──
+        const origPush = Array.prototype.push;
+        // Not needed since we call saveData() on every operation
+
+        console.log('✅ Kajana Enterprise System v3.0 loaded');
+        console.log(`📊 ${transactions.length} transactions, ${users.length} users`);
+    </script>
 </body>
 </html>
