@@ -61,7 +61,7 @@
 
         /* STATS */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem; }
-        .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: pointer; }
+        .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: default; }
         .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
         .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; color: #5a5a5a; }
         .stat-card .value { font-weight: 700; font-size: 1.5rem; margin-top: 0.1rem; }
@@ -91,6 +91,8 @@
         .btn-teal:hover { background: #1aa87d; }
         .btn-orange { background: #fd7e14; border-color: #fd7e14; color: #fff; }
         .btn-orange:hover { background: #e06b0a; }
+        .btn-pink { background: #e83e8c; border-color: #e83e8c; color: #fff; }
+        .btn-pink:hover { background: #c8236b; }
 
         /* TABLE */
         .table-wrap { background: #fff; border-radius: var(--radius); padding: 0.2rem; box-shadow: var(--shadow); overflow-x: auto; }
@@ -110,6 +112,9 @@
         .badge-status.completed { background: #cce5ff; color: #004085; }
         .badge-status.expense { background: #f8d7da; color: #721c24; }
         .badge-status.partial { background: #d6d8db; color: #383d41; }
+        .badge-status.paid { background: #d4edda; color: #155724; }
+        .badge-status.unpaid { background: #f8d7da; color: #721c24; }
+        .badge-status.refund { background: #fff3cd; color: #856404; }
         .action-icons i { margin: 0 3px; color: #5f5f5f; cursor: pointer; transition: var(--transition); font-size: 1rem; }
         .action-icons i:hover { color: var(--red); transform: scale(1.2); }
         .action-icons i.text-success:hover { color: #1a7a3a; }
@@ -124,20 +129,13 @@
         .modal-card .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 2rem; }
 
-        /* INVENTORY INTERACTIVE CARDS */
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin: 1rem 0; }
-        .inventory-item { background: #fff; padding: 1rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center; border-left: 4px solid var(--yellow); cursor: pointer; transition: var(--transition); }
-        .inventory-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
-        .inventory-item .name { font-weight: 600; font-size: 0.9rem; }
-        .inventory-item .qty { font-size: 1.8rem; font-weight: 700; color: var(--black); margin: 0.3rem 0; }
-        .inventory-item .unit { font-size: 0.7rem; color: #888; }
-        .inventory-item .min-stock { font-size: 0.65rem; color: #999; }
-        .inventory-item .site-distribution { font-size: 0.65rem; color: #666; margin-top: 0.3rem; border-top: 1px solid #eee; padding-top: 0.3rem; }
-        .inventory-item.low-stock { border-left-color: var(--red); background: #fef5f5; }
-        .inventory-item .stock-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
-        .stock-dot.green { background: #28a745; }
-        .stock-dot.yellow { background: #ffc107; }
-        .stock-dot.red { background: var(--red); }
+        /* INVENTORY DISPLAY */
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; margin: 0.5rem 0; }
+        .inv-item { background: #f5f3f0; padding: 0.6rem 0.8rem; border-radius: 12px; text-align: center; border-left: 4px solid var(--yellow); }
+        .inv-item .name { font-weight: 600; font-size: 0.8rem; }
+        .inv-item .qty { font-size: 1.2rem; font-weight: 700; }
+        .inv-item .unit { font-size: 0.6rem; color: #888; }
+        .inv-item.low { border-left-color: var(--red); background: #fef5f5; }
 
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
@@ -166,7 +164,7 @@
         .audit-entry .time { color: #888; font-size: 0.7rem; }
 
         /* RESPONSIVE */
-        @media (max-width: 768px) { .container { padding: 1rem; } .login-card { padding: 2rem 1.5rem; } .modal-card { padding: 1.5rem; } .modal-card .row2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: start; } .user-badge { width: 100%; justify-content: center; } .site-selector { border-radius: 20px; justify-content: center; } .toolbar .left { width: 100%; justify-content: center; } .stats-grid { grid-template-columns: 1fr 1fr; } .inventory-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
+        @media (max-width: 768px) { .container { padding: 1rem; } .login-card { padding: 2rem 1.5rem; } .modal-card { padding: 1.5rem; } .modal-card .row2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: start; } .user-badge { width: 100%; justify-content: center; } .site-selector { border-radius: 20px; justify-content: center; } .toolbar .left { width: 100%; justify-content: center; } .stats-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -216,12 +214,7 @@
         </div>
 
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-card"><div class="label">Today's Sales</div><div class="value" id="todaySales">UGX 0</div><div class="sub" id="todaySalesSub">+0%</div></div>
-            <div class="stat-card"><div class="label">Month Sales</div><div class="value" id="monthSales">UGX 0</div><div class="sub" id="monthSalesSub">0 invoices</div></div>
-            <div class="stat-card"><div class="label">Month Expenses</div><div class="value" id="monthExp">UGX 0</div><div class="sub" id="monthExpSub">0 entries</div></div>
-            <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value" id="pendingDispatch">0</div><div class="sub" id="pendingDispatchSub">Ready for loading</div></div>
-            <div class="stat-card"><div class="label">Credit Balances</div><div class="value" id="creditBalance">UGX 0</div><div class="sub" id="creditBalanceSub">Total outstanding</div></div>
-            <div class="stat-card" onclick="openModal('stockview')"><div class="label">📦 Stock Items</div><div class="value" id="stockItems">0</div><div class="sub" id="stockItemsSub">Click to view all</div></div>
+            <!-- Stats will be dynamically rendered based on role -->
         </div>
 
         <div id="dashboardCharts" class="hidden chart-grid">
@@ -241,11 +234,20 @@
                 <button class="btn btn-outline-primary" id="btnClients" onclick="openModal('clients')"><i class="fas fa-user-tie"></i> Credit Clients</button>
                 <button class="btn btn-outline-primary" id="btnAudit" onclick="openModal('audit')"><i class="fas fa-history"></i> Audit</button>
                 <button class="btn btn-teal" id="btnClearInvoice" onclick="openModal('clear')"><i class="fas fa-check-double"></i> Clear Invoice</button>
+                <button class="btn btn-pink" id="btnRefund" onclick="openModal('refund')"><i class="fas fa-undo-alt"></i> Refund</button>
             </div>
             <div>
                 <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
                 <button class="btn" onclick="exportBackup()"><i class="fas fa-download"></i> Backup</button>
             </div>
+        </div>
+
+        <!-- Sales Agent Stock View -->
+        <div id="salesStockView" class="hidden" style="margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <h4 style="font-size:0.9rem;color:#555;"><i class="fas fa-boxes"></i> Current Stock - <span id="stockSiteLabel">Workshop</span></h4>
+            </div>
+            <div id="salesStockGrid" class="inventory-grid"></div>
         </div>
 
         <div class="table-wrap">
@@ -266,7 +268,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.0 · Sales Agents can manage production & materials</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.0 · Full Role Management</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -282,9 +284,10 @@
         // DATA LAYER
         // ═══════════════════════════════════════════════════════════════
 
-        const STORAGE_KEY = 'kajana_data_v8';
+        const STORAGE_KEY = 'kajana_data_v10';
         let transactions = [];
         let auditLog = [];
+        let loadingOrders = [];
         let nextId = 100;
         let currentSite = 'workshop';
         let currentUser = null;
@@ -292,6 +295,7 @@
         let creditClients = [];
         let userPermissions = {};
         let productionLog = [];
+        let dailyExpenseLimit = 500000;
 
         const DEFAULT_INVENTORY = {
             workshop: [
@@ -353,12 +357,14 @@
                     const data = JSON.parse(raw);
                     transactions = data.transactions || [];
                     auditLog = data.auditLog || [];
+                    loadingOrders = data.loadingOrders || [];
                     productionLog = data.productionLog || [];
                     nextId = data.nextId || 100;
                     inventoryItems = data.inventory || JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
                     users = data.users || [...DEFAULT_USERS];
                     creditClients = data.creditClients || [...DEFAULT_CLIENTS];
                     userPermissions = data.userPermissions || {};
+                    dailyExpenseLimit = data.dailyExpenseLimit || 500000;
                     return true;
                 }
             } catch (e) { console.warn('Load error', e); }
@@ -367,7 +373,7 @@
 
         function saveData() {
             try {
-                const data = { transactions, auditLog, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions };
+                const data = { transactions, auditLog, loadingOrders, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) { console.warn('Save error', e); }
         }
@@ -389,35 +395,35 @@
             users = [...DEFAULT_USERS];
             creditClients = [...DEFAULT_CLIENTS];
             productionLog = [];
+            loadingOrders = [];
             const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
             transactions = [
                 { id: nextId++, date: d(0), site: 'workshop', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
                     customer: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd',
-                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-001', status: 'completed',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-001', status: 'completed', paid: true, paymentMode: 'cash',
                     dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120, balanceQty: 0 } },
                 { id: nextId++, date: d(1), site: 'ngetta', item: 'Stone Dust', qty: 5, price: 170000, amount: 850000,
                     customer: 'Mary Smith', contact: '+256 700 222', address: 'Ngetta', company: '', payment: 'credit',
-                    deposit: 300000, balance: 550000, receipt: 'R-002', status: 'pending', dispatch: { loaded: false } },
+                    deposit: 300000, balance: 550000, receipt: 'R-002', status: 'pending', paid: false, paymentMode: '',
+                    dispatch: { loaded: false } },
                 { id: nextId++, date: d(2), site: 'adyel', item: 'Hollow Section', qty: 80, price: 14000, amount: 1120000,
                     customer: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc',
-                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-003', status: 'completed',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-003', status: 'completed', paid: true, paymentMode: 'cash',
                     dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80, balanceQty: 0 } },
                 { id: nextId++, date: d(0), site: 'workshop', item: 'Fuel', qty: 1, price: 450000, amount: 450000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
-                    receipt: 'E-001', status: 'expense', dispatch: {} },
+                    receipt: 'E-001', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {} },
                 { id: nextId++, date: d(3), site: 'ngetta', item: 'Gravel 10t', qty: 10, price: 120000, amount: 1200000,
                     customer: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '',
-                    payment: 'credit', deposit: 500000, balance: 700000, receipt: 'R-004', status: 'pending', dispatch: { loaded: false } },
+                    payment: 'credit', deposit: 500000, balance: 700000, receipt: 'R-004', status: 'pending', paid: false, paymentMode: '',
+                    dispatch: { loaded: false } },
                 { id: nextId++, date: d(1), site: 'adyel', item: 'Road Cubs', qty: 200, price: 9000, amount: 1800000,
                     customer: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt',
-                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-005', status: 'completed',
+                    payment: 'cash', deposit: 0, balance: 0, receipt: 'R-005', status: 'completed', paid: true, paymentMode: 'cash',
                     dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200, balanceQty: 0 } },
                 { id: nextId++, date: d(0), site: 'workshop', item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
-                    receipt: 'E-002', status: 'expense', dispatch: {} },
-                { id: nextId++, date: d(2), site: 'adyel', item: 'Concrete Blocks', qty: 50, price: 12000, amount: 600000,
-                    customer: 'David Otieno', contact: '+256 700 666', address: 'Adyel', company: 'Otieno Constructions',
-                    payment: 'credit', deposit: 200000, balance: 400000, receipt: 'R-006', status: 'pending', dispatch: { loaded: false } },
+                    receipt: 'E-002', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {} },
             ];
             auditLog = [{ timestamp: new Date().toISOString(), user: 'system', action: 'System Init', details: 'Database seeded', site: 'workshop' }];
             saveData();
@@ -459,20 +465,24 @@
         function isCashier() { return getUserRole() === 'cashier'; }
         function isSales() { return getUserRole() === 'sales'; }
         function isDispatch() { return getUserRole() === 'dispatch'; }
-        function canViewFinancials() { return !isDispatch(); }
+        function canViewFinancials() { return !isSales() && !isDispatch(); }
+        function canViewStock() { return isSales() || isGM() || isManager() || isDispatch(); }
+        function canManageProduction() { return isGM() || isManager() || isDispatch(); }
 
         // ── Permissions ──
         function canCreateSale() { return isGM() || isManager() || isCashier() || isSales(); }
-        function canCreateExpense() { return isGM() || isManager() || isAccountant(); }
+        function canCreateExpense() { return isGM() || isManager() || isCashier(); }
         function canClearInvoice() { return isGM() || isManager() || isAccountant(); }
         function canDispatch() { return isGM() || isManager() || isDispatch(); }
-        function canManageInventory() { return isGM() || isManager() || isDispatch() || isSales(); }
+        function canManageInventory() { return isGM() || isManager() || isDispatch(); }
         function canManageUsers() { return isGM(); }
         function canManageClients() { return isGM() || isManager(); }
         function canViewAudit() { return isGM() || isManager() || isAccountant(); }
         function canDeleteTransaction() { return isGM() || isManager(); }
         function canEditTransaction() { return isGM() || isManager(); }
         function canViewReports() { return isGM() || isManager() || isAccountant(); }
+        function canHandleRefund() { return isGM() || isManager() || isCashier(); }
+        function canSetExpenseLimit() { return isGM(); }
 
         // ═══════════════════════════════════════════════════════════════
         // LOGIN
@@ -515,14 +525,25 @@
             document.getElementById('btnExpense').style.display = canCreateExpense() ? 'inline-flex' : 'none';
             document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
             document.getElementById('btnInventory').style.display = canManageInventory() ? 'inline-flex' : 'none';
-            document.getElementById('btnProduction').style.display = canManageInventory() ? 'inline-flex' : 'none';
+            document.getElementById('btnProduction').style.display = canManageProduction() ? 'inline-flex' : 'none';
             document.getElementById('btnUsers').style.display = canManageUsers() ? 'inline-flex' : 'none';
             document.getElementById('btnClients').style.display = canManageClients() ? 'inline-flex' : 'none';
             document.getElementById('btnAudit').style.display = canViewAudit() ? 'inline-flex' : 'none';
             document.getElementById('btnClearInvoice').style.display = canClearInvoice() ? 'inline-flex' : 'none';
+            document.getElementById('btnRefund').style.display = canHandleRefund() ? 'inline-flex' : 'none';
 
             document.getElementById('dashboardCharts').classList.toggle('hidden', !isGM());
 
+            // Show sales stock view for Sales Agent
+            const salesStockView = document.getElementById('salesStockView');
+            if (isSales()) {
+                salesStockView.classList.remove('hidden');
+                renderSalesStock();
+            } else {
+                salesStockView.classList.add('hidden');
+            }
+
+            renderStats();
             renderTable();
             if (isGM()) renderCharts();
             addAudit('Login', `User ${user.name} logged in`);
@@ -540,12 +561,95 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // RENDER
+        // RENDER FUNCTIONS
         // ═══════════════════════════════════════════════════════════════
+
+        function renderStats() {
+            const statsGrid = document.getElementById('statsGrid');
+            const siteData = transactions.filter(t => t.site === currentSite);
+            const today = new Date().toISOString().split('T')[0];
+            const month = today.slice(0, 7);
+            
+            // Calculate various metrics
+            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
+            const todayCashSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'cash').reduce((s, o) => s + o.amount, 0);
+            const todayCreditSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'credit').reduce((s, o) => s + o.amount, 0);
+            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
+            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+            // Daily expenses (for Cashier)
+            const dailyExp = siteData.filter(t => t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+            const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
+            const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
+            const items = getItemsForSite(currentSite);
+            const totalStock = items.reduce((s, i) => s + (i.stock || 0), 0);
+
+            const hideFinancials = isSales() || isDispatch();
+            const role = getUserRole();
+
+            let statsHTML = '';
+
+            if (role === 'sales') {
+                // Sales Agent: Show stock only
+                statsHTML = `
+                    <div class="stat-card"><div class="label">📦 Total Stock</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
+                    <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && t.status !== 'expense').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                `;
+            } else if (role === 'cashier') {
+                // Cashier: Show daily cash sales, daily credit sales, daily expenses
+                const dailyExpenseLimitDisplay = dailyExpenseLimit;
+                statsHTML = `
+                    <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && t.status !== 'expense').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && t.status !== 'expense').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimitDisplay.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                `;
+            } else if (role === 'dispatch') {
+                // Dispatch: Show pending, stock
+                statsHTML = `
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">📦 Total Stock</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
+                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                `;
+            } else {
+                // GM, Manager, Accountant: Full financial view
+                statsHTML = `
+                    <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
+                    <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').length} invoices</div></div>
+                    <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').length} entries</div></div>
+                    <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                    <div class="stat-card"><div class="label">📦 Stock Items</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
+                `;
+            }
+
+            statsGrid.innerHTML = statsHTML;
+        }
+
+        function renderSalesStock() {
+            const grid = document.getElementById('salesStockGrid');
+            const items = getItemsForSite(currentSite);
+            document.getElementById('stockSiteLabel').textContent = currentSite.toUpperCase();
+            
+            if (!items.length) {
+                grid.innerHTML = '<div style="color:#888;padding:0.5rem;">No items in stock</div>';
+                return;
+            }
+
+            grid.innerHTML = items.map(item => {
+                const isLow = item.stock <= (item.minStock || 0);
+                return `<div class="inv-item ${isLow ? 'low' : ''}">
+                    <div class="name">${item.name}</div>
+                    <div class="qty">${item.stock || 0}</div>
+                    <div class="unit">units ${isLow ? '⚠️ Low' : ''}</div>
+                </div>`;
+            }).join('');
+        }
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
-            const hideFinancials = isDispatch();
+            const hideFinancials = isSales() || isDispatch();
             
             document.querySelectorAll('.financial-col').forEach(el => {
                 el.style.display = hideFinancials ? 'none' : '';
@@ -554,7 +658,7 @@
             const filtered = transactions.filter(t => t.site === currentSite);
             if (!filtered.length) {
                 tbody.innerHTML = `<tr><td colspan="${hideFinancials ? 9 : 11}" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
-                updateStats();
+                renderStats();
                 return;
             }
             const statusMap = {
@@ -562,13 +666,15 @@
                 cleared: '<span class="badge-status cleared">✅ Cleared</span>',
                 completed: '<span class="badge-status completed">✅ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
-                partial: '<span class="badge-status partial">📦 Partial</span>'
+                partial: '<span class="badge-status partial">📦 Partial</span>',
+                refund: '<span class="badge-status refund">🔄 Refund</span>'
             };
             tbody.innerHTML = filtered.map((t, i) => {
                 const st = t.status || 'pending';
                 const canClear = canClearInvoice() && (st === 'pending' || st === 'partial');
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
+                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
@@ -579,7 +685,7 @@
               <td>${t.customer || '-'}</td>
               <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : (t.payment || 'cash')}</td>
               <td>${t.receipt || '-'}</td>
-              <td>${statusMap[st] || statusMap.pending}</td>
+              <td>${statusMap[st] || statusMap.pending} ${t.payment === 'credit' ? ' ' + paidStatus : ''}</td>
               <td class="action-icons" style="text-align:center;">
                 ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear Invoice"></i>` : ''}
                 ${canDelete ? `<i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})" title="Delete"></i>` : ''}
@@ -588,35 +694,9 @@
               </td>
             </tr>`;
             }).join('');
-            updateStats();
+            renderStats();
             if (isGM()) renderCharts();
-        }
-
-        function updateStats() {
-            const siteData = transactions.filter(t => t.site === currentSite);
-            const today = new Date().toISOString().split('T')[0];
-            const month = today.slice(0, 7);
-            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
-            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
-            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
-            const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
-            const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
-            const items = getItemsForSite(currentSite);
-            const totalStock = items.reduce((s, i) => s + (i.stock || 0), 0);
-
-            document.getElementById('todaySales').textContent = isDispatch() ? '—' : 'UGX ' + todaySales.toLocaleString();
-            document.getElementById('monthSales').textContent = isDispatch() ? '—' : 'UGX ' + monthSales.toLocaleString();
-            document.getElementById('monthExp').textContent = isDispatch() ? '—' : 'UGX ' + monthExp.toLocaleString();
-            document.getElementById('pendingDispatch').textContent = pending;
-            document.getElementById('creditBalance').textContent = isDispatch() ? '—' : 'UGX ' + creditBal.toLocaleString();
-            document.getElementById('stockItems').textContent = totalStock;
-
-            document.getElementById('todaySalesSub').textContent = isDispatch() ? 'Hidden from dispatch' : (todaySales > 0 ? '📈 +' + Math.round((todaySales/100000)*100)/100 + '%' : 'No sales today');
-            document.getElementById('monthSalesSub').textContent = isDispatch() ? '—' : siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').length + ' invoices';
-            document.getElementById('monthExpSub').textContent = isDispatch() ? '—' : siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').length + ' entries';
-            document.getElementById('pendingDispatchSub').textContent = pending > 0 ? pending + ' ready for loading' : 'All dispatched';
-            document.getElementById('creditBalanceSub').textContent = isDispatch() ? '—' : (creditBal > 0 ? creditBal.toLocaleString() + ' outstanding' : 'No credit balances');
-            document.getElementById('stockItemsSub').textContent = items.length + ' product types · Click to view all';
+            if (isSales()) renderSalesStock();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -631,7 +711,7 @@
             for (let i = 6; i >= 0; i--) {
                 const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0];
                 dates.push(d);
-                const dayTotal = transactions.filter(t => t.date === d && t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+                const dayTotal = transactions.filter(t => t.date === d && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
                 salesData.push(dayTotal);
             }
             const ctx1 = document.getElementById('salesChart').getContext('2d');
@@ -644,7 +724,7 @@
 
             const sites = ['workshop', 'ngetta', 'adyel'];
             const siteLabels = ['Workshop', 'Ngetta', 'Adyel'];
-            const siteTotals = sites.map(s => transactions.filter(t => t.site === s && t.status !== 'expense').reduce((sum, o) => sum + o.amount, 0));
+            const siteTotals = sites.map(s => transactions.filter(t => t.site === s && t.status !== 'expense' && t.status !== 'refund').reduce((sum, o) => sum + o.amount, 0));
             const ctx2 = document.getElementById('siteChart').getContext('2d');
             if (chartInstances.site) chartInstances.site.destroy();
             chartInstances.site = new Chart(ctx2, {
@@ -655,87 +735,413 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // STOCK VIEW MODAL
+        // MODAL SYSTEM
         // ═══════════════════════════════════════════════════════════════
 
-        function buildStockViewModal(card) {
-            const allSites = ['workshop', 'ngetta', 'adyel'];
-            const siteLabels = { workshop: 'Workshop', ngetta: 'Ngetta', adyel: 'Adyel' };
-            
-            const allItems = new Set();
-            allSites.forEach(site => {
-                getItemsForSite(site).forEach(item => allItems.add(item.name));
-            });
+        function openModal(type) {
+            const overlay = document.getElementById('modalOverlay');
+            const card = document.getElementById('modalCard');
+            overlay.style.display = 'flex';
 
-            let html = `<h3><i class="fas fa-boxes"></i> Global Stock Overview</h3>
-            <div style="margin-bottom:1rem;font-size:0.85rem;color:#555;">Click any item to see detailed distribution across all sites</div>
-            <div class="inventory-grid" id="stockViewGrid">`;
+            if (type === 'sale') buildSaleModal(card);
+            else if (type === 'expense') buildExpenseModal(card);
+            else if (type === 'dispatch') buildDispatchModal(card);
+            else if (type === 'receipt') buildReceiptModal(card);
+            else if (type === 'report') buildReportModal(card);
+            else if (type === 'users') buildUsersModal(card);
+            else if (type === 'inventory') buildInventoryModal(card);
+            else if (type === 'production') buildProductionModal(card);
+            else if (type === 'clients') buildClientsModal(card);
+            else if (type === 'audit') buildAuditModal(card);
+            else if (type === 'clear') buildClearModal(card);
+            else if (type === 'refund') buildRefundModal(card);
+        }
 
-            allItems.forEach(itemName => {
-                const siteStocks = allSites.map(site => {
-                    const found = getItemsForSite(site).find(i => i.name === itemName);
-                    return { site, stock: found ? found.stock || 0 : 0, price: found ? found.price : 0 };
-                });
-                const totalStock = siteStocks.reduce((sum, s) => sum + s.stock, 0);
-                const isLow = totalStock < 50;
+        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-                html += `
-                <div class="inventory-item ${isLow ? 'low-stock' : ''}" onclick="showItemDistribution('${itemName}')" style="cursor:pointer;">
-                    <div class="name">${itemName}</div>
-                    <div class="qty">${totalStock}</div>
-                    <div class="unit">total units</div>
-                    <div class="site-distribution">
-                        ${siteStocks.map(s => `
-                            <span style="display:inline-block;margin:0 4px;">
-                                <span class="stock-dot ${s.stock > 0 ? 'green' : 'red'}"></span>
-                                ${siteLabels[s.site]}: ${s.stock}
-                            </span>
-                        `).join('')}
-                    </div>
-                    ${isLow ? '<div style="color:var(--red);font-size:0.7rem;font-weight:600;">⚠️ Low stock</div>' : ''}
-                </div>`;
-            });
+        // ── SALE Modal ── Payment Mode FIRST ──
+        function buildSaleModal(card) {
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
-            html += `</div>
-            <div id="itemDetailView" style="margin-top:1rem;padding:1rem;background:#f5f3f0;border-radius:16px;display:none;"></div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-            card.innerHTML = html;
+            const clientOptions = creditClients.map(c => `<option value="${c.name}">${c.name} (${c.company || 'Individual'})</option>`).join('');
 
-            window.showItemDistribution = function(itemName) {
-                const detailView = document.getElementById('itemDetailView');
-                const allSites = ['workshop', 'ngetta', 'adyel'];
-                const siteLabels = { workshop: 'Workshop', ngetta: 'Ngetta', adyel: 'Adyel' };
-                
-                let details = `<h4 style="margin-bottom:0.5rem;">📊 ${itemName} - Distribution</h4>`;
-                details += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">`;
-                
-                allSites.forEach(site => {
-                    const found = getItemsForSite(site).find(i => i.name === itemName);
-                    const stock = found ? found.stock || 0 : 0;
-                    const price = found ? found.price : 0;
-                    const minStock = found ? found.minStock || 0 : 0;
-                    details += `
-                        <div style="background:white;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid ${stock > 0 ? '#28a745' : 'var(--red)'};">
-                            <strong>${siteLabels[site]}</strong>
-                            <div style="font-size:1.5rem;font-weight:700;">${stock}</div>
-                            <div style="font-size:0.7rem;color:#888;">units ${price > 0 ? '· UGX ' + price.toLocaleString() : ''}</div>
-                            <div style="font-size:0.65rem;color:#999;">Min: ${minStock}</div>
-                        </div>
-                    `;
-                });
-                details += `</div>`;
-                detailView.innerHTML = details;
-                detailView.style.display = 'block';
+            card.innerHTML = `
+            <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
+            <form id="modalForm">
+              <div class="row2">
+                <div><label>Payment Mode *</label>
+                  <select id="modalPayment" required onchange="toggleCredit()">
+                    <option value="cash">Cash</option>
+                    <option value="credit">Credit</option>
+                  </select>
+                </div>
+                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+              </div>
+              <div class="row2">
+                <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
+                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Unit Price (UGX)</label><input id="modalPrice" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+                <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
+              </div>
+              <div class="row2">
+                <div><label>Customer</label>
+                  <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
+                    <option value="">-- New Customer --</option>
+                    ${clientOptions}
+                  </select>
+                </div>
+                <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
+                <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
+              </div>
+              <div class="row2" id="creditFields" style="display:none;">
+                <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
+                <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
+              </div>
+              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('sale'); };
+            const siteField = document.getElementById('modalSite');
+            if (!canChooseSite) siteField.value = currentSite;
+            siteField.onchange = function() { populateItems(this.value); };
+            populateItems(currentSite);
+            document.getElementById('modalItemSelect').onchange = updatePrice;
+            toggleCredit();
+            document.getElementById('modalReceipt').value = generateReceipt();
+
+            window.fillCustomerDetails = function() {
+                const sel = document.getElementById('modalCustomerSelect');
+                const val = sel.value;
+                if (val) {
+                    const client = creditClients.find(c => c.name === val);
+                    if (client) {
+                        document.getElementById('modalContact').value = client.contact || '';
+                        document.getElementById('modalAddress').value = client.address || '';
+                        document.getElementById('modalCompany').value = client.company || '';
+                    }
+                } else {
+                    document.getElementById('modalContact').value = '';
+                    document.getElementById('modalAddress').value = '';
+                    document.getElementById('modalCompany').value = '';
+                }
             };
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // PRODUCTION & MATERIALS MODAL (Sales Agents can access)
-        // ═══════════════════════════════════════════════════════════════
+        // ── EXPENSE Modal ──
+        function buildExpenseModal(card) {
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
-        function buildProductionModal(card) {
+            let limitWarning = '';
+            if (isCashier()) {
+                const today = new Date().toISOString().split('T')[0];
+                const todayExpenses = transactions.filter(t => t.site === currentSite && t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+                const remaining = dailyExpenseLimit - todayExpenses;
+                limitWarning = `<div style="background:#fef3cd;padding:0.5rem 1rem;border-radius:12px;margin-bottom:0.5rem;font-size:0.8rem;">💰 Daily expense limit: UGX ${dailyExpenseLimit.toLocaleString()} | Remaining: UGX ${Math.max(0, remaining).toLocaleString()}</div>`;
+            }
+
+            card.innerHTML = `
+            <h3><i class="fas fa-coins"></i> Add Expense</h3>
+            ${limitWarning}
+            <form id="modalForm">
+              <div class="row2">
+                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+                <div><label>Description</label><input id="modalItem" placeholder="e.g. Fuel, Maintenance" required /></div>
+              </div>
+              <div class="row2">
+                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="1" value="1" /></div>
+                <div><label>Amount (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" required /></div>
+              </div>
+              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Manual or auto" /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('expense'); };
+            const siteField = document.getElementById('modalSite');
+            if (!canChooseSite) siteField.value = currentSite;
+            document.getElementById('modalReceipt').value = 'E-' + String(nextId).padStart(4, '0');
+        }
+
+        // ── REFUND Modal ──
+        function buildRefundModal(card) {
+            if (!canHandleRefund()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Cashier can process refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            card.innerHTML = `
+            <h3><i class="fas fa-undo-alt"></i> Process Refund</h3>
+            <form id="modalForm">
+              <div class="row2">
+                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+                <div><label>Original Receipt #</label><input id="refundReceipt" placeholder="Enter receipt to refund" required /></div>
+              </div>
+              <div><label>Reason for Refund</label><input id="refundReason" placeholder="Reason" required /></div>
+              <div class="row2">
+                <div><label>Amount to Refund (UGX)</label><input id="refundAmount" type="number" step="any" placeholder="0" required /></div>
+                <div><label>Refund Method</label>
+                  <select id="refundMethod"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option></select>
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger"><i class="fas fa-undo-alt"></i> Process Refund</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const site = document.getElementById('modalSite').value;
+                const receipt = document.getElementById('refundReceipt').value.trim();
+                const reason = document.getElementById('refundReason').value.trim();
+                const amount = parseFloat(document.getElementById('refundAmount').value);
+                const method = document.getElementById('refundMethod').value;
+
+                if (!receipt || !reason || !amount || amount <= 0) { toast('Fill all fields', 'error'); return; }
+                const original = transactions.find(t => t.receipt === receipt && t.site === site);
+                if (!original) { toast('Original transaction not found', 'error'); return; }
+                if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
+
+                const refund = {
+                    id: nextId++,
+                    date: new Date().toISOString().split('T')[0],
+                    site: site,
+                    item: 'REFUND: ' + original.item,
+                    qty: original.qty,
+                    price: -amount,
+                    amount: -amount,
+                    customer: original.customer || 'Refund',
+                    contact: original.contact || '',
+                    address: original.address || '',
+                    company: original.company || '',
+                    payment: method,
+                    deposit: 0,
+                    balance: 0,
+                    receipt: 'REF-' + original.receipt,
+                    status: 'refund',
+                    paid: true,
+                    paymentMode: method,
+                    dispatch: { loaded: false },
+                    refundReason: reason,
+                    originalReceipt: original.receipt
+                };
+                transactions.push(refund);
+                original.status = 'refund';
+                saveData();
+                addAudit('Refund', `Refunded ${receipt} - ${reason} - UGX ${amount}`);
+                renderTable();
+                closeModal();
+                toast(`✅ Refund processed for ${receipt}`, 'success');
+            };
+        }
+
+        // ── CLEAR INVOICE Modal ──
+        function buildClearModal(card) {
+            const pendingInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.status === 'pending' || t.status === 'partial') &&
+                t.status !== 'expense' && t.status !== 'refund'
+            );
+
+            let options = '<option value="">-- Select Invoice to Clear --</option>';
+            pendingInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (UGX ${t.amount.toLocaleString()})</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-check-double"></i> Clear Invoice (Accountant)</h3>
+            <form id="modalForm">
+              <div><label>Select Pending Invoice</label>
+                <select id="clearInvoiceSelect" required>
+                  ${options}
+                </select>
+              </div>
+              <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+              <div class="row2">
+                <div><label>Payment Status</label>
+                  <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
+                </div>
+                <div><label>Payment Mode</label>
+                  <select id="clearPaymentMode"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="cheque">Cheque</option></select>
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear Invoice</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
+                const paidStatus = document.getElementById('clearPaidStatus').value;
+                const paymentMode = document.getElementById('clearPaymentMode').value;
+                if (!id) { toast('Select an invoice', 'error'); return; }
+                clearInvoice(id, paidStatus, paymentMode);
+                closeModal();
+            };
+            document.getElementById('clearInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('clearInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()} | Payment: ${trans.payment}`;
+                }
+            };
+        }
+
+        // ── DISPATCH Modal ──
+        function buildDispatchModal(card) {
+            const clearedInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                t.status === 'cleared' &&
+                (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)
+            );
+
+            let options = '<option value="">-- Select Cleared Invoice --</option>';
+            clearedInvoices.forEach(t => {
+                const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
+                options += `<option value="${t.receipt}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
+            <form id="modalForm">
+              <div><label>Cleared Invoice</label>
+                <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
+                  ${options}
+                </select>
+              </div>
+              <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+              <div class="row2">
+                <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
+                <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
+              </div>
+              <div class="row2">
+                <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
+                <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
+              </div>
+              <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
+        }
+
+        // ── INVENTORY Modal ──
+        function buildInventoryModal(card) {
             if (!canManageInventory()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage production.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const isGMOrManager = isGM() || isManager();
+            const siteItems = getItemsForSite(currentSite);
+
+            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management - ${currentSite.toUpperCase()}</h3>
+            <div style="margin-bottom:1rem;">
+              <div class="inventory-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.8rem;">`;
+
+            siteItems.forEach((item, idx) => {
+                const isLow = item.stock <= (item.minStock || 0);
+                html += `
+              <div style="background:#f5f3f0;padding:0.8rem 1rem;border-radius:16px;text-align:center;border-left:4px solid ${isLow ? 'var(--red)' : 'var(--yellow)'};">
+                <div style="font-weight:600;font-size:0.85rem;">${item.name} ${isLow ? '⚠️' : ''}</div>
+                <div style="font-size:1.2rem;font-weight:700;">${item.stock || 0}</div>
+                <div style="font-size:0.7rem;color:#888;">units (min: ${item.minStock || 0})</div>
+                <div style="font-size:0.7rem;color:#888;">UGX ${item.price.toLocaleString()}</div>
+                ${isGMOrManager ? `<button class="btn btn-danger" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.3rem;" onclick="deleteInventoryItem('${currentSite}',${idx})"><i class="fas fa-trash"></i></button>` : ''}
+              </div>`;
+            });
+
+            html += `</div>
+            ${isGMOrManager ? `
+              <button class="btn btn-primary" onclick="addInventoryItem()" style="margin-top:0.5rem;"><i class="fas fa-plus"></i> Add Item</button>
+              <div style="margin-top:0.8rem;">
+                <label>Update Stock</label>
+                <div class="row2">
+                  <select id="stockItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;"><option value="">-- Select Item --</option>${siteItems.map((i,idx) => `<option value="${idx}">${i.name}</option>`).join('')}</select>
+                  <div style="display:flex;gap:0.5rem;">
+                    <input id="stockQty" type="number" placeholder="Qty" style="flex:1;padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    <button class="btn btn-success" onclick="updateStockItem()"><i class="fas fa-sync"></i> Update</button>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            card.innerHTML = html;
+
+            window.addInventoryItem = function() {
+                const name = prompt('Enter item name:');
+                if (!name) return;
+                const price = prompt('Enter unit price (UGX):');
+                if (price === null) return;
+                const p = parseFloat(price);
+                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
+                const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
+                if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
+                inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
+                saveData();
+                addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
+                toast('Item added!', 'success');
+                buildInventoryModal(card);
+            };
+
+            window.updateStockItem = function() {
+                const idx = parseInt(document.getElementById('stockItemSelect').value);
+                const qty = parseFloat(document.getElementById('stockQty').value);
+                if (isNaN(idx) || !qty || qty < 0) { toast('Invalid input', 'error'); return; }
+                const items = inventoryItems[currentSite];
+                if (items && items[idx]) {
+                    items[idx].stock = (items[idx].stock || 0) + qty;
+                    saveData();
+                    addAudit('Stock Update', `Updated ${items[idx].name}: +${qty} units`);
+                    toast(`Stock updated! ${items[idx].name}: ${items[idx].stock}`, 'success');
+                    buildInventoryModal(card);
+                }
+            };
+
+            window.deleteInventoryItem = function(site, idx) {
+                if (!confirm('Delete this item?')) return;
+                inventoryItems[site].splice(idx, 1);
+                saveData();
+                addAudit('Inventory Delete', `Deleted item from ${site}`);
+                toast('Item deleted', 'warning');
+                buildInventoryModal(card);
+            };
+        }
+
+        // ── PRODUCTION Modal (Dispatch can now access) ──
+        function buildProductionModal(card) {
+            if (!canManageProduction()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Dispatch can manage production & materials.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
                 return;
             }
 
@@ -816,307 +1222,6 @@
             };
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // MODAL SYSTEM
-        // ═══════════════════════════════════════════════════════════════
-
-        function openModal(type) {
-            const overlay = document.getElementById('modalOverlay');
-            const card = document.getElementById('modalCard');
-            overlay.style.display = 'flex';
-
-            if (type === 'sale') buildSaleModal(card);
-            else if (type === 'expense') buildExpenseModal(card);
-            else if (type === 'dispatch') buildDispatchModal(card);
-            else if (type === 'receipt') buildReceiptModal(card);
-            else if (type === 'report') buildReportModal(card);
-            else if (type === 'users') buildUsersModal(card);
-            else if (type === 'inventory') buildInventoryModal(card);
-            else if (type === 'production') buildProductionModal(card);
-            else if (type === 'clients') buildClientsModal(card);
-            else if (type === 'audit') buildAuditModal(card);
-            else if (type === 'clear') buildClearModal(card);
-            else if (type === 'stockview') buildStockViewModal(card);
-        }
-
-        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-
-        // ── SALE Modal ──
-        function buildSaleModal(card) {
-            const canChooseSite = isGM();
-            const siteOptions = canChooseSite ?
-                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
-                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
-
-            const clientOptions = creditClients.map(c => `<option value="${c.name}">${c.name} (${c.company || 'Individual'})</option>`).join('');
-
-            card.innerHTML = `
-            <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
-            <form id="modalForm">
-              <div class="row2">
-                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-                <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
-              </div>
-              <div class="row2">
-                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
-                <div><label>Unit Price (UGX)</label><input id="modalPrice" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
-                <div><label>Payment</label><select id="modalPayment" onchange="toggleCredit()"><option value="cash">Cash</option><option value="credit">Credit</option></select></div>
-              </div>
-              <div class="row2">
-                <div><label>Customer</label>
-                  <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
-                    <option value="">-- New Customer --</option>
-                    ${clientOptions}
-                  </select>
-                </div>
-                <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
-                <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
-              </div>
-              <div class="row2" id="creditFields" style="display:none;">
-                <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
-                <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
-              </div>
-              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('sale'); };
-            const siteField = document.getElementById('modalSite');
-            if (!canChooseSite) siteField.value = currentSite;
-            siteField.onchange = function() { populateItems(this.value); };
-            populateItems(currentSite);
-            document.getElementById('modalItemSelect').onchange = updatePrice;
-            toggleCredit();
-            document.getElementById('modalReceipt').value = generateReceipt();
-
-            window.fillCustomerDetails = function() {
-                const sel = document.getElementById('modalCustomerSelect');
-                const val = sel.value;
-                if (val) {
-                    const client = creditClients.find(c => c.name === val);
-                    if (client) {
-                        document.getElementById('modalContact').value = client.contact || '';
-                        document.getElementById('modalAddress').value = client.address || '';
-                        document.getElementById('modalCompany').value = client.company || '';
-                    }
-                } else {
-                    document.getElementById('modalContact').value = '';
-                    document.getElementById('modalAddress').value = '';
-                    document.getElementById('modalCompany').value = '';
-                }
-            };
-        }
-
-        // ── EXPENSE Modal ──
-        function buildExpenseModal(card) {
-            const canChooseSite = isGM();
-            const siteOptions = canChooseSite ?
-                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
-                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
-
-            card.innerHTML = `
-            <h3><i class="fas fa-coins"></i> Add Expense</h3>
-            <form id="modalForm">
-              <div class="row2">
-                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-                <div><label>Description</label><input id="modalItem" placeholder="e.g. Fuel, Maintenance" required /></div>
-              </div>
-              <div class="row2">
-                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="1" value="1" /></div>
-                <div><label>Amount (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" required /></div>
-              </div>
-              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Manual or auto" /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('expense'); };
-            const siteField = document.getElementById('modalSite');
-            if (!canChooseSite) siteField.value = currentSite;
-            document.getElementById('modalReceipt').value = 'E-' + String(nextId).padStart(4, '0');
-        }
-
-        // ── CLEAR INVOICE Modal ──
-        function buildClearModal(card) {
-            const pendingInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                (t.status === 'pending' || t.status === 'partial') &&
-                t.status !== 'expense'
-            );
-
-            let options = '<option value="">-- Select Invoice to Clear --</option>';
-            pendingInvoices.forEach(t => {
-                options += `<option value="${t.id}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (${t.qty} units)</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-check-double"></i> Clear Invoice (Accountant)</h3>
-            <form id="modalForm">
-              <div><label>Select Pending Invoice</label>
-                <select id="clearInvoiceSelect" required>
-                  ${options}
-                </select>
-              </div>
-              <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear Invoice</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
-                if (!id) { toast('Select an invoice', 'error'); return; }
-                clearInvoice(id);
-                closeModal();
-            };
-            document.getElementById('clearInvoiceSelect').onchange = function() {
-                const id = parseInt(this.value);
-                const info = document.getElementById('clearInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const trans = transactions.find(t => t.id === id);
-                if (trans) {
-                    info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'}`;
-                }
-            };
-        }
-
-        // ── DISPATCH Modal ──
-        function buildDispatchModal(card) {
-            const clearedInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                (t.status === 'cleared' || t.status === 'partial') &&
-                t.dispatch?.loaded !== true
-            );
-
-            let options = '<option value="">-- Select Cleared Invoice --</option>';
-            clearedInvoices.forEach(t => {
-                options += `<option value="${t.receipt}">${t.receipt} - ${t.customer || 'N/A'} - ${t.item} (${t.qty} units)</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
-            <form id="modalForm">
-              <div><label>Cleared Invoice</label>
-                <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
-                  ${options}
-                </select>
-              </div>
-              <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-              <div class="row2">
-                <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
-                <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
-                <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
-              </div>
-              <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
-        }
-
-        // ── INVENTORY Modal ──
-        function buildInventoryModal(card) {
-            if (!canManageInventory()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const isGMOrManager = isGM() || isManager();
-            const siteItems = getItemsForSite(currentSite);
-
-            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management - ${currentSite.toUpperCase()}</h3>
-            <div style="margin-bottom:1rem;">
-              <div class="inventory-grid" id="inventoryGrid">`;
-
-            siteItems.forEach((item, idx) => {
-                const isLow = item.stock <= (item.minStock || 0);
-                html += `
-              <div class="inventory-item ${isLow ? 'low-stock' : ''}">
-                <div class="name">${item.name} ${isLow ? '⚠️' : ''}</div>
-                <div class="qty">${item.stock || 0}</div>
-                <div class="unit">units (min: ${item.minStock || 0})</div>
-                <div style="font-size:0.7rem;color:#888;">UGX ${item.price.toLocaleString()}</div>
-                ${isGMOrManager ? `<button class="btn btn-danger" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.3rem;" onclick="deleteInventoryItem('${currentSite}',${idx})"><i class="fas fa-trash"></i></button>` : ''}
-              </div>`;
-            });
-
-            html += `</div>
-            ${isGMOrManager ? `
-              <button class="btn btn-primary" onclick="addInventoryItem()" style="margin-top:0.5rem;"><i class="fas fa-plus"></i> Add Item</button>
-              <div style="margin-top:0.8rem;">
-                <label>Update Stock</label>
-                <div class="row2">
-                  <select id="stockItemSelect"><option value="">-- Select Item --</option>${siteItems.map((i,idx) => `<option value="${idx}">${i.name}</option>`).join('')}</select>
-                  <div style="display:flex;gap:0.5rem;">
-                    <input id="stockQty" type="number" placeholder="Qty" style="flex:1;" />
-                    <button class="btn btn-success" onclick="updateStockItem()"><i class="fas fa-sync"></i> Update</button>
-                  </div>
-                </div>
-              </div>
-            ` : ''}
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
-          `;
-            card.innerHTML = html;
-
-            window.addInventoryItem = function() {
-                const name = prompt('Enter item name:');
-                if (!name) return;
-                const price = prompt('Enter unit price (UGX):');
-                if (price === null) return;
-                const p = parseFloat(price);
-                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
-                const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
-                if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
-                inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
-                saveData();
-                addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
-                toast('Item added!', 'success');
-                buildInventoryModal(card);
-            };
-
-            window.updateStockItem = function() {
-                const idx = parseInt(document.getElementById('stockItemSelect').value);
-                const qty = parseFloat(document.getElementById('stockQty').value);
-                if (isNaN(idx) || !qty || qty < 0) { toast('Invalid input', 'error'); return; }
-                const items = inventoryItems[currentSite];
-                if (items && items[idx]) {
-                    items[idx].stock = (items[idx].stock || 0) + qty;
-                    saveData();
-                    addAudit('Stock Update', `Updated ${items[idx].name}: +${qty} units`);
-                    toast(`Stock updated! ${items[idx].name}: ${items[idx].stock}`, 'success');
-                    buildInventoryModal(card);
-                }
-            };
-
-            window.deleteInventoryItem = function(site, idx) {
-                if (!confirm('Delete this item?')) return;
-                inventoryItems[site].splice(idx, 1);
-                saveData();
-                addAudit('Inventory Delete', `Deleted item from ${site}`);
-                toast('Item deleted', 'warning');
-                buildInventoryModal(card);
-            };
-        }
-
         // ── CLIENTS Modal ──
         function buildClientsModal(card) {
             if (!canManageClients()) {
@@ -1143,7 +1248,7 @@
                 <tbody>
           `;
             creditClients.forEach((c, idx) => {
-                const totalOutstanding = transactions.filter(t => t.customer === c.name && t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
+                const totalOutstanding = transactions.filter(t => t.customer === c.name && t.payment === 'credit' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
                 const overLimit = totalOutstanding > (c.creditLimit || 0);
                 html += `<tr style="${overLimit ? 'background:#fee;' : ''}">
               <td>${c.name} ${overLimit ? '⚠️' : ''}</td>
@@ -1210,7 +1315,15 @@
               <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
             </form>
 
-            <h4 style="margin:1rem 0 0.5rem;">Permissions</h4>
+            <h4 style="margin:1rem 0 0.5rem;">Daily Expense Limit</h4>
+            <div style="background:#f5f3f0;padding:1rem;border-radius:16px;margin-bottom:1rem;">
+              <div class="row2">
+                <div><label>Daily Expense Limit (UGX)</label><input id="expenseLimit" type="number" value="${dailyExpenseLimit}" /></div>
+                <div><button class="btn btn-primary" onclick="updateExpenseLimit()" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Update Limit</button></div>
+              </div>
+            </div>
+
+            <h4 style="margin:1rem 0 0.5rem;">User Permissions</h4>
             <div style="max-height:200px;overflow-y:auto;margin-bottom:1rem;">
               <table style="font-size:0.8rem;min-width:auto;">
                 <thead><tr><th>User</th><th>Role</th><th>Actions</th></tr></thead>
@@ -1226,6 +1339,15 @@
             html += `</tbody></table></div>
             <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
             card.innerHTML = html;
+
+            window.updateExpenseLimit = function() {
+                const newLimit = parseFloat(document.getElementById('expenseLimit').value);
+                if (isNaN(newLimit) || newLimit < 0) { toast('Invalid limit', 'error'); return; }
+                dailyExpenseLimit = newLimit;
+                saveData();
+                addAudit('Expense Limit', `Updated daily expense limit to UGX ${newLimit}`);
+                toast('Expense limit updated!', 'success');
+            };
 
             document.getElementById('userForm').onsubmit = function(e) {
                 e.preventDefault();
@@ -1246,7 +1368,7 @@
             window.editPermissions = function(username) {
                 const perms = userPermissions[username] || {};
                 const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_clients', 'view_reports',
-                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch'];
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'handle_refund'];
                 let msg = `Set permissions for ${username}:\n\n`;
                 actions.forEach(a => {
                     const current = perms[a] ? '✅' : '❌';
@@ -1330,7 +1452,7 @@
                 container.style.display = 'block';
                 const from = document.getElementById('reportFrom').value;
                 const to = document.getElementById('reportTo').value;
-                const data = transactions.filter(t => t.site === currentSite && t.date >= from && t.date <= to && t.status !== 'expense');
+                const data = transactions.filter(t => t.site === currentSite && t.date >= from && t.date <= to && t.status !== 'expense' && t.status !== 'refund');
                 const labels = [...new Set(data.map(t => t.date))].sort();
                 const values = labels.map(d => data.filter(t => t.date === d).reduce((s, o) => s + o.amount, 0));
                 const ctx = document.getElementById('reportChart').getContext('2d');
@@ -1406,14 +1528,6 @@
             const amt = document.getElementById('modalAmount');
             if (amt) amt.value = total;
             calcBalance();
-            const sel = document.getElementById('modalItemSelect');
-            if (sel) {
-                const opt = sel.options[sel.selectedIndex];
-                const stock = parseInt(opt?.dataset?.stock) || 0;
-                if (qty > stock && stock > 0) {
-                    toast(`⚠️ Stock: ${stock} units available`, 'warning');
-                }
-            }
         }
 
         function calcBalance() {
@@ -1436,7 +1550,8 @@
             if (!info || !receipt) { info.innerHTML = ''; return; }
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             if (trans) {
-                info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Status: ${trans.status}`;
+                const remaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
+                info.innerHTML = `<strong>${trans.receipt}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Remaining: ${remaining} units`;
             } else {
                 info.innerHTML = '❌ Invoice not found';
             }
@@ -1448,7 +1563,8 @@
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             const balField = document.getElementById('dispatchBalanceQty');
             if (trans && balField) {
-                balField.value = Math.max(0, trans.qty - loaded);
+                const currentRemaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
+                balField.value = Math.max(0, currentRemaining - loaded);
             }
         }
 
@@ -1475,6 +1591,16 @@
             if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
             if (transactions.find(t => t.receipt === receipt)) { toast('Receipt # already exists!', 'error'); return; }
 
+            // Check expense limit for cashier
+            if (type === 'expense' && isCashier()) {
+                const today = new Date().toISOString().split('T')[0];
+                const todayExpenses = transactions.filter(t => t.site === site && t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+                if (todayExpenses + amount > dailyExpenseLimit) {
+                    toast(`❌ Expense exceeds daily limit of UGX ${dailyExpenseLimit.toLocaleString()}`, 'error');
+                    return;
+                }
+            }
+
             const stock = getItemStock(site, item);
             if (type === 'sale' && qty > stock && stock > 0) {
                 if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
@@ -1488,7 +1614,7 @@
                 qty,
                 price,
                 amount,
-                customer: customer || 'Walk-in Customer',
+                customer: customer || (type === 'expense' ? 'Expense' : 'Walk-in Customer'),
                 contact,
                 address,
                 company,
@@ -1497,6 +1623,8 @@
                 balance,
                 receipt,
                 status: type === 'expense' ? 'expense' : 'pending',
+                paid: payment === 'cash',
+                paymentMode: payment === 'cash' ? 'cash' : '',
                 dispatch: { loaded: false }
             };
             transactions.push(trans);
@@ -1513,19 +1641,28 @@
             toast(`${type === 'expense' ? 'Expense' : 'Invoice'} saved! Receipt: ${receipt}`, 'success');
         }
 
-        function clearInvoice(id) {
+        function clearInvoice(id, paidStatus, paymentMode) {
             const trans = transactions.find(t => t.id === id);
             if (!trans) return;
             if (trans.status === 'cleared' || trans.status === 'completed') {
                 toast('Already cleared', 'warning');
                 return;
             }
-            if (trans.status === 'expense') { toast('Cannot clear expense', 'error'); return; }
+            if (trans.status === 'expense' || trans.status === 'refund') { toast('Cannot clear expense or refund', 'error'); return; }
+            
             trans.status = 'cleared';
+            trans.paid = paidStatus === 'paid';
+            trans.paymentMode = paymentMode || trans.paymentMode || 'cash';
+            
+            if (trans.paid) {
+                trans.balance = 0;
+                trans.deposit = trans.amount;
+            }
+            
             saveData();
-            addAudit('Invoice Cleared', `Cleared ${trans.receipt} - ${trans.customer} by ${currentUser?.name}`);
+            addAudit('Invoice Cleared', `Cleared ${trans.receipt} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
             renderTable();
-            toast(`✅ Invoice ${trans.receipt} cleared! Ready for dispatch.`, 'success');
+            toast(`✅ Invoice ${trans.receipt} cleared!`, 'success');
         }
 
         function deleteTrans(id) {
@@ -1568,12 +1705,34 @@
             if (!receipt || !loadedQty || loadedQty <= 0) { toast('Select invoice and enter quantity', 'error'); return; }
             const trans = transactions.find(t => t.receipt === receipt && t.site === currentSite);
             if (!trans) { toast('Invoice not found', 'error'); return; }
-            if (trans.status === 'expense') { toast('Cannot dispatch expense', 'error'); return; }
-            if (trans.dispatch?.loaded) { toast('Already dispatched', 'warning'); return; }
+            if (trans.status === 'expense' || trans.status === 'refund') { toast('Cannot dispatch expense or refund', 'error'); return; }
+            
+            const currentRemaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
+            if (loadedQty > currentRemaining) { toast(`Only ${currentRemaining} units remaining`, 'error'); return; }
 
-            const balanceQty = Math.max(0, trans.qty - loadedQty);
-            trans.dispatch = { loaded: true, vehicle, plate, driver, loadedQty, balanceQty };
+            const balanceQty = Math.max(0, currentRemaining - loadedQty);
+            trans.dispatch = { 
+                loaded: true, 
+                vehicle, 
+                plate, 
+                driver, 
+                loadedQty: (trans.dispatch?.loadedQty || 0) + loadedQty, 
+                balanceQty 
+            };
             trans.status = balanceQty === 0 ? 'completed' : 'partial';
+            
+            loadingOrders.push({
+                receipt: trans.receipt,
+                site: currentSite,
+                date: new Date().toISOString().split('T')[0],
+                vehicle,
+                plate,
+                driver,
+                loadedQty,
+                balanceQty,
+                dispatchedBy: currentUser?.name || 'Dispatch'
+            });
+            
             saveData();
             addAudit('Dispatch', `Dispatched ${trans.receipt} - ${trans.item} x${loadedQty} (Balance: ${balanceQty})`);
             renderTable();
@@ -1597,13 +1756,14 @@
         function generateReport() {
             const data = getReportData();
             let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
-            txt += `Date | Item | Qty | Amount | Customer | Status\n${'-'.repeat(55)}\n`;
+            txt += `Date | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
-                txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status}\n`;
+                txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
             });
-            const sales = data.filter(t => t.status !== 'expense').reduce((s, o) => s + o.amount, 0);
+            const sales = data.filter(t => t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const exp = data.filter(t => t.status === 'expense').reduce((s, o) => s + o.amount, 0);
-            txt += `\n${'='.repeat(55)}\nTOTAL SALES: UGX ${sales.toLocaleString()}\nTOTAL EXPENSES: UGX ${exp.toLocaleString()}\nNET: UGX ${(sales-exp).toLocaleString()}`;
+            const refunds = data.filter(t => t.status === 'refund').reduce((s, o) => s + o.amount, 0);
+            txt += `\n${'='.repeat(55)}\nTOTAL SALES: UGX ${sales.toLocaleString()}\nTOTAL EXPENSES: UGX ${exp.toLocaleString()}\nTOTAL REFUNDS: UGX ${Math.abs(refunds).toLocaleString()}\nNET: UGX ${(sales - exp - Math.abs(refunds)).toLocaleString()}`;
             const blob = new Blob([txt], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1617,9 +1777,9 @@
 
         function generateCSV() {
             const data = getReportData();
-            let csv = 'Date,Site,Item,Qty,Amount,Price,Customer,Payment,Receipt,Status\n';
+            let csv = 'Date,Site,Item,Qty,Amount,Price,Customer,Payment,Receipt,Status,Paid,PaymentMode\n';
             data.forEach(t => {
-                csv += `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.price||0},${t.customer||''},${t.payment||'cash'},${t.receipt||''},${t.status}\n`;
+                csv += `${t.date},${t.site},${t.item},${t.qty},${t.amount},${t.price||0},${t.customer||''},${t.payment||'cash'},${t.receipt||''},${t.status},${t.paid ? 'Yes' : 'No'},${t.paymentMode || ''}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -1637,7 +1797,7 @@
         // ═══════════════════════════════════════════════════════════════
 
         function exportBackup() {
-            const data = { transactions, auditLog, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions, exportedAt: new Date().toISOString() };
+            const data = { transactions, auditLog, loadingOrders, productionLog, nextId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1661,6 +1821,7 @@
                 document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
                 renderTable();
                 if (isGM()) renderCharts();
+                if (isSales()) renderSalesStock();
             });
         });
 
@@ -1685,37 +1846,11 @@
         window.logout = logout;
         window.populateItems = populateItems;
         window.fillCustomerDetails = window.fillCustomerDetails || function() {};
-        window.showItemDistribution = window.showItemDistribution || function() {};
         window.recordProductionStock = window.recordProductionStock || function() {};
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
 
-        window.addInventoryItem = function() {
-            const name = prompt('Enter item name:');
-            if (!name) return;
-            const price = prompt('Enter unit price (UGX):');
-            if (price === null) return;
-            const p = parseFloat(price);
-            if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
-            const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
-            if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
-            inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
-            saveData();
-            addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
-            toast('Item added!', 'success');
-            renderTable();
-        };
-
-        window.deleteInventoryItem = function(site, idx) {
-            if (!confirm('Delete this item?')) return;
-            inventoryItems[site].splice(idx, 1);
-            saveData();
-            addAudit('Inventory Delete', `Deleted item from ${site}`);
-            toast('Item deleted', 'warning');
-            renderTable();
-        };
-
         renderTable();
-        console.log('✅ Kajana Enterprise System v8.0 loaded - Sales Agents can manage production & materials');
+        console.log('✅ Kajana Enterprise System v10.0 loaded - Complete Role Management');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
