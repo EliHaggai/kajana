@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprises · Limited</title>
+    <title>Kajana Enterprise Ltd · Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -128,6 +128,7 @@
         .modal-card input:focus, .modal-card select:focus, .modal-card textarea:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
         .modal-card .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 2rem; }
+        .modal-divider { border: none; border-top: 2px dashed #ddd; margin: 1.2rem 0; }
 
         /* INVENTORY DISPLAY */
         .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; margin: 0.5rem 0; }
@@ -136,6 +137,8 @@
         .inv-item .qty { font-size: 1.2rem; font-weight: 700; }
         .inv-item .unit { font-size: 0.6rem; color: #888; }
         .inv-item.low { border-left-color: var(--red); background: #fef5f5; }
+        .stock-section { margin-bottom: 1.5rem; }
+        .stock-section h4 { font-size: 0.9rem; color: #555; margin-bottom: 0.5rem; }
 
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
@@ -172,8 +175,8 @@
     <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <h1>⛰️ Kajana <span>Enterprise</span></h1>
-            <div class="sub">Concrete &amp; Stone Mining ·  Production</div>
+            <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+            <div class="sub">Concrete &amp; Stone Mining · Production</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
                 <input type="text" id="loginUser" value="gm@kajana.com" placeholder="Enter username" />
@@ -195,8 +198,8 @@
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
-                <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · production</div>
+                <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+                <div class="subtitle">concrete · stone · mining · Production</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -215,6 +218,14 @@
 
         <div class="stats-grid" id="statsGrid">
             <!-- Stats will be dynamically rendered based on role -->
+        </div>
+
+        <!-- Stock View - Visible to all users -->
+        <div class="stock-section" id="stockView">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <h4 style="font-size:0.9rem;color:#555;"><i class="fas fa-boxes"></i> Current Stock - <span id="stockSiteLabel">Workshop</span></h4>
+            </div>
+            <div id="stockGrid" class="inventory-grid"></div>
         </div>
 
         <div id="dashboardCharts" class="hidden chart-grid">
@@ -242,14 +253,6 @@
             </div>
         </div>
 
-        <!-- Sales Agent Stock View -->
-        <div id="salesStockView" class="hidden" style="margin-bottom:1rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-                <h4 style="font-size:0.9rem;color:#555;"><i class="fas fa-boxes"></i> Current Stock - <span id="stockSiteLabel">Workshop</span></h4>
-            </div>
-            <div id="salesStockGrid" class="inventory-grid"></div>
-        </div>
-
         <div class="table-wrap">
             <table>
                 <thead>
@@ -258,7 +261,7 @@
                         <th class="financial-col">Amount</th>
                         <th>Customer</th>
                         <th class="financial-col">Payment</th>
-                        <th>Receipt</th>
+                        <th>Receipt/Invoice</th>
                         <th>Status</th>
                         <th style="text-align:center;">Actions</th>
                     </tr>
@@ -268,7 +271,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.0 · Full Role Management</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd · v10.5 · Sales form reorganized</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -466,8 +469,9 @@
         function isSales() { return getUserRole() === 'sales'; }
         function isDispatch() { return getUserRole() === 'dispatch'; }
         function canViewFinancials() { return !isSales() && !isDispatch(); }
-        function canViewStock() { return isSales() || isGM() || isManager() || isDispatch(); }
+        function canSeeExpenses() { return !isSales() && !isDispatch(); }
         function canManageProduction() { return isGM() || isManager() || isDispatch(); }
+        function canSeeCreditFields() { return !isSales(); }
 
         // ── Permissions ──
         function canCreateSale() { return isGM() || isManager() || isCashier() || isSales(); }
@@ -534,16 +538,8 @@
 
             document.getElementById('dashboardCharts').classList.toggle('hidden', !isGM());
 
-            // Show sales stock view for Sales Agent
-            const salesStockView = document.getElementById('salesStockView');
-            if (isSales()) {
-                salesStockView.classList.remove('hidden');
-                renderSalesStock();
-            } else {
-                salesStockView.classList.add('hidden');
-            }
-
             renderStats();
+            renderStock();
             renderTable();
             if (isGM()) renderCharts();
             addAudit('Login', `User ${user.name} logged in`);
@@ -564,71 +560,8 @@
         // RENDER FUNCTIONS
         // ═══════════════════════════════════════════════════════════════
 
-        function renderStats() {
-            const statsGrid = document.getElementById('statsGrid');
-            const siteData = transactions.filter(t => t.site === currentSite);
-            const today = new Date().toISOString().split('T')[0];
-            const month = today.slice(0, 7);
-            
-            // Calculate various metrics
-            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
-            const todayCashSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'cash').reduce((s, o) => s + o.amount, 0);
-            const todayCreditSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'credit').reduce((s, o) => s + o.amount, 0);
-            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
-            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
-            // Daily expenses (for Cashier)
-            const dailyExp = siteData.filter(t => t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
-            const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
-            const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
-            const items = getItemsForSite(currentSite);
-            const totalStock = items.reduce((s, i) => s + (i.stock || 0), 0);
-
-            const hideFinancials = isSales() || isDispatch();
-            const role = getUserRole();
-
-            let statsHTML = '';
-
-            if (role === 'sales') {
-                // Sales Agent: Show stock only
-                statsHTML = `
-                    <div class="stat-card"><div class="label">📦 Total Stock</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
-                    <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && t.status !== 'expense').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
-                `;
-            } else if (role === 'cashier') {
-                // Cashier: Show daily cash sales, daily credit sales, daily expenses
-                const dailyExpenseLimitDisplay = dailyExpenseLimit;
-                statsHTML = `
-                    <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && t.status !== 'expense').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && t.status !== 'expense').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimitDisplay.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
-                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
-                    <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
-                `;
-            } else if (role === 'dispatch') {
-                // Dispatch: Show pending, stock
-                statsHTML = `
-                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
-                    <div class="stat-card"><div class="label">📦 Total Stock</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
-                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
-                `;
-            } else {
-                // GM, Manager, Accountant: Full financial view
-                statsHTML = `
-                    <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
-                    <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense').length} invoices</div></div>
-                    <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').length} entries</div></div>
-                    <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
-                    <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
-                    <div class="stat-card"><div class="label">📦 Stock Items</div><div class="value">${totalStock}</div><div class="sub">${items.length} product types</div></div>
-                `;
-            }
-
-            statsGrid.innerHTML = statsHTML;
-        }
-
-        function renderSalesStock() {
-            const grid = document.getElementById('salesStockGrid');
+        function renderStock() {
+            const grid = document.getElementById('stockGrid');
             const items = getItemsForSite(currentSite);
             document.getElementById('stockSiteLabel').textContent = currentSite.toUpperCase();
             
@@ -647,15 +580,72 @@
             }).join('');
         }
 
+        function renderStats() {
+            const statsGrid = document.getElementById('statsGrid');
+            const siteData = transactions.filter(t => t.site === currentSite);
+            const today = new Date().toISOString().split('T')[0];
+            const month = today.slice(0, 7);
+            
+            const todaySales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
+            const todayCashSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'cash').reduce((s, o) => s + o.amount, 0);
+            const todayCreditSales = siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund' && t.payment === 'credit').reduce((s, o) => s + o.amount, 0);
+            const monthSales = siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
+            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+            const dailyExp = siteData.filter(t => t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
+            const pending = siteData.filter(t => t.status === 'pending' || t.status === 'partial').length;
+            const creditBal = siteData.filter(t => t.payment === 'credit').reduce((s, o) => s + (o.balance || 0), 0);
+
+            const hideFinancials = isSales() || isDispatch();
+            const role = getUserRole();
+
+            let statsHTML = '';
+
+            if (role === 'sales') {
+                statsHTML = `
+                    <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && t.status !== 'expense' && t.status !== 'refund').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                `;
+            } else if (role === 'cashier') {
+                statsHTML = `
+                    <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && t.status !== 'expense' && t.status !== 'refund').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && t.status !== 'expense' && t.status !== 'refund').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                `;
+            } else if (role === 'dispatch') {
+                statsHTML = `
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                `;
+            } else {
+                // GM, Manager, Accountant: Full financial view
+                statsHTML = `
+                    <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
+                    <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status !== 'expense' && t.status !== 'refund').length} invoices</div></div>
+                    <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.status === 'expense').length} entries</div></div>
+                    <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                `;
+            }
+
+            statsGrid.innerHTML = statsHTML;
+        }
+
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             const hideFinancials = isSales() || isDispatch();
+            const hideExpenses = isSales() || isDispatch();
             
             document.querySelectorAll('.financial-col').forEach(el => {
                 el.style.display = hideFinancials ? 'none' : '';
             });
 
-            const filtered = transactions.filter(t => t.site === currentSite);
+            let filtered = transactions.filter(t => t.site === currentSite);
+            if (hideExpenses) {
+                filtered = filtered.filter(t => t.status !== 'expense');
+            }
+
             if (!filtered.length) {
                 tbody.innerHTML = `<tr><td colspan="${hideFinancials ? 9 : 11}" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
                 renderStats();
@@ -663,8 +653,8 @@
             }
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
-                cleared: '<span class="badge-status cleared">✔️ Cleared</span>',
-                completed: '<span class="badge-status completed">✔️ Completed</span>',
+                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
+                completed: '<span class="badge-status completed">✅ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
                 partial: '<span class="badge-status partial">📦 Partial</span>',
                 refund: '<span class="badge-status refund">🔄 Refund</span>'
@@ -674,7 +664,7 @@
                 const canClear = canClearInvoice() && (st === 'pending' || st === 'partial');
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
-                const paidStatus = t.paid ? '<span class="badge-status paid">✔️ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
+                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
@@ -695,8 +685,8 @@
             </tr>`;
             }).join('');
             renderStats();
+            renderStock();
             if (isGM()) renderCharts();
-            if (isSales()) renderSalesStock();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -759,57 +749,80 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── Payment Mode FIRST ──
+        // ── SALE Modal ── Reorganized Flow ──
         function buildSaleModal(card) {
             const canChooseSite = isGM();
+            const isSalesAgent = isSales();
             const siteOptions = canChooseSite ?
                 `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
                 `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
             const clientOptions = creditClients.map(c => `<option value="${c.name}">${c.name} (${c.company || 'Individual'})</option>`).join('');
 
+            const creditFieldsHTML = isSalesAgent ? '' : `
+                <div class="row2" id="creditFields" style="display:none;">
+                    <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
+                    <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
+                </div>
+            `;
+
+            const receiptLabel = isSalesAgent ? 'Invoice Number' : 'Receipt Number';
+            const receiptPlaceholder = isSalesAgent ? 'Auto-generated invoice #' : 'Auto-generated if empty';
+
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
             <form id="modalForm">
-              <div class="row2">
-                <div><label>Payment Mode *</label>
-                  <select id="modalPayment" required onchange="toggleCredit()">
-                    <option value="cash">Cash</option>
-                    <option value="credit">Credit</option>
-                  </select>
+                <!-- Section 1: Payment Mode & Site -->
+                <div class="row2">
+                    <div><label>Payment Mode *</label>
+                        <select id="modalPayment" required onchange="toggleCredit()">
+                            <option value="cash">Cash</option>
+                            <option value="credit">Credit</option>
+                        </select>
+                    </div>
+                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
                 </div>
-                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-              </div>
-              <div class="row2">
-                <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
-                <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Unit Price (UGX)</label><input id="modalPrice" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
-                <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
-              </div>
-              <div class="row2">
-                <div><label>Customer</label>
-                  <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
-                    <option value="">-- New Customer --</option>
-                    ${clientOptions}
-                  </select>
+
+                <hr class="modal-divider">
+
+                <!-- Section 2: Customer Details -->
+                <div class="row2">
+                    <div><label>Customer</label>
+                        <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
+                            <option value="">-- New Customer --</option>
+                            ${clientOptions}
+                        </select>
+                    </div>
+                    <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
                 </div>
-                <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
-                <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
-              </div>
-              <div class="row2" id="creditFields" style="display:none;">
-                <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
-                <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
-              </div>
-              <div><label>Receipt Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
-              </div>
+                <div class="row2">
+                    <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
+                    <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
+                </div>
+
+                <hr class="modal-divider">
+
+                <!-- Section 3: Item Details -->
+                <div class="row2">
+                    <div><label>Item</label><select id="modalItemSelect" required onchange="updatePrice()"><option value="">-- Select --</option></select></div>
+                    <div><label>Quantity</label><input id="modalQty" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Unit Price (UGX)</label><input id="modalPrice" type="number" step="any" placeholder="0" required oninput="calcTotal()" /></div>
+                    <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
+                </div>
+
+                ${creditFieldsHTML}
+
+                <hr class="modal-divider">
+
+                <!-- Section 4: Invoice/Receipt -->
+                <div><label>${receiptLabel}</label><input id="modalReceipt" placeholder="${receiptPlaceholder}" /></div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
+                </div>
             </form>
           `;
             document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('sale'); };
@@ -820,6 +833,11 @@
             document.getElementById('modalItemSelect').onchange = updatePrice;
             toggleCredit();
             document.getElementById('modalReceipt').value = generateReceipt();
+
+            // If Sales Agent, hide credit fields on load
+            if (isSalesAgent) {
+                document.getElementById('creditFields')?.remove();
+            }
 
             window.fillCustomerDetails = function() {
                 const sel = document.getElementById('modalCustomerSelect');
@@ -953,7 +971,7 @@
                 addAudit('Refund', `Refunded ${receipt} - ${reason} - UGX ${amount}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Refund processed for ${receipt}`, 'success');
+                toast(`✅ Refund processed for ${receipt}`, 'success');
             };
         }
 
@@ -1138,7 +1156,7 @@
             };
         }
 
-        // ── PRODUCTION Modal (Dispatch can now access) ──
+        // ── PRODUCTION Modal ──
         function buildProductionModal(card) {
             if (!canManageProduction()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Dispatch can manage production & materials.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1194,7 +1212,7 @@
                     productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Production', item, qty, note: 'Added to stock' });
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
-                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -1216,7 +1234,7 @@
                 productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Materials Received', item: name, qty, note: 'Added to inventory' });
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
-                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
             };
@@ -1371,7 +1389,7 @@
                     'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'handle_refund'];
                 let msg = `Set permissions for ${username}:\n\n`;
                 actions.forEach(a => {
-                    const current = perms[a] ? '✔️' : '❌';
+                    const current = perms[a] ? '✅' : '❌';
                     msg += `${current} ${a}\n`;
                 });
                 msg += '\nEnter which actions to enable (comma separated):\n' + actions.join(', ');
@@ -1531,17 +1549,22 @@
         }
 
         function calcBalance() {
-            const amt = parseFloat(document.getElementById('modalAmount')?.value) || 0;
-            const dep = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
-            const bal = amt - dep;
+            const amtField = document.getElementById('modalAmount');
+            const depField = document.getElementById('modalDeposit');
             const balField = document.getElementById('modalBalance');
-            if (balField) balField.value = Math.max(0, bal);
+            if (amtField && depField && balField) {
+                const amt = parseFloat(amtField.value) || 0;
+                const dep = parseFloat(depField.value) || 0;
+                balField.value = Math.max(0, amt - dep);
+            }
         }
 
         function toggleCredit() {
             const payment = document.getElementById('modalPayment')?.value;
             const fields = document.getElementById('creditFields');
-            if (fields) fields.style.display = payment === 'credit' ? 'grid' : 'none';
+            if (fields) {
+                fields.style.display = payment === 'credit' ? 'grid' : 'none';
+            }
         }
 
         function updateDispatchInfo() {
@@ -1584,14 +1607,19 @@
             const address = document.getElementById('modalAddress')?.value || '';
             const company = document.getElementById('modalCompany')?.value || '';
             const payment = document.getElementById('modalPayment')?.value || 'cash';
-            const deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
-            const balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
+            
+            let deposit = 0;
+            let balance = 0;
+            if (!isSales()) {
+                deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
+                balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
+            }
+            
             const price = parseFloat(document.getElementById('modalPrice')?.value) || 0;
 
             if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
-            if (transactions.find(t => t.receipt === receipt)) { toast('Receipt # already exists!', 'error'); return; }
+            if (transactions.find(t => t.receipt === receipt)) { toast('Receipt/Invoice # already exists!', 'error'); return; }
 
-            // Check expense limit for cashier
             if (type === 'expense' && isCashier()) {
                 const today = new Date().toISOString().split('T')[0];
                 const todayExpenses = transactions.filter(t => t.site === site && t.date === today && t.status === 'expense').reduce((s, o) => s + o.amount, 0);
@@ -1662,7 +1690,7 @@
             saveData();
             addAudit('Invoice Cleared', `Cleared ${trans.receipt} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
             renderTable();
-            toast(`✔️ Invoice ${trans.receipt} cleared!`, 'success');
+            toast(`✅ Invoice ${trans.receipt} cleared!`, 'success');
         }
 
         function deleteTrans(id) {
@@ -1737,7 +1765,7 @@
             addAudit('Dispatch', `Dispatched ${trans.receipt} - ${trans.item} x${loadedQty} (Balance: ${balanceQty})`);
             renderTable();
             closeModal();
-            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1750,12 +1778,15 @@
             let data = transactions.filter(t => t.site === currentSite);
             if (from) data = data.filter(t => t.date >= from);
             if (to) data = data.filter(t => t.date <= to);
+            if (isSales() || isDispatch()) {
+                data = data.filter(t => t.status !== 'expense');
+            }
             return data;
         }
 
         function generateReport() {
             const data = getReportData();
-            let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA Enterprise Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
                 txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
@@ -1821,7 +1852,6 @@
                 document.getElementById('currentSiteDisplay').textContent = currentSite.toUpperCase();
                 renderTable();
                 if (isGM()) renderCharts();
-                if (isSales()) renderSalesStock();
             });
         });
 
@@ -1850,7 +1880,7 @@
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
 
         renderTable();
-        console.log('✔️ Kajana Enterprise System v10.0 loaded - Complete Role Management');
+        console.log('✅ Kajana Enterprise Ltd System v10.5 loaded - Sales form reorganized');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
