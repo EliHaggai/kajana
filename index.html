@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise Ltd · Management System</title>
+    <title>Kajana Enterprises Ltd · Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -175,7 +175,7 @@
     <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+            <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
             <div class="sub">Concrete &amp; Stone Mining · Production</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
@@ -198,7 +198,7 @@
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
-                <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+                <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
                 <div class="subtitle">concrete · stone · mining · Production</div>
             </div>
             <div class="user-badge">
@@ -271,7 +271,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd · v10.5 · Sales form reorganized</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd Ltd · v10.5 · Sales form reorganized</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -1786,7 +1786,7 @@
 
         function generateReport() {
             const data = getReportData();
-            let txt = `KAJANA Enterprise Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA Enterprises Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
                 txt += `${t.date} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
@@ -1880,7 +1880,7 @@
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
 
         renderTable();
-        console.log('✅ Kajana Enterprise Ltd System v10.5 loaded - Sales form reorganized');
+        console.log('✅ Kajana Enterprises Ltd System v10.5 loaded - Sales form reorganized');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
