@@ -751,14 +751,14 @@
                     <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
-                    <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared documents'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared transaction'}</div></div>
                     <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                     <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             } else if (role === 'dispatch') {
                 statsHTML = `
-                    <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared documents'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared transactions'}</div></div>
                     <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
@@ -767,7 +767,7 @@
                     <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
                     <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
-                    <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready' : 'No cleared documents'}</div></div>
+                    <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready' : 'No cleared transaction'}</div></div>
                     <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
                     <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
@@ -1487,9 +1487,9 @@
                 t.status !== 'cancelled'
             );
 
-            let options = '<option value="">-- Select Cleared Document --</option>';
+            let options = '<option value="">-- Select Transaction --</option>';
             if (clearedDocuments.length === 0) {
-                options += '<option value="" disabled>No cleared documents available for dispatch</option>';
+                options += '<option value="" disabled>No cleared transactions available for dispatch</option>';
             } else {
                 clearedDocuments.forEach(t => {
                     const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
@@ -1503,7 +1503,7 @@
                 <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared and ready for dispatch
             </div>
             <form id="modalForm">
-                <div><label>Cleared Document</label>
+                <div><label>Cleared Transaction</label>
                     <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
                         ${options}
                     </select>
