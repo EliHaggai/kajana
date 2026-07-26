@@ -118,6 +118,7 @@
         .badge-status.unpaid { background: #f8d7da; color: #721c24; }
         .badge-status.refund { background: #fff3cd; color: #856404; }
         .badge-status.cancelled { background: #e9ecef; color: #6c757d; }
+        .badge-status.pending-refund { background: #fff3cd; color: #856404; }
         .action-icons i { margin: 0 3px; color: #5f5f5f; cursor: pointer; transition: var(--transition); font-size: 1rem; }
         .action-icons i:hover { color: var(--red); transform: scale(1.2); }
         .action-icons i.text-success:hover { color: #1a7a3a; }
@@ -222,7 +223,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v7.1</div>
+                <div class="subtitle">concrete · stone · mining · complete management v8.0</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -273,6 +274,7 @@
                 <button class="btn btn-outline-primary" id="btnAudit" onclick="openModal('audit')"><i class="fas fa-history"></i> Audit</button>
                 <button class="btn btn-teal" id="btnClearInvoice" onclick="openModal('clear')"><i class="fas fa-check-double"></i> Clear/Receipt</button>
                 <button class="btn btn-pink" id="btnRefund" onclick="openModal('refund')"><i class="fas fa-undo-alt"></i> Refund</button>
+                <button class="btn btn-warning" id="btnRefundRequests" onclick="openModal('refundRequests')" style="background:#ffc107;border-color:#ffc107;color:#000;"><i class="fas fa-clipboard-list"></i> Refund Requests</button>
             </div>
             <div>
                 <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
@@ -298,7 +300,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v7.1 · Clean dashboard</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd Ltd · v8.0 · Fully Synchronized</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -314,10 +316,11 @@
         // DATA LAYER
         // ═══════════════════════════════════════════════════════════════
 
-        const STORAGE_KEY = 'kajana_data_v7';
+        const STORAGE_KEY = 'kajana_data_v8';
         let transactions = [];
         let auditLog = [];
         let loadingOrders = [];
+        let refundRequests = [];
         let nextInvoiceId = 1;
         let nextReceiptId = 1;
         let currentSite = 'workshop';
@@ -397,6 +400,7 @@
                     transactions = data.transactions || [];
                     auditLog = data.auditLog || [];
                     loadingOrders = data.loadingOrders || [];
+                    refundRequests = data.refundRequests || [];
                     productionLog = data.productionLog || [];
                     nextInvoiceId = data.nextInvoiceId || 1;
                     nextReceiptId = data.nextReceiptId || 1;
@@ -414,7 +418,7 @@
 
         function saveData() {
             try {
-                const data = { transactions, auditLog, loadingOrders, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings };
+                const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) { console.warn('Save error', e); }
         }
@@ -434,7 +438,7 @@
         function addActivity(type, message) {
             const feed = document.getElementById('activityFeed');
             if (!feed) return;
-            const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8' };
+            const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107' };
             const item = document.createElement('div');
             item.className = 'activity-item';
             item.innerHTML = `
@@ -454,10 +458,11 @@
             recent.forEach(log => {
                 const type = log.action.includes('Sale') ? 'sale' : 
                            log.action.includes('Expense') ? 'expense' : 
-                           log.action.includes('Dispatch') ? 'dispatch' : 'system';
+                           log.action.includes('Dispatch') ? 'dispatch' : 
+                           log.action.includes('Refund') ? 'refund' : 'system';
                 const item = document.createElement('div');
                 item.className = 'activity-item';
-                const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8' };
+                const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107' };
                 item.innerHTML = `
                     <span style="color:${colors[type] || '#888'}">●</span>
                     <span>${log.action}: ${log.details || ''}</span>
@@ -474,6 +479,7 @@
             creditClients = [...DEFAULT_CLIENTS];
             productionLog = [];
             loadingOrders = [];
+            refundRequests = [];
             const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
             transactions = [
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
@@ -551,9 +557,11 @@
         function canSeeCreditFields() { return !isSales(); }
         function canClearInvoice() { return isGM() || isManager() || isAccountant() || isCashier(); }
         function canCancelInvoice() { return isGM() || isManager() || isAccountant() || isCashier(); }
+        function canCreateSale() { return isGM() || isManager() || isSales(); }
+        function canRequestRefund() { return isGM() || isManager() || isCashier(); }
+        function canApproveRefund() { return isGM() || isManager() || isAccountant(); }
 
         // ── Permissions ──
-        function canCreateSale() { return isGM() || isManager() || isCashier() || isSales(); }
         function canCreateExpense() { return isGM() || isManager() || isCashier(); }
         function canDispatch() { return isGM() || isManager() || isDispatch(); }
         function canManageInventory() { return isGM() || isManager() || isDispatch(); }
@@ -563,7 +571,6 @@
         function canDeleteTransaction() { return isGM() || isManager(); }
         function canEditTransaction() { return isGM() || isManager(); }
         function canViewReports() { return isGM() || isManager() || isAccountant(); }
-        function canHandleRefund() { return isGM() || isManager() || isCashier(); }
         function canSetExpenseLimit() { return isGM(); }
         function canEditPrices() { return isGM() || isManager(); }
 
@@ -612,7 +619,8 @@
             document.getElementById('btnClients').style.display = canManageClients() ? 'inline-flex' : 'none';
             document.getElementById('btnAudit').style.display = canViewAudit() ? 'inline-flex' : 'none';
             document.getElementById('btnClearInvoice').style.display = canClearInvoice() ? 'inline-flex' : 'none';
-            document.getElementById('btnRefund').style.display = canHandleRefund() ? 'inline-flex' : 'none';
+            document.getElementById('btnRefund').style.display = canRequestRefund() ? 'inline-flex' : 'none';
+            document.getElementById('btnRefundRequests').style.display = canApproveRefund() ? 'inline-flex' : 'none';
             document.getElementById('btnSettings').style.display = isGM() ? 'inline-flex' : 'none';
 
             document.getElementById('dashboardCharts').classList.toggle('hidden', !isGM());
@@ -694,7 +702,9 @@
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => t.docType === 'invoice' && t.status === 'pending').length;
+            const clearedForDispatch = siteData.filter(t => t.docType === 'invoice' && t.status === 'cleared' && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
             const creditBal = siteData.filter(t => t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
+            const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
 
             const hideFinancials = isSales() || isDispatch();
             const role = getUserRole();
@@ -711,21 +721,24 @@
                     <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && t.docType === 'invoice' && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && t.docType === 'invoice' && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
-                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Cleared for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">Invoices ready for loading</div></div>
                     <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                    <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                 `;
             } else if (role === 'dispatch') {
                 statsHTML = `
-                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Cleared for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Ready for loading' : 'No items to load'}</div></div>
                     <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
             } else {
                 statsHTML = `
                     <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'invoice' && t.status !== 'cancelled').length} invoices</div></div>
                     <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
-                    <div class="stat-card"><div class="label">Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for loading' : 'All dispatched'}</div></div>
+                    <div class="stat-card"><div class="label">Cleared for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Ready for loading' : 'No items to load'}</div></div>
                     <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                    <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
                 `;
             }
 
@@ -759,7 +772,7 @@
                 partial: '<span class="badge-status partial">📦 Partial</span>',
                 paid: '<span class="badge-status paid">✔️ Paid</span>',
                 unpaid: '<span class="badge-status unpaid">❌ Unpaid</span>',
-                refund: '<span class="badge-status refund">🔄 Refund</span>',
+                refund: '<span class="badge-status refund">🔄 Refunded</span>',
                 cancelled: '<span class="badge-status cancelled">🚫 Cancelled</span>'
             };
             tbody.innerHTML = filtered.map((t, i) => {
@@ -863,7 +876,8 @@
             else if (type === 'clients') buildClientsModal(card);
             else if (type === 'audit') buildAuditModal(card);
             else if (type === 'clear') buildClearModal(card);
-            else if (type === 'refund') buildRefundModal(card);
+            else if (type === 'refund') buildRefundRequestModal(card);
+            else if (type === 'refundRequests') buildRefundApprovalModal(card);
             else if (type === 'settings') buildSettingsModal(card);
         }
 
@@ -871,6 +885,12 @@
 
         // ── SALE Modal ──
         function buildSaleModal(card) {
+            // Only Sales Agent, Manager, and GM can create sales
+            if (!canCreateSale()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
             const canChooseSite = isGM();
             const isSalesAgent = isSales();
             const siteOptions = canChooseSite ?
@@ -1003,6 +1023,217 @@
             };
         }
 
+        // ── REFUND REQUEST Modal (Cashier) ──
+        function buildRefundRequestModal(card) {
+            if (!canRequestRefund()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Manager, and GM can request refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            // Get paid invoices that can be refunded
+            const refundableInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                t.docType === 'invoice' &&
+                (t.status === 'completed' || t.status === 'cleared') &&
+                t.paid === true &&
+                t.status !== 'cancelled' &&
+                t.status !== 'refund'
+            );
+
+            let options = '<option value="">-- Select Invoice --</option>';
+            refundableInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - UGX ${t.amount.toLocaleString()}</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-undo-alt"></i> Request Refund</h3>
+            <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Cashier: Submit refund request for approval by Accountant</p>
+            <form id="modalForm">
+                <div class="row2">
+                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+                    <div><label>Invoice</label>
+                        <select id="refundInvoiceSelect" required>
+                            ${options}
+                        </select>
+                    </div>
+                </div>
+                <div id="refundInvoiceInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div><label>Reason for Refund</label><input id="refundReason" placeholder="Reason" required /></div>
+                <div class="row2">
+                    <div><label>Refund Amount (UGX)</label><input id="refundAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Refund Method</label>
+                        <select id="refundMethod"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option></select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-warning" style="background:#ffc107;border-color:#ffc107;color:#000;"><i class="fas fa-paper-plane"></i> Submit Request</button>
+                </div>
+            </form>
+          `;
+
+            document.getElementById('refundInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('refundInvoiceInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
+                    document.getElementById('refundAmount').value = trans.amount;
+                }
+            };
+
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const site = document.getElementById('modalSite').value;
+                const invoiceId = parseInt(document.getElementById('refundInvoiceSelect').value);
+                const reason = document.getElementById('refundReason').value.trim();
+                const amount = parseFloat(document.getElementById('refundAmount').value);
+                const method = document.getElementById('refundMethod').value;
+
+                if (!invoiceId || !reason || !amount || amount <= 0) { toast('Fill all fields', 'error'); return; }
+                const original = transactions.find(t => t.id === invoiceId);
+                if (!original) { toast('Invoice not found', 'error'); return; }
+                if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
+
+                const request = {
+                    id: Date.now(),
+                    invoiceId: invoiceId,
+                    docNumber: original.docNumber,
+                    site: site,
+                    customer: original.customer || 'N/A',
+                    item: original.item,
+                    qty: original.qty,
+                    amount: amount,
+                    reason: reason,
+                    method: method,
+                    requestedBy: currentUser?.name || 'Cashier',
+                    requestedDate: new Date().toISOString().split('T')[0],
+                    status: 'pending',
+                    originalTransaction: original
+                };
+                refundRequests.push(request);
+                saveData();
+                addAudit('Refund Request', `Refund requested for ${original.docNumber} - ${reason} - UGX ${amount}`);
+                addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
+                renderTable();
+                closeModal();
+                toast(`✔️ Refund request submitted for ${original.docNumber}`, 'success');
+            };
+        }
+
+        // ── REFUND APPROVAL Modal (Accountant) ──
+        function buildRefundApprovalModal(card) {
+            if (!canApproveRefund()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Accountant, Manager, and GM can approve refund requests.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const pendingRequests = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite);
+
+            let html = `<h3><i class="fas fa-clipboard-list"></i> Refund Requests - ${currentSite.toUpperCase()}</h3>
+            <div style="max-height:400px;overflow-y:auto;">`;
+
+            if (!pendingRequests.length) {
+                html += `<p style="color:#888;padding:1rem 0;">No pending refund requests</p>`;
+            } else {
+                pendingRequests.forEach((req, idx) => {
+                    html += `
+                        <div style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:12px;margin-bottom:0.8rem;border-left:4px solid #ffc107;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                <div>
+                                    <strong>${req.docNumber}</strong> - ${req.customer}
+                                    <div style="font-size:0.8rem;color:#888;">${req.item} x${req.qty} | Amount: UGX ${req.amount.toLocaleString()}</div>
+                                    <div style="font-size:0.8rem;color:#888;">Reason: ${req.reason} | Method: ${req.method}</div>
+                                    <div style="font-size:0.7rem;color:#999;">Requested: ${req.requestedDate} by ${req.requestedBy}</div>
+                                </div>
+                                <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+                                    <button class="btn btn-success" onclick="approveRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-check"></i> Approve</button>
+                                    <button class="btn btn-danger" onclick="rejectRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-times"></i> Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            window.approveRefund = function(idx) {
+                const request = refundRequests[idx];
+                if (!request) return;
+                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
+                
+                if (confirm(`Approve refund for ${request.docNumber} - UGX ${request.amount.toLocaleString()}?`)) {
+                    request.status = 'approved';
+                    
+                    // Create refund transaction
+                    const refund = {
+                        id: nextInvoiceId++,
+                        date: new Date().toISOString().split('T')[0],
+                        site: request.site,
+                        item: 'REFUND: ' + request.item,
+                        qty: request.qty,
+                        price: -request.amount,
+                        amount: -request.amount,
+                        customer: request.customer || 'Refund',
+                        contact: '',
+                        address: '',
+                        company: '',
+                        payment: request.method,
+                        deposit: 0,
+                        balance: 0,
+                        docNumber: 'REF-' + request.docNumber,
+                        docType: 'refund',
+                        status: 'refund',
+                        paid: true,
+                        paymentMode: request.method,
+                        dispatch: { loaded: false },
+                        refundReason: request.reason,
+                        originalReceipt: request.docNumber
+                    };
+                    transactions.push(refund);
+                    
+                    // Mark original as refunded
+                    const original = transactions.find(t => t.id === request.invoiceId);
+                    if (original) {
+                        original.status = 'refund';
+                        // Restore stock
+                        updateStock(original.site, original.item, original.qty, 'add');
+                    }
+                    
+                    saveData();
+                    addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()}`);
+                    addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
+                    renderTable();
+                    buildRefundApprovalModal(card);
+                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
+                }
+            };
+
+            window.rejectRefund = function(idx) {
+                const request = refundRequests[idx];
+                if (!request) return;
+                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
+                
+                if (confirm(`Reject refund for ${request.docNumber}?`)) {
+                    request.status = 'rejected';
+                    saveData();
+                    addAudit('Refund Rejected', `Refund ${request.docNumber} rejected by ${currentUser?.name}`);
+                    addActivity('refund', `Refund rejected: ${request.docNumber}`);
+                    renderTable();
+                    buildRefundApprovalModal(card);
+                    toast(`❌ Refund ${request.docNumber} rejected`, 'warning');
+                }
+            };
+        }
+
         // ── CLEAR/RECEIPT Modal ──
         function buildClearModal(card) {
             const pendingInvoices = transactions.filter(t =>
@@ -1035,7 +1266,7 @@
                     </div>
                 </div>
                 <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
-                    <i class="fas fa-info-circle"></i> This will convert the invoice to a receipt (RPT-XXXX)
+                    <i class="fas fa-info-circle"></i> This will convert the invoice to a receipt (RPT-XXXX) and make it available for Dispatch
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeModal()">Cancel</button>
@@ -1061,6 +1292,57 @@
                     info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
                 }
             };
+        }
+
+        // ── DISPATCH Modal ──
+        function buildDispatchModal(card) {
+            // Get cleared invoices ready for dispatch
+            const clearedInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                t.status === 'cleared' &&
+                t.docType === 'invoice' &&
+                (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0) &&
+                t.status !== 'cancelled'
+            );
+
+            let options = '<option value="">-- Select Cleared Invoice --</option>';
+            if (clearedInvoices.length === 0) {
+                options += '<option value="" disabled>No cleared invoices available for dispatch</option>';
+            } else {
+                clearedInvoices.forEach(t => {
+                    const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
+                    options += `<option value="${t.docNumber}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
+                });
+            }
+
+            card.innerHTML = `
+            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
+            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> ${clearedInvoices.length} invoice(s) cleared and ready for dispatch
+            </div>
+            <form id="modalForm">
+                <div><label>Cleared Invoice</label>
+                    <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
+                        ${options}
+                    </select>
+                </div>
+                <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
+                    <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
+                    <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
+                </div>
+                <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
         }
 
         // ── EXPENSE Modal ──
@@ -1100,130 +1382,6 @@
             document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('expense'); };
             const siteField = document.getElementById('modalSite');
             if (!canChooseSite) siteField.value = currentSite;
-        }
-
-        // ── REFUND Modal ──
-        function buildRefundModal(card) {
-            if (!canHandleRefund()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Cashier can process refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const canChooseSite = isGM();
-            const siteOptions = canChooseSite ?
-                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
-                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
-
-            card.innerHTML = `
-            <h3><i class="fas fa-undo-alt"></i> Process Refund</h3>
-            <form id="modalForm">
-              <div class="row2">
-                <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-                <div><label>Original Document #</label><input id="refundReceipt" placeholder="Enter INV-XXXX or RPT-XXXX" required /></div>
-              </div>
-              <div><label>Reason for Refund</label><input id="refundReason" placeholder="Reason" required /></div>
-              <div class="row2">
-                <div><label>Amount to Refund (UGX)</label><input id="refundAmount" type="number" step="any" placeholder="0" required /></div>
-                <div><label>Refund Method</label>
-                  <select id="refundMethod"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option></select>
-                </div>
-              </div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-danger"><i class="fas fa-undo-alt"></i> Process Refund</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const site = document.getElementById('modalSite').value;
-                const receipt = document.getElementById('refundReceipt').value.trim();
-                const reason = document.getElementById('refundReason').value.trim();
-                const amount = parseFloat(document.getElementById('refundAmount').value);
-                const method = document.getElementById('refundMethod').value;
-
-                if (!receipt || !reason || !amount || amount <= 0) { toast('Fill all fields', 'error'); return; }
-                const original = transactions.find(t => t.docNumber === receipt && t.site === site);
-                if (!original) { toast('Original transaction not found', 'error'); return; }
-                if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
-                if (original.docType === 'expense') { toast('Cannot refund expenses', 'error'); return; }
-
-                const refund = {
-                    id: nextInvoiceId++,
-                    date: new Date().toISOString().split('T')[0],
-                    site: site,
-                    item: 'REFUND: ' + original.item,
-                    qty: original.qty,
-                    price: -amount,
-                    amount: -amount,
-                    customer: original.customer || 'Refund',
-                    contact: original.contact || '',
-                    address: original.address || '',
-                    company: original.company || '',
-                    payment: method,
-                    deposit: 0,
-                    balance: 0,
-                    docNumber: 'REF-' + original.docNumber,
-                    docType: 'refund',
-                    status: 'refund',
-                    paid: true,
-                    paymentMode: method,
-                    dispatch: { loaded: false },
-                    refundReason: reason,
-                    originalReceipt: original.docNumber
-                };
-                transactions.push(refund);
-                original.status = 'refund';
-                saveData();
-                addAudit('Refund', `Refunded ${receipt} - ${reason} - UGX ${amount}`);
-                addActivity('expense', `Refund processed for ${receipt} - UGX ${amount.toLocaleString()}`);
-                renderTable();
-                closeModal();
-                toast(`✔️ Refund processed for ${receipt}`, 'success');
-            };
-        }
-
-        // ── DISPATCH Modal ──
-        function buildDispatchModal(card) {
-            const clearedInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                t.status === 'cleared' &&
-                t.docType === 'invoice' &&
-                (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0) &&
-                t.status !== 'cancelled'
-            );
-
-            let options = '<option value="">-- Select Cleared Invoice --</option>';
-            clearedInvoices.forEach(t => {
-                const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
-                options += `<option value="${t.docNumber}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
-            <form id="modalForm">
-              <div><label>Cleared Invoice</label>
-                <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
-                  ${options}
-                </select>
-              </div>
-              <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-              <div class="row2">
-                <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
-                <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
-                <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
-              </div>
-              <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
         }
 
         // ── INVENTORY Modal ──
@@ -1551,7 +1709,7 @@
             window.editPermissions = function(username) {
                 const perms = userPermissions[username] || {};
                 const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_clients', 'view_reports',
-                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'handle_refund', 'cancel_invoice'];
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice'];
                 let currentPerms = {};
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
@@ -2023,6 +2181,7 @@
             if (!trans) { toast('Document not found', 'error'); return; }
             if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot dispatch expense or refund', 'error'); return; }
             if (trans.status === 'cancelled') { toast('Cannot dispatch cancelled document', 'error'); return; }
+            if (trans.status !== 'cleared') { toast('Invoice must be cleared first', 'error'); return; }
             
             const currentRemaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
             if (loadedQty > currentRemaining) { toast(`Only ${currentRemaining} units remaining`, 'error'); return; }
@@ -2076,7 +2235,7 @@
 
         function generateReport() {
             const data = getReportData();
-            let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA ENTERPRISES LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Doc # | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
                 txt += `${t.date} | ${t.docNumber || 'N/A'} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
@@ -2118,7 +2277,7 @@
         // ═══════════════════════════════════════════════════════════════
 
         function exportBackup() {
-            const data = { transactions, auditLog, loadingOrders, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
+            const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -2172,10 +2331,12 @@
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
         window.toggleSetting = window.toggleSetting || function() {};
         window.editPrice = window.editPrice || function() {};
+        window.approveRefund = window.approveRefund || function() {};
+        window.rejectRefund = window.rejectRefund || function() {};
         window.showItemDetails = showItemDetails;
 
         renderTable();
-        console.log('✔️ Kajana Enterprise System v7.1 loaded - Clean dashboard');
+        console.log('✔️ Kajana Enterprises Ltd System v8.0 loaded - Fully Synchronized');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
     </script>
 </body>
