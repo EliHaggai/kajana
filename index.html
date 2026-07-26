@@ -95,6 +95,8 @@
         .btn-pink:hover { background: #c8236b; }
         .btn-dark { background: #343a40; border-color: #343a40; color: #fff; }
         .btn-dark:hover { background: #23272b; }
+        .btn-indigo { background: #6610f2; border-color: #6610f2; color: #fff; }
+        .btn-indigo:hover { background: #520dc2; }
 
         /* TABLE */
         .table-wrap { background: #fff; border-radius: var(--radius); padding: 0.2rem; box-shadow: var(--shadow); overflow-x: auto; }
@@ -119,6 +121,8 @@
         .badge-status.refund { background: #fff3cd; color: #856404; }
         .badge-status.cancelled { background: #e9ecef; color: #6c757d; }
         .badge-status.pending-refund { background: #fff3cd; color: #856404; }
+        .badge-status.active { background: #d4edda; color: #155724; }
+        .badge-status.exhausted { background: #e9ecef; color: #6c757d; }
         .action-icons i { margin: 0 3px; color: #5f5f5f; cursor: pointer; transition: var(--transition); font-size: 1rem; }
         .action-icons i:hover { color: var(--red); transform: scale(1.2); }
         .action-icons i.text-success:hover { color: #1a7a3a; }
@@ -160,6 +164,18 @@
         .settings-group { background: #f5f3f0; padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
         .settings-group h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
 
+        /* DEPOSIT CARDS */
+        .deposit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .deposit-card { background: #fff; border-radius: 16px; padding: 1rem 1.2rem; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); }
+        .deposit-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+        .deposit-card .customer-name { font-weight: 700; font-size: 1.1rem; }
+        .deposit-card .deposit-amount { font-size: 1.5rem; font-weight: 700; color: var(--black); }
+        .deposit-card .used-amount { color: var(--red); }
+        .deposit-card .balance-amount { color: #1a7a3a; }
+        .deposit-card .status-badge { font-size: 0.7rem; padding: 0.2rem 0.8rem; border-radius: 20px; }
+        .deposit-card .status-badge.active { background: #d4edda; color: #155724; }
+        .deposit-card .status-badge.exhausted { background: #e9ecef; color: #6c757d; }
+
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
         .flag-stripes-mini { display: flex; gap: 2px; }
@@ -199,7 +215,7 @@
     <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+            <h1>⛰️ Kajana <span>Enterprise Ltd Ltd</span></h1>
             <div class="sub">Concrete &amp; Stone Mining · Complete Management</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
@@ -222,8 +238,8 @@
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
-                <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v8.2</div>
+                <h1>⛰️ Kajana <span>Enterprise Ltd Ltd</span></h1>
+                <div class="subtitle">concrete · stone · mining · complete management v8.3</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -267,6 +283,7 @@
                 <button class="btn btn-success" id="btnDispatch" onclick="openModal('dispatch')"><i class="fas fa-truck"></i> Dispatch</button>
                 <button class="btn btn-purple" id="btnInventory" onclick="openModal('inventory')"><i class="fas fa-boxes"></i> Manage Stock</button>
                 <button class="btn btn-orange" id="btnProduction" onclick="openModal('production')"><i class="fas fa-industry"></i> Production & Materials</button>
+                <button class="btn btn-indigo" id="btnDeposits" onclick="openModal('deposits')"><i class="fas fa-hand-holding-usd"></i> Deposits</button>
                 <button class="btn btn-yellow" onclick="openModal('report')"><i class="fas fa-chart-bar"></i> Reports</button>
                 <button class="btn btn-dark" id="btnSettings" onclick="openModal('settings')"><i class="fas fa-cog"></i> Settings</button>
                 <button class="btn btn-outline-primary" id="btnUsers" onclick="openModal('users')"><i class="fas fa-users-cog"></i> Users</button>
@@ -300,7 +317,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd · v8.2 · Dispatch Fixed</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd Ltd · v8.3 · Deposits Management</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -321,6 +338,7 @@
         let auditLog = [];
         let loadingOrders = [];
         let refundRequests = [];
+        let deposits = [];
         let nextInvoiceId = 1;
         let nextReceiptId = 1;
         let currentSite = 'workshop';
@@ -403,6 +421,7 @@
                     auditLog = data.auditLog || [];
                     loadingOrders = data.loadingOrders || [];
                     refundRequests = data.refundRequests || [];
+                    deposits = data.deposits || [];
                     productionLog = data.productionLog || [];
                     nextInvoiceId = data.nextInvoiceId || 1;
                     nextReceiptId = data.nextReceiptId || 1;
@@ -420,7 +439,7 @@
 
         function saveData() {
             try {
-                const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings };
+                const data = { transactions, auditLog, loadingOrders, refundRequests, deposits, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) { console.warn('Save error', e); }
         }
@@ -440,7 +459,7 @@
         function addActivity(type, message) {
             const feed = document.getElementById('activityFeed');
             if (!feed) return;
-            const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107' };
+            const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107', deposit: '#6610f2' };
             const item = document.createElement('div');
             item.className = 'activity-item';
             item.innerHTML = `
@@ -461,10 +480,11 @@
                 const type = log.action.includes('Sale') ? 'sale' : 
                            log.action.includes('Expense') ? 'expense' : 
                            log.action.includes('Dispatch') ? 'dispatch' : 
-                           log.action.includes('Refund') ? 'refund' : 'system';
+                           log.action.includes('Refund') ? 'refund' : 
+                           log.action.includes('Deposit') ? 'deposit' : 'system';
                 const item = document.createElement('div');
                 item.className = 'activity-item';
-                const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107' };
+                const colors = { sale: '#1a7a3a', expense: '#d71921', dispatch: '#6f42c1', system: '#17a2b8', refund: '#ffc107', deposit: '#6610f2' };
                 item.innerHTML = `
                     <span style="color:${colors[type] || '#888'}">●</span>
                     <span>${log.action}: ${log.details || ''}</span>
@@ -482,6 +502,10 @@
             productionLog = [];
             loadingOrders = [];
             refundRequests = [];
+            deposits = [
+                { id: 1, customer: 'John Doe', contact: '+256 700 111', date: new Date().toISOString().split('T')[0], amount: 5000000, used: 1200000, balance: 3800000, status: 'active', notes: 'Initial deposit for construction materials', transactions: ['INV-001'] },
+                { id: 2, customer: 'Mary Smith', contact: '+256 700 222', date: new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0], amount: 3000000, used: 3000000, balance: 0, status: 'exhausted', notes: 'Fully used for stone dust', transactions: ['INV-002'] }
+            ];
             const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
             transactions = [
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
@@ -562,6 +586,7 @@
         function canCreateSale() { return isGM() || isManager() || isSales(); }
         function canRequestRefund() { return isGM() || isManager() || isCashier(); }
         function canApproveRefund() { return isGM() || isManager() || isAccountant(); }
+        function canManageDeposits() { return isGM() || isManager() || isAccountant() || isCashier(); }
 
         // ── Permissions ──
         function canCreateExpense() { return isGM() || isManager() || isCashier(); }
@@ -617,6 +642,7 @@
             document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
             document.getElementById('btnInventory').style.display = canManageInventory() ? 'inline-flex' : 'none';
             document.getElementById('btnProduction').style.display = canManageProduction() ? 'inline-flex' : 'none';
+            document.getElementById('btnDeposits').style.display = canManageDeposits() ? 'inline-flex' : 'none';
             document.getElementById('btnUsers').style.display = canManageUsers() ? 'inline-flex' : 'none';
             document.getElementById('btnClients').style.display = canManageClients() ? 'inline-flex' : 'none';
             document.getElementById('btnAudit').style.display = canViewAudit() ? 'inline-flex' : 'none';
@@ -705,10 +731,10 @@
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'pending').length;
-            // Cleared invoices/receipts ready for dispatch (status = 'cleared' and not fully loaded)
             const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'cleared' && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
             const creditBal = siteData.filter(t => t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
             const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
+            const totalDeposits = deposits.filter(d => d.site === currentSite).reduce((s, d) => s + d.balance, 0);
 
             const hideFinancials = isSales() || isDispatch();
             const role = getUserRole();
@@ -728,6 +754,7 @@
                     <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
+                    <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             } else if (role === 'dispatch') {
                 statsHTML = `
@@ -743,6 +770,7 @@
                     <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
+                    <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             }
 
@@ -861,6 +889,336 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // DEPOSITS MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════
+
+        function buildDepositsModal(card) {
+            if (!canManageDeposits()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Accountant, Manager, and GM can manage deposits.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const siteDeposits = deposits.filter(d => d.site === currentSite);
+            const totalDeposits = siteDeposits.reduce((s, d) => s + d.amount, 0);
+            const totalUsed = siteDeposits.reduce((s, d) => s + d.used, 0);
+            const totalBalance = siteDeposits.reduce((s, d) => s + d.balance, 0);
+
+            let html = `
+            <h3><i class="fas fa-hand-holding-usd"></i> Customer Deposits - ${currentSite.toUpperCase()}</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid var(--yellow);">
+                    <div style="font-size:0.7rem;color:#888;">Total Deposits</div>
+                    <div style="font-size:1.3rem;font-weight:700;">UGX ${totalDeposits.toLocaleString()}</div>
+                </div>
+                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid var(--red);">
+                    <div style="font-size:0.7rem;color:#888;">Used Amount</div>
+                    <div style="font-size:1.3rem;font-weight:700;color:var(--red);">UGX ${totalUsed.toLocaleString()}</div>
+                </div>
+                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid #1a7a3a;">
+                    <div style="font-size:0.7rem;color:#888;">Balance</div>
+                    <div style="font-size:1.3rem;font-weight:700;color:#1a7a3a;">UGX ${totalBalance.toLocaleString()}</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="openModal('newDeposit')"><i class="fas fa-plus"></i> New Deposit</button>
+                <button class="btn btn-success" onclick="openModal('useDeposit')"><i class="fas fa-shopping-cart"></i> Use Deposit</button>
+            </div>
+            <div class="deposit-grid">
+          `;
+
+            if (siteDeposits.length === 0) {
+                html += `<p style="color:#888;padding:1rem 0;">No deposits found for this site.</p>`;
+            } else {
+                siteDeposits.forEach(d => {
+                    const statusClass = d.status === 'active' ? 'active' : 'exhausted';
+                    const statusLabel = d.status === 'active' ? '✔️ Active' : '⛔ Exhausted';
+                    html += `
+                        <div class="deposit-card">
+                            <div style="display:flex;justify-content:space-between;align-items:start;">
+                                <div>
+                                    <div class="customer-name">${d.customer}</div>
+                                    <div style="font-size:0.8rem;color:#888;">${d.contact || 'No contact'}</div>
+                                </div>
+                                <span class="status-badge ${statusClass}">${statusLabel}</span>
+                            </div>
+                            <div style="margin-top:0.5rem;">
+                                <div><span style="color:#888;">Deposit:</span> <span class="deposit-amount">UGX ${d.amount.toLocaleString()}</span></div>
+                                <div><span style="color:#888;">Used:</span> <span class="used-amount">UGX ${d.used.toLocaleString()}</span></div>
+                                <div><span style="color:#888;">Balance:</span> <span class="balance-amount">UGX ${d.balance.toLocaleString()}</span></div>
+                                <div style="font-size:0.7rem;color:#888;margin-top:0.3rem;">Date: ${d.date} | ${d.transactions ? d.transactions.length : 0} transactions</div>
+                                ${d.notes ? `<div style="font-size:0.75rem;color:#888;margin-top:0.2rem;">📝 ${d.notes}</div>` : ''}
+                            </div>
+                            ${d.status === 'active' ? `<button class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.5rem;background:#dc3545;color:#fff;border:none;border-radius:20px;" onclick="closeDeposit(${d.id})"><i class="fas fa-times"></i> Close Deposit</button>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            card.innerHTML = html;
+
+            window.closeDeposit = function(id) {
+                if (confirm('Close this deposit? Any remaining balance will be refunded.')) {
+                    const deposit = deposits.find(d => d.id === id);
+                    if (deposit) {
+                        deposit.status = 'exhausted';
+                        if (deposit.balance > 0) {
+                            // Create a refund transaction for the balance
+                            const refundTrans = {
+                                id: nextInvoiceId++,
+                                date: new Date().toISOString().split('T')[0],
+                                site: deposit.site || currentSite,
+                                item: 'DEPOSIT REFUND: ' + deposit.customer,
+                                qty: 1,
+                                price: -deposit.balance,
+                                amount: -deposit.balance,
+                                customer: deposit.customer,
+                                contact: deposit.contact || '',
+                                address: '',
+                                company: '',
+                                payment: 'cash',
+                                deposit: 0,
+                                balance: 0,
+                                docNumber: 'REF-DEP-' + String(deposit.id),
+                                docType: 'refund',
+                                status: 'refund',
+                                paid: true,
+                                paymentMode: 'cash',
+                                dispatch: { loaded: false },
+                                refundReason: 'Deposit closure refund',
+                                originalReceipt: deposit.customer + ' deposit'
+                            };
+                            transactions.push(refundTrans);
+                            addAudit('Deposit Closed', `Deposit for ${deposit.customer} closed with balance refund of UGX ${deposit.balance.toLocaleString()}`);
+                            addActivity('deposit', `Deposit closed for ${deposit.customer} - refunded UGX ${deposit.balance.toLocaleString()}`);
+                        } else {
+                            addAudit('Deposit Closed', `Deposit for ${deposit.customer} closed - fully used`);
+                            addActivity('deposit', `Deposit closed for ${deposit.customer} - fully used`);
+                        }
+                        saveData();
+                        renderTable();
+                        buildDepositsModal(card);
+                        toast(`Deposit for ${deposit.customer} closed`, 'success');
+                    }
+                }
+            };
+        }
+
+        // ── NEW DEPOSIT Modal ──
+        function buildNewDepositModal(card) {
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            card.innerHTML = `
+            <h3><i class="fas fa-hand-holding-usd"></i> New Customer Deposit</h3>
+            <form id="modalForm">
+                <div class="row2">
+                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+                    <div><label>Date</label><input id="depositDate" type="date" value="${new Date().toISOString().split('T')[0]}" required /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Customer Name *</label><input id="depositCustomer" placeholder="Full name" required /></div>
+                    <div><label>Contact</label><input id="depositContact" placeholder="Phone/Email" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Deposit Amount (UGX) *</label><input id="depositAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Payment Method</label>
+                        <select id="depositPayment"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option><option value="cheque">Cheque</option></select>
+                    </div>
+                </div>
+                <div><label>Notes</label><input id="depositNotes" placeholder="Optional notes" /></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:#6610f2;border-color:#6610f2;"><i class="fas fa-save"></i> Save Deposit</button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const site = document.getElementById('modalSite').value;
+                const date = document.getElementById('depositDate').value;
+                const customer = document.getElementById('depositCustomer').value.trim();
+                const contact = document.getElementById('depositContact').value.trim();
+                const amount = parseFloat(document.getElementById('depositAmount').value);
+                const payment = document.getElementById('depositPayment').value;
+                const notes = document.getElementById('depositNotes').value.trim();
+
+                if (!customer || !amount || amount <= 0) { toast('Fill all required fields', 'error'); return; }
+
+                const deposit = {
+                    id: Date.now(),
+                    site: site,
+                    date: date,
+                    customer: customer,
+                    contact: contact,
+                    amount: amount,
+                    used: 0,
+                    balance: amount,
+                    status: 'active',
+                    notes: notes,
+                    paymentMethod: payment,
+                    transactions: []
+                };
+                deposits.push(deposit);
+                saveData();
+                addAudit('Deposit Created', `Deposit of UGX ${amount.toLocaleString()} for ${customer} at ${site}`);
+                addActivity('deposit', `New deposit: ${customer} - UGX ${amount.toLocaleString()}`);
+                renderTable();
+                closeModal();
+                toast(`✔️ Deposit of UGX ${amount.toLocaleString()} recorded for ${customer}`, 'success');
+            };
+        }
+
+        // ── USE DEPOSIT Modal ──
+        function buildUseDepositModal(card) {
+            const activeDeposits = deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0);
+            const siteItems = getItemsForSite(currentSite);
+
+            let depositOptions = '<option value="">-- Select Deposit --</option>';
+            activeDeposits.forEach(d => {
+                depositOptions += `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`;
+            });
+
+            let itemOptions = '<option value="">-- Select Item --</option>';
+            siteItems.forEach(i => {
+                itemOptions += `<option value="${i.name}" data-price="${i.price}" data-stock="${i.stock || 0}">${i.name} (UGX ${i.price.toLocaleString()}) - Stock: ${i.stock || 0}</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-shopping-cart"></i> Use Deposit for Purchase</h3>
+            <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Deduct from customer deposit for items purchased</p>
+            <form id="modalForm">
+                <div><label>Select Deposit</label>
+                    <select id="useDepositSelect" required onchange="updateDepositInfo()">
+                        ${depositOptions}
+                    </select>
+                </div>
+                <div id="depositInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Item</label>
+                        <select id="useItemSelect" required onchange="updateItemPrice()">
+                            ${itemOptions}
+                        </select>
+                    </div>
+                    <div><label>Quantity</label><input id="useQty" type="number" step="any" placeholder="0" required oninput="calculateUseTotal()" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Unit Price (UGX)</label><input id="usePrice" type="number" step="any" placeholder="0" oninput="calculateUseTotal()" /></div>
+                    <div><label>Total (UGX)</label><input id="useTotal" type="number" step="any" placeholder="0" readonly /></div>
+                </div>
+                <div><label>Remaining Balance After Purchase</label><input id="useRemaining" type="number" step="any" placeholder="0" readonly style="background:#e9ecef;" /></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Purchase</button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const depositId = parseInt(document.getElementById('useDepositSelect').value);
+                const item = document.getElementById('useItemSelect').value;
+                const qty = parseFloat(document.getElementById('useQty').value);
+                const total = parseFloat(document.getElementById('useTotal').value);
+                const price = parseFloat(document.getElementById('usePrice').value);
+
+                if (!depositId || !item || !qty || qty <= 0 || !total || total <= 0) { toast('Fill all fields', 'error'); return; }
+                const deposit = deposits.find(d => d.id === depositId);
+                if (!deposit) { toast('Deposit not found', 'error'); return; }
+                if (total > deposit.balance) { toast(`Insufficient balance! Available: UGX ${deposit.balance.toLocaleString()}`, 'error'); return; }
+
+                // Create sale transaction
+                const docNumber = generateInvoiceNumber();
+                const trans = {
+                    id: nextInvoiceId++,
+                    date: new Date().toISOString().split('T')[0],
+                    site: deposit.site || currentSite,
+                    item: item,
+                    qty: qty,
+                    price: price,
+                    amount: total,
+                    customer: deposit.customer,
+                    contact: deposit.contact || '',
+                    address: '',
+                    company: '',
+                    payment: 'deposit',
+                    deposit: total,
+                    balance: 0,
+                    docNumber: docNumber,
+                    docType: 'invoice',
+                    status: 'pending',
+                    paid: true,
+                    paymentMode: 'deposit',
+                    dispatch: { loaded: false },
+                    depositId: deposit.id
+                };
+                transactions.push(trans);
+
+                // Update deposit
+                deposit.used = (deposit.used || 0) + total;
+                deposit.balance = deposit.amount - deposit.used;
+                if (deposit.balance <= 0) deposit.status = 'exhausted';
+                if (!deposit.transactions) deposit.transactions = [];
+                deposit.transactions.push(docNumber);
+
+                // Update stock
+                updateStock(deposit.site || currentSite, item, qty, 'subtract');
+
+                saveData();
+                addAudit('Deposit Used', `UGX ${total.toLocaleString()} used from ${deposit.customer}'s deposit for ${item} x${qty}`);
+                addActivity('deposit', `Deposit used: ${deposit.customer} - UGX ${total.toLocaleString()} for ${item}`);
+                renderTable();
+                closeModal();
+                toast(`✔️ UGX ${total.toLocaleString()} deducted from ${deposit.customer}'s deposit. Balance: UGX ${deposit.balance.toLocaleString()}`, 'success');
+            };
+
+            // Auto-fill price when item selected
+            window.updateItemPrice = function() {
+                const sel = document.getElementById('useItemSelect');
+                const priceField = document.getElementById('usePrice');
+                if (sel && priceField) {
+                    const opt = sel.options[sel.selectedIndex];
+                    priceField.value = opt?.dataset?.price || 0;
+                    calculateUseTotal();
+                }
+            };
+
+            window.updateDepositInfo = function() {
+                const id = parseInt(document.getElementById('useDepositSelect').value);
+                const info = document.getElementById('depositInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const deposit = deposits.find(d => d.id === id);
+                if (deposit) {
+                    info.innerHTML = `<strong>${deposit.customer}</strong> | Balance: UGX ${deposit.balance.toLocaleString()} | Contact: ${deposit.contact || 'N/A'}`;
+                }
+            };
+
+            window.calculateUseTotal = function() {
+                const qty = parseFloat(document.getElementById('useQty').value) || 0;
+                const price = parseFloat(document.getElementById('usePrice').value) || 0;
+                const total = qty * price;
+                document.getElementById('useTotal').value = total;
+                // Update remaining balance
+                const id = parseInt(document.getElementById('useDepositSelect').value);
+                if (id) {
+                    const deposit = deposits.find(d => d.id === id);
+                    if (deposit) {
+                        const remaining = Math.max(0, deposit.balance - total);
+                        document.getElementById('useRemaining').value = remaining;
+                        if (total > deposit.balance) {
+                            document.getElementById('useRemaining').style.color = 'var(--red)';
+                        } else {
+                            document.getElementById('useRemaining').style.color = '#1a7a3a';
+                        }
+                    }
+                }
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // MODAL SYSTEM
         // ═══════════════════════════════════════════════════════════════
 
@@ -883,6 +1241,9 @@
             else if (type === 'refund') buildRefundRequestModal(card);
             else if (type === 'refundRequests') buildRefundApprovalModal(card);
             else if (type === 'settings') buildSettingsModal(card);
+            else if (type === 'deposits') buildDepositsModal(card);
+            else if (type === 'newDeposit') buildNewDepositModal(card);
+            else if (type === 'useDeposit') buildUseDepositModal(card);
         }
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
@@ -925,6 +1286,7 @@
                         <select id="modalPayment" required onchange="togglePaymentMode()">
                             <option value="cash">Cash</option>
                             <option value="credit">Credit</option>
+                            <option value="deposit">Deposit</option>
                         </select>
                     </div>
                     <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
@@ -942,6 +1304,13 @@
                         <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
                             <option value="">-- Select Client --</option>
                             ${clientOptions}
+                        </select>
+                    </div>
+                    <div id="depositCustomerField" style="display:none;">
+                        <label>Select Deposit Customer</label>
+                        <select id="modalDepositSelect" onchange="fillDepositCustomer()">
+                            <option value="">-- Select Deposit --</option>
+                            ${deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0).map(d => `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -979,20 +1348,42 @@
                 const payment = document.getElementById('modalPayment').value;
                 const cashField = document.getElementById('cashCustomerField');
                 const creditField = document.getElementById('creditCustomerField');
+                const depositField = document.getElementById('depositCustomerField');
                 const creditFields = document.getElementById('creditFields');
                 
+                cashField.style.display = 'none';
+                creditField.style.display = 'none';
+                depositField.style.display = 'none';
+                if (creditFields) creditFields.style.display = 'none';
+
                 if (payment === 'cash') {
                     cashField.style.display = 'block';
-                    creditField.style.display = 'none';
-                    if (creditFields) creditFields.style.display = 'none';
                     document.getElementById('modalCustomerInput').required = true;
-                    if (document.getElementById('modalCustomerSelect')) document.getElementById('modalCustomerSelect').required = false;
-                } else {
-                    cashField.style.display = 'none';
+                } else if (payment === 'credit') {
                     creditField.style.display = 'block';
                     if (creditFields) creditFields.style.display = 'grid';
-                    document.getElementById('modalCustomerInput').required = false;
-                    if (document.getElementById('modalCustomerSelect')) document.getElementById('modalCustomerSelect').required = true;
+                    document.getElementById('modalCustomerSelect').required = true;
+                } else if (payment === 'deposit') {
+                    depositField.style.display = 'block';
+                    document.getElementById('modalDepositSelect').required = true;
+                }
+            };
+
+            window.fillDepositCustomer = function() {
+                const sel = document.getElementById('modalDepositSelect');
+                const id = parseInt(sel.value);
+                if (id) {
+                    const deposit = deposits.find(d => d.id === id);
+                    if (deposit) {
+                        document.getElementById('modalContact').value = deposit.contact || '';
+                        document.getElementById('modalAddress').value = '';
+                        document.getElementById('modalCompany').value = '';
+                        document.getElementById('modalCustomerInput').value = deposit.customer;
+                    }
+                } else {
+                    document.getElementById('modalContact').value = '';
+                    document.getElementById('modalAddress').value = '';
+                    document.getElementById('modalCompany').value = '';
                 }
             };
 
@@ -1024,6 +1415,116 @@
                     document.getElementById('modalCompany').value = '';
                 }
             };
+        }
+
+        // ── CLEAR/RECEIPT Modal ──
+        function buildClearModal(card) {
+            const pendingInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.status === 'pending' || t.status === 'partial') &&
+                (t.docType === 'invoice' || t.docType === 'receipt') &&
+                t.status !== 'cancelled'
+            );
+
+            let options = '<option value="">-- Select Document to Clear --</option>';
+            pendingInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (UGX ${t.amount.toLocaleString()})</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-check-double"></i> Clear → Receipt</h3>
+            <form id="modalForm">
+                <div><label>Select Document</label>
+                    <select id="clearInvoiceSelect" required>
+                        ${options}
+                    </select>
+                </div>
+                <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Payment Status</label>
+                        <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
+                    </div>
+                    <div><label>Payment Mode</label>
+                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="cheque">Cheque</option></select>
+                    </div>
+                </div>
+                <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
+                    <i class="fas fa-info-circle"></i> This will convert to a receipt (RPT-XXXX) and make it available for Dispatch
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear & Convert to Receipt</button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
+                const paidStatus = document.getElementById('clearPaidStatus').value;
+                const paymentMode = document.getElementById('clearPaymentMode').value;
+                if (!id) { toast('Select a document', 'error'); return; }
+                clearInvoice(id, paidStatus, paymentMode);
+                closeModal();
+            };
+            document.getElementById('clearInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('clearInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
+                }
+            };
+        }
+
+        // ── DISPATCH Modal ──
+        function buildDispatchModal(card) {
+            const clearedDocuments = transactions.filter(t =>
+                t.site === currentSite &&
+                t.status === 'cleared' &&
+                (t.docType === 'invoice' || t.docType === 'receipt') &&
+                (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0) &&
+                t.status !== 'cancelled'
+            );
+
+            let options = '<option value="">-- Select Cleared Document --</option>';
+            if (clearedDocuments.length === 0) {
+                options += '<option value="" disabled>No cleared documents available for dispatch</option>';
+            } else {
+                clearedDocuments.forEach(t => {
+                    const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
+                    options += `<option value="${t.docNumber}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
+                });
+            }
+
+            card.innerHTML = `
+            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
+            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared and ready for dispatch
+            </div>
+            <form id="modalForm">
+                <div><label>Cleared Document</label>
+                    <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
+                        ${options}
+                    </select>
+                </div>
+                <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
+                    <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
+                    <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
+                </div>
+                <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
         }
 
         // ── REFUND REQUEST Modal (Cashier) ──
@@ -1231,118 +1732,6 @@
                     toast(`❌ Refund ${request.docNumber} rejected`, 'warning');
                 }
             };
-        }
-
-        // ── CLEAR/RECEIPT Modal ──
-        function buildClearModal(card) {
-            const pendingInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                (t.status === 'pending' || t.status === 'partial') &&
-                (t.docType === 'invoice' || t.docType === 'receipt') &&
-                t.status !== 'cancelled'
-            );
-
-            let options = '<option value="">-- Select Document to Clear --</option>';
-            pendingInvoices.forEach(t => {
-                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (UGX ${t.amount.toLocaleString()})</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-check-double"></i> Clear → Receipt</h3>
-            <form id="modalForm">
-                <div><label>Select Document</label>
-                    <select id="clearInvoiceSelect" required>
-                        ${options}
-                    </select>
-                </div>
-                <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-                <div class="row2">
-                    <div><label>Payment Status</label>
-                        <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
-                    </div>
-                    <div><label>Payment Mode</label>
-                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="cheque">Cheque</option></select>
-                    </div>
-                </div>
-                <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
-                    <i class="fas fa-info-circle"></i> This will convert to a receipt (RPT-XXXX) and make it available for Dispatch
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear & Convert to Receipt</button>
-                </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
-                const paidStatus = document.getElementById('clearPaidStatus').value;
-                const paymentMode = document.getElementById('clearPaymentMode').value;
-                if (!id) { toast('Select a document', 'error'); return; }
-                clearInvoice(id, paidStatus, paymentMode);
-                closeModal();
-            };
-            document.getElementById('clearInvoiceSelect').onchange = function() {
-                const id = parseInt(this.value);
-                const info = document.getElementById('clearInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const trans = transactions.find(t => t.id === id);
-                if (trans) {
-                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
-                }
-            };
-        }
-
-        // ── DISPATCH Modal ── FIXED: includes both invoices and receipts ──
-        function buildDispatchModal(card) {
-            // Get cleared documents ready for dispatch (status = 'cleared')
-            // Include both invoices and receipts
-            const clearedDocuments = transactions.filter(t =>
-                t.site === currentSite &&
-                t.status === 'cleared' &&
-                (t.docType === 'invoice' || t.docType === 'receipt') &&
-                (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0) &&
-                t.status !== 'cancelled'
-            );
-
-            let options = '<option value="">-- Select Cleared Document --</option>';
-            if (clearedDocuments.length === 0) {
-                options += '<option value="" disabled>No cleared documents available for dispatch</option>';
-            } else {
-                clearedDocuments.forEach(t => {
-                    const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
-                    options += `<option value="${t.docNumber}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
-                });
-            }
-
-            card.innerHTML = `
-            <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
-            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
-                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared and ready for dispatch
-            </div>
-            <form id="modalForm">
-                <div><label>Cleared Document</label>
-                    <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
-                        ${options}
-                    </select>
-                </div>
-                <div id="dispatchInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-                <div class="row2">
-                    <div><label>Vehicle</label><input id="dispatchVehicle" placeholder="Truck, Van" /></div>
-                    <div><label>Number Plate</label><input id="dispatchPlate" placeholder="UBA 123X" /></div>
-                </div>
-                <div class="row2">
-                    <div><label>Driver Contact</label><input id="dispatchDriver" placeholder="Phone" /></div>
-                    <div><label>Qty Loaded</label><input id="dispatchLoadedQty" type="number" step="any" placeholder="0" required oninput="updateDispatchBalance()" /></div>
-                </div>
-                <div><label>Balance Remaining</label><input id="dispatchBalanceQty" type="number" step="any" placeholder="0" readonly /></div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Load</button>
-                </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
         }
 
         // ── EXPENSE Modal ──
@@ -1709,7 +2098,7 @@
             window.editPermissions = function(username) {
                 const perms = userPermissions[username] || {};
                 const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_clients', 'view_reports',
-                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice'];
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice', 'manage_deposits'];
                 let currentPerms = {};
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
@@ -1992,6 +2381,7 @@
             const amount = parseFloat(document.getElementById('modalAmount').value);
             
             const isSalesAgent = isSales();
+            const payment = document.getElementById('modalPayment').value;
             let docNumber;
             if (type === 'expense') {
                 docNumber = 'EXP-' + String(nextInvoiceId).padStart(4, '0');
@@ -2002,26 +2392,45 @@
                 docNumber = document.getElementById('modalReceipt').value.trim() || generateInvoiceNumber();
             }
             
-            const payment = document.getElementById('modalPayment').value;
             let customer = '';
+            let deposit = 0;
+            let balance = 0;
+            let depositId = null;
+
             if (payment === 'cash') {
                 customer = document.getElementById('modalCustomerInput').value.trim() || 'Walk-in Customer';
-            } else {
+            } else if (payment === 'credit') {
                 const select = document.getElementById('modalCustomerSelect');
                 customer = select ? select.value || '' : '';
+                deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
+                balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
+            } else if (payment === 'deposit') {
+                const select = document.getElementById('modalDepositSelect');
+                depositId = parseInt(select.value);
+                if (depositId) {
+                    const dep = deposits.find(d => d.id === depositId);
+                    if (dep) {
+                        customer = dep.customer;
+                        deposit = amount;
+                        balance = 0;
+                        // Check if deposit has enough balance
+                        if (amount > dep.balance) {
+                            toast(`Insufficient deposit balance! Available: UGX ${dep.balance.toLocaleString()}`, 'error');
+                            return;
+                        }
+                    } else {
+                        toast('Invalid deposit selected', 'error');
+                        return;
+                    }
+                } else {
+                    toast('Please select a deposit', 'error');
+                    return;
+                }
             }
             
             const contact = document.getElementById('modalContact')?.value || '';
             const address = document.getElementById('modalAddress')?.value || '';
             const company = document.getElementById('modalCompany')?.value || '';
-            
-            let deposit = 0;
-            let balance = 0;
-            if (!isSalesAgent && payment === 'credit') {
-                deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
-                balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
-            }
-            
             const price = parseFloat(document.getElementById('modalPrice')?.value) || 0;
 
             if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
@@ -2054,17 +2463,30 @@
                 contact,
                 address,
                 company,
-                payment,
-                deposit,
-                balance,
+                payment: payment,
+                deposit: payment === 'deposit' ? amount : deposit,
+                balance: payment === 'credit' ? balance : 0,
                 docNumber: docNumber,
                 docType: type === 'expense' ? 'expense' : 'invoice',
                 status: type === 'expense' ? 'expense' : 'pending',
-                paid: payment === 'cash',
-                paymentMode: payment === 'cash' ? 'cash' : '',
-                dispatch: { loaded: false }
+                paid: payment === 'cash' || payment === 'deposit',
+                paymentMode: payment === 'deposit' ? 'deposit' : (payment === 'cash' ? 'cash' : ''),
+                dispatch: { loaded: false },
+                depositId: depositId
             };
             transactions.push(trans);
+
+            // Update deposit if payment method is deposit
+            if (payment === 'deposit' && depositId) {
+                const dep = deposits.find(d => d.id === depositId);
+                if (dep) {
+                    dep.used = (dep.used || 0) + amount;
+                    dep.balance = dep.amount - dep.used;
+                    if (dep.balance <= 0) dep.status = 'exhausted';
+                    if (!dep.transactions) dep.transactions = [];
+                    dep.transactions.push(docNumber);
+                }
+            }
 
             if (type !== 'expense') {
                 updateStock(site, item, qty, 'subtract');
@@ -2235,7 +2657,7 @@
 
         function generateReport() {
             const data = getReportData();
-            let txt = `KAJANA Enterprise Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA Enterprise Ltd Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Doc # | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
                 txt += `${t.date} | ${t.docNumber || 'N/A'} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
@@ -2277,7 +2699,7 @@
         // ═══════════════════════════════════════════════════════════════
 
         function exportBackup() {
-            const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
+            const data = { transactions, auditLog, loadingOrders, refundRequests, deposits, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -2327,17 +2749,22 @@
         window.logout = logout;
         window.populateItems = populateItems;
         window.fillCustomerDetails = window.fillCustomerDetails || function() {};
+        window.fillDepositCustomer = window.fillDepositCustomer || function() {};
         window.recordProductionStock = window.recordProductionStock || function() {};
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
         window.toggleSetting = window.toggleSetting || function() {};
         window.editPrice = window.editPrice || function() {};
         window.approveRefund = window.approveRefund || function() {};
         window.rejectRefund = window.rejectRefund || function() {};
+        window.closeDeposit = window.closeDeposit || function() {};
+        window.updateItemPrice = window.updateItemPrice || function() {};
+        window.updateDepositInfo = window.updateDepositInfo || function() {};
+        window.calculateUseTotal = window.calculateUseTotal || function() {};
         window.showItemDetails = showItemDetails;
 
         renderTable();
-        console.log('✔️ Kajana Enterprise Ltd System v8.2 loaded - Dispatch Fixed');
-        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients`);
+        console.log('✔️ Kajana Enterprise Ltd Ltd System v8.3 loaded - Deposits Management');
+        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients, ${deposits.length} deposits`);
     </script>
 </body>
 </html>
