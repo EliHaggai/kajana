@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprises Ltd · Complete Management System</title>
+    <title>Kajana Enterprises · Complete Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -186,6 +186,8 @@
         .quick-customer-add { background: #f8f9fa; padding: 0.8rem; border-radius: 16px; margin: 0.5rem 0; border: 1px dashed #ccc; }
         .quick-customer-add .row2 { gap: 0.5rem; }
         .quick-customer-add .btn-sm { padding: 0.2rem 0.8rem; font-size: 0.75rem; }
+        .conditional-field { transition: all 0.3s ease; }
+        .conditional-field.hidden { display: none !important; }
 
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
@@ -241,7 +243,7 @@
     <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
+            <h1>⛰️ Kajana <span>Enterprises</span></h1>
             <div class="sub">Concrete &amp; Stone Mining · Complete Management</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
@@ -264,8 +266,8 @@
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
-                <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v9.4</div>
+                <h1>⛰️ Kajana <span>Enterprises</span></h1>
+                <div class="subtitle">concrete · stone · mining · complete management v9.7</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -342,7 +344,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd Ltd · v9.4 · Fully Operational</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd · v9.7 · Fully Operational</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -445,12 +447,12 @@
         ];
 
         const DEFAULT_CUSTOMERS = [
-            { id: 1, name: 'John Doe', contact: '+256 700 111', email: 'john@abc.com', address: 'Kampala', company: 'ABC Ltd', accountType: 'credit', creditLimit: 5000000, balance: 0, depositBalance: 0 },
-            { id: 2, name: 'Mary Smith', contact: '+256 700 222', email: 'mary@smith.com', address: 'Ngetta', company: '', accountType: 'credit', creditLimit: 3000000, balance: 550000, depositBalance: 0 },
-            { id: 3, name: 'James Ochieng', contact: '+256 700 333', email: 'james@builders.com', address: 'Adyel', company: 'Builders Inc', accountType: 'credit', creditLimit: 4000000, balance: 0, depositBalance: 0 },
-            { id: 4, name: 'Ngetta Constructions', contact: '+256 700 444', email: 'info@ngettaconst.com', address: 'Ngetta', company: '', accountType: 'credit', creditLimit: 8000000, balance: 700000, depositBalance: 0 },
-            { id: 5, name: 'City Council', contact: '+256 700 555', email: 'procurement@citycouncil.com', address: 'Adyel', company: 'Govt', accountType: 'credit', creditLimit: 10000000, balance: 0, depositBalance: 0 },
-            { id: 6, name: 'David Otieno', contact: '+256 700 666', email: 'david@otieno.com', address: 'Adyel', company: 'Otieno Constructions', accountType: 'deposit', creditLimit: 2500000, balance: 0, depositBalance: 2500000 },
+            { id: 1, name: 'John Doe', contact: '+256 700 111', email: 'john@abc.com', address: 'Kampala', company: 'ABC Ltd', accountType: 'credit', balance: 0, depositBalance: 0 },
+            { id: 2, name: 'Mary Smith', contact: '+256 700 222', email: 'mary@smith.com', address: 'Ngetta', company: '', accountType: 'credit', balance: 550000, depositBalance: 0 },
+            { id: 3, name: 'James Ochieng', contact: '+256 700 333', email: 'james@builders.com', address: 'Adyel', company: 'Builders Inc', accountType: 'credit', balance: 0, depositBalance: 0 },
+            { id: 4, name: 'Ngetta Constructions', contact: '+256 700 444', email: 'info@ngettaconst.com', address: 'Ngetta', company: '', accountType: 'credit', balance: 700000, depositBalance: 0 },
+            { id: 5, name: 'City Council', contact: '+256 700 555', email: 'procurement@citycouncil.com', address: 'Adyel', company: 'Govt', accountType: 'credit', balance: 0, depositBalance: 0 },
+            { id: 6, name: 'David Otieno', contact: '+256 700 666', email: 'david@otieno.com', address: 'Adyel', company: 'Otieno Constructions', accountType: 'deposit', balance: 0, depositBalance: 2500000 },
         ];
 
         // ── Custom Confirm Dialog ──
@@ -578,7 +580,7 @@
             transactions = [
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', type: 'Invoice', customer: 'John Doe',
                     customerId: 1, item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
-                    balance: 0, docNumber: 'INV-001', status: 'Paid', paymentMethod: 'Cash', dispatch: { loaded: true,
+                    balance: 0, docNumber: 'INV-001', status: 'Cleared', paymentMethod: 'Cash', dispatch: { loaded: true,
                         vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120, balanceQty: 0 } },
                 { id: nextInvoiceId++, date: d(1), site: 'ngetta', type: 'Invoice', customer: 'Mary Smith',
                     customerId: 2, item: 'Stone Dust', qty: 5, price: 170000, amount: 850000,
@@ -586,7 +588,7 @@
                     dispatch: { loaded: false } },
                 { id: nextInvoiceId++, date: d(2), site: 'adyel', type: 'Invoice', customer: 'James Ochieng',
                     customerId: 3, item: 'Hollow Section', qty: 80, price: 14000, amount: 1120000,
-                    balance: 0, docNumber: 'INV-003', status: 'Paid', paymentMethod: 'Cash', dispatch: { loaded: true,
+                    balance: 0, docNumber: 'INV-003', status: 'Cleared', paymentMethod: 'Cash', dispatch: { loaded: true,
                         vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80, balanceQty: 0 } },
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', type: 'Expense', customer: '', customerId: null,
                     item: 'Fuel', qty: 1, price: 450000, amount: 450000,
@@ -597,7 +599,7 @@
                     dispatch: { loaded: false } },
                 { id: nextInvoiceId++, date: d(1), site: 'adyel', type: 'Invoice', customer: 'City Council',
                     customerId: 5, item: 'Road Cubs', qty: 200, price: 9000, amount: 1800000,
-                    balance: 0, docNumber: 'INV-005', status: 'Paid', paymentMethod: 'Cash', dispatch: { loaded: true,
+                    balance: 0, docNumber: 'INV-005', status: 'Cleared', paymentMethod: 'Cash', dispatch: { loaded: true,
                         vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200, balanceQty: 0 } },
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', type: 'Expense', customer: '', customerId: null,
                     item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
@@ -854,7 +856,7 @@
             } else if (role === 'dispatch') {
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${pendingDispatch}</div><div class="sub">${pendingDispatch > 0 ? 'Cleared & ready' : 'No cleared'}</div></div>
-                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'Completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'Completed').length}</div><div class="sub">Fully dispatched</div></div>
                     <div class="stat-card"><div class="label">📦 Partial</div><div class="value">${siteData.filter(t => t.status === 'Partial').length}</div><div class="sub">Partially loaded</div></div>
                 `;
             } else {
@@ -874,10 +876,10 @@
             const statusMap = {
                 'Draft': '<span class="badge-status draft">📄 Draft</span>',
                 'Sent': '<span class="badge-status sent">📤 Sent</span>',
-                'Paid': '<span class="badge-status paid">✔️ Paid</span>',
+                'Paid': '<span class="badge-status paid">✅ Paid</span>',
                 'Unpaid': '<span class="badge-status unpaid">❌ Unpaid</span>',
-                'Cleared': '<span class="badge-status cleared">✔️ Cleared</span>',
-                'Completed': '<span class="badge-status completed">✔️ Completed</span>',
+                'Cleared': '<span class="badge-status cleared">✅ Cleared</span>',
+                'Completed': '<span class="badge-status completed">✅ Completed</span>',
                 'Partial': '<span class="badge-status partial">📦 Partial</span>',
                 'Expense': '<span class="badge-status expense">💰 Expense</span>',
                 'Refunded': '<span class="badge-status refund">🔄 Refunded</span>',
@@ -1199,7 +1201,7 @@
                 addActivity('payment', `Payment received from ${trans.customer || 'Walk-in'} - UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Payment of UGX ${amount.toLocaleString()} received`, 'success');
+                toast(`✅ Payment of UGX ${amount.toLocaleString()} received`, 'success');
             };
         }
 
@@ -1255,7 +1257,7 @@
             document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); confirmDispatch(); };
         }
 
-        // ── CREATE INVOICE Modal ──
+        // ── CREATE INVOICE Modal ── FIXED: ALL invoices start as "Sent" ──
         function buildInvoiceModal(card) {
             if (!canCreateInvoice()) {
                 card.innerHTML =
@@ -1279,7 +1281,8 @@
             card.innerHTML = `
             <h3><i class="fas fa-file-invoice"></i> Create Invoice</h3>
             <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
-                <i class="fas fa-info-circle"></i> Invoices are created with "Sent" status. They become "Paid" when payment is received by Cashier.
+                <i class="fas fa-info-circle"></i> 
+                <strong>All invoices</strong> are created here <br>
             </div>
             <form id="modalForm">
                 <div class="row2">
@@ -1312,16 +1315,20 @@
                     <div class="row2">
                         <div><label>Address</label><input id="newCustAddress" placeholder="Location" /></div>
                         <div><label>Account Type</label>
-                            <select id="newCustAccountType">
-                                <option value="cash">Cash (Walk-in)</option>
+                            <select id="newCustAccountType" onchange="toggleCustomerFields()">
+                                <option value="cash">Walk-in (Cash)</option>
                                 <option value="credit">Credit</option>
                                 <option value="deposit">Deposit</option>
                             </select>
                         </div>
                     </div>
+                    <div id="depositField" class="conditional-field hidden">
+                        <div class="row2">
+                            <div><label>Deposit Amount (UGX) *</label><input id="newCustDeposit" type="number" placeholder="0" value="0" /></div>
+                        </div>
+                    </div>
                     <div class="row2">
-                        <div><label>Credit Limit (UGX)</label><input id="newCustLimit" type="number" placeholder="0" value="0" /></div>
-                        <div style="display:flex;align-items:end;gap:0.5rem;">
+                        <div style="display:flex;align-items:end;gap:0.5rem;grid-column:1/-1;">
                             <button type="button" class="btn btn-sm btn-success" onclick="saveNewCustomer()" style="flex:1;"><i class="fas fa-check"></i> Add Customer</button>
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="cancelNewCustomer()">✕</button>
                         </div>
@@ -1362,11 +1369,23 @@
             </form>
           `;
 
+            // Toggle conditional fields based on account type
+            window.toggleCustomerFields = function() {
+                const accountType = document.getElementById('newCustAccountType').value;
+                const depositField = document.getElementById('depositField');
+                if (accountType === 'deposit') {
+                    depositField.classList.remove('hidden');
+                } else {
+                    depositField.classList.add('hidden');
+                }
+            };
+
             window.toggleNewCustomer = function() {
                 const section = document.getElementById('quickCustomerSection');
                 if (section.style.display === 'none') {
                     section.style.display = 'block';
                     document.getElementById('invCustomer').value = 'new';
+                    toggleCustomerFields();
                 } else {
                     section.style.display = 'none';
                     document.getElementById('invCustomer').value = '';
@@ -1381,9 +1400,15 @@
                 const company = document.getElementById('newCustCompany').value.trim();
                 const address = document.getElementById('newCustAddress').value.trim();
                 const accountType = document.getElementById('newCustAccountType').value;
-                const creditLimit = parseFloat(document.getElementById('newCustLimit').value) || 0;
+                const depositAmount = parseFloat(document.getElementById('newCustDeposit').value) || 0;
 
                 if (!name) { toast('Customer name required', 'error'); return; }
+
+                // For deposit customers, deposit amount is required
+                if (accountType === 'deposit' && depositAmount <= 0) {
+                    toast('Deposit amount required for deposit customers', 'error');
+                    return;
+                }
 
                 let existing = customers.find(c => c.name.toLowerCase() === name.toLowerCase());
                 if (existing) {
@@ -1402,12 +1427,31 @@
                     address: address,
                     company: company,
                     accountType: accountType,
-                    creditLimit: accountType === 'cash' ? 0 : creditLimit,
                     balance: 0,
-                    depositBalance: accountType === 'deposit' ? 0 : 0
+                    depositBalance: accountType === 'deposit' ? depositAmount : 0
                 };
                 customers.push(newCustomer);
                 saveData();
+
+                // If deposit customer, create a deposit record
+                if (accountType === 'deposit' && depositAmount > 0) {
+                    const deposit = {
+                        id: Date.now(),
+                        site: currentSite,
+                        date: new Date().toISOString().split('T')[0],
+                        customer: name,
+                        contact: contact,
+                        amount: depositAmount,
+                        used: 0,
+                        balance: depositAmount,
+                        status: 'active',
+                        notes: 'Initial deposit',
+                        paymentMethod: 'cash',
+                        transactions: []
+                    };
+                    deposits.push(deposit);
+                    saveData();
+                }
 
                 const select = document.getElementById('invCustomer');
                 const opt = document.createElement('option');
@@ -1419,8 +1463,8 @@
                 document.getElementById('quickCustomerSection').style.display = 'none';
                 loadCustomerDetails();
 
-                addAudit('Customer Added', `Quick add: ${name} by ${currentUser?.name}`);
-                toast(`✔️ Customer ${name} added successfully!`, 'success');
+                addAudit('Customer Added', `Quick add: ${name} (${accountType}) by ${currentUser?.name}`);
+                toast(`✅ Customer ${name} added successfully!`, 'success');
             };
 
             window.cancelNewCustomer = function() {
@@ -1432,6 +1476,8 @@
                 document.getElementById('newCustEmail').value = '';
                 document.getElementById('newCustCompany').value = '';
                 document.getElementById('newCustAddress').value = '';
+                document.getElementById('newCustDeposit').value = '0';
+                document.getElementById('depositField').classList.add('hidden');
             };
 
             window.loadCustomerDetails = function() {
@@ -1442,7 +1488,7 @@
                 if (customer) {
                     details.style.display = 'block';
                     details.innerHTML =
-                        `<strong>${customer.name}</strong> | ${customer.company || 'Individual'} | Balance: UGX ${(customer.balance || 0).toLocaleString()} | ${customer.accountType === 'credit' ? 'Credit Limit: UGX ' + (customer.creditLimit || 0).toLocaleString() : customer.accountType === 'deposit' ? 'Deposit Account' : 'Cash Customer'}`;
+                        `<strong>${customer.name}</strong> | ${customer.company || 'Individual'} | Balance: UGX ${(customer.balance || 0).toLocaleString()} | ${customer.accountType === 'credit' ? 'Credit Account' : customer.accountType === 'deposit' ? 'Deposit Account: UGX ' + (customer.depositBalance || 0).toLocaleString() : 'Cash Customer'}`;
                 }
             };
 
@@ -1487,30 +1533,35 @@
                     if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
                 }
 
+                // FIXED: ALL invoices start as "Sent" - Cashier marks as "Paid" when payment is received
                 let paymentMethod = 'Credit';
                 let status = 'Sent';
                 let balance = amount;
 
-                if (customer.accountType === 'cash') {
-                    paymentMethod = 'Cash';
-                    status = 'Paid';
-                    balance = 0;
-                } else if (customer.accountType === 'deposit') {
-                    paymentMethod = 'Deposit';
+                // For deposit customers, check if deposit can cover the amount
+                if (customer.accountType === 'deposit') {
                     const dep = deposits.find(d => d.customer === customer.name && d.site === site && d.status === 'active');
                     if (dep && dep.balance >= amount) {
-                        status = 'Paid';
-                        balance = 0;
-                        dep.used = (dep.used || 0) + amount;
-                        dep.balance = dep.amount - dep.used;
-                        if (dep.balance <= 0) dep.status = 'exhausted';
-                        if (!dep.transactions) dep.transactions = [];
-                        dep.transactions.push(docNumber);
-                    } else {
+                        // Deposit covers full amount - still "Sent" but we can note it
+                        // The cashier will still need to process it
+                        paymentMethod = 'Deposit';
                         status = 'Sent';
                         balance = amount;
+                        // We'll handle the deposit deduction when cashier processes payment
+                    } else {
+                        paymentMethod = 'Credit';
+                        status = 'Sent';
+                        balance = amount;
+                        if (dep) {
+                            toast(`⚠️ Deposit balance UGX ${dep.balance.toLocaleString()} is less than invoice amount UGX ${amount.toLocaleString()}. Invoice marked as "Sent".`, 'warning');
+                        }
                     }
+                } else if (customer.accountType === 'cash') {
+                    paymentMethod = 'Cash';
+                    status = 'Sent'; // Always Sent until cashier receives payment
+                    balance = amount;
                 } else {
+                    // Credit customer
                     paymentMethod = 'Credit';
                     status = 'Sent';
                     balance = amount;
@@ -1530,7 +1581,7 @@
                     amount: amount,
                     balance: balance,
                     docNumber: docNumber,
-                    status: status,
+                    status: status, // Always "Sent" initially
                     paymentMethod: paymentMethod,
                     notes: notes,
                     dispatch: { loaded: false },
@@ -1539,16 +1590,17 @@
                 transactions.push(trans);
                 updateStock(site, item, qty, 'subtract');
 
-                if (customer.accountType === 'credit') {
+                // Only add to balance for credit customers
+                if (customer.accountType === 'credit' && balance > 0) {
                     customer.balance = (customer.balance || 0) + balance;
                 }
 
                 saveData();
-                addAudit('Invoice Created', `${docNumber} - ${customer.name} - UGX ${amount.toLocaleString()}`);
-                addActivity('sale', `Invoice ${docNumber} created for ${customer.name}`);
+                addAudit('Invoice Created', `${docNumber} - ${customer.name} - UGX ${amount.toLocaleString()} (Sent)`);
+                addActivity('sale', `Invoice ${docNumber} created for ${customer.name} (Sent)`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Invoice ${docNumber} created with status "${status}"!`, 'success');
+                toast(`✅ Invoice ${docNumber} created with status "Sent"! Awaiting payment.`, 'success');
             };
         }
 
@@ -1626,7 +1678,7 @@
             addActivity('dispatch', `Dispatched: ${receipt} - ${trans.item} x${loadedQty}`);
             renderTable();
             closeModal();
-            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ── CLEAR INVOICE ──
@@ -1658,7 +1710,7 @@
                     `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
                 renderTable();
-                toast(`✔️ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
+                toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
             });
         }
 
@@ -1685,7 +1737,7 @@
                 addAudit('Document Voided', `Voided ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document voided: ${trans.docNumber}`);
                 renderTable();
-                toast(`✔️ ${trans.docNumber} voided`, 'warning');
+                toast(`✅ ${trans.docNumber} voided`, 'warning');
             });
         }
 
@@ -1812,7 +1864,7 @@
 
             window.generateFullReport = function() {
                 let txt =
-                    `KAJANA Enterprises Ltd LTD\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
+                    `KAJANA ENTERPRISES LTD\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
                 txt += `FINANCIAL SUMMARY\n${'-'.repeat(30)}\n`;
                 txt += `Total Revenue: UGX ${totalRevenue.toLocaleString()}\n`;
                 txt += `Accounts Receivable (Sent): UGX ${totalReceivables.toLocaleString()}\n`;
@@ -1972,7 +2024,7 @@
                 addActivity('expense', `Expense: ${category} - UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Expense recorded!`, 'success');
+                toast(`✅ Expense recorded!`, 'success');
                 return;
             }
         }
@@ -2015,35 +2067,39 @@
                 <div class="row2">
                     <div><label>Address</label><input id="custAddress" placeholder="Location" /></div>
                     <div><label>Account Type</label>
-                        <select id="custAccountType">
+                        <select id="custAccountType" onchange="toggleCustomerFormFields()">
+                            <option value="cash">Walk-in (Cash)</option>
                             <option value="credit">Credit</option>
                             <option value="deposit">Deposit</option>
-                            <option value="cash">Cash</option>
                         </select>
                     </div>
                 </div>
-                <div class="row2">
-                    <div><label>Credit Limit (UGX)</label><input id="custCreditLimit" type="number" placeholder="0" value="1000000" /></div>
+                <div id="custDepositField" class="conditional-field hidden">
+                    <div class="row2">
+                        <div><label>Deposit Amount (UGX) *</label><input id="custDeposit" type="number" placeholder="0" value="0" /></div>
+                    </div>
+                </div>
+                <div class="row2" id="custBalanceField">
                     <div><label>Opening Balance (UGX)</label><input id="custOpeningBalance" type="number" placeholder="0" value="0" /></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add Customer</button>
             </form>
             <div style="max-height:300px;overflow-y:auto;">
               <table style="font-size:0.8rem;min-width:auto;">
-                <thead><tr><th>Name</th><th>Contact</th><th>Type</th><th>Balance</th><th>Limit</th><th style="text-align:center;">Action</th></tr></thead>
+                <thead><tr><th>Name</th><th>Contact</th><th>Type</th><th>Balance</th><th>Deposit</th><th style="text-align:center;">Action</th></tr></thead>
                 <tbody>
           `;
             customers.forEach((c) => {
                 const totalOutstanding = transactions.filter(t => t.customerId === c.id && t.type === 'Invoice' && t
                         .status !== 'Paid' && t.status !== 'Void')
                     .reduce((s, o) => s + (o.balance || 0), 0);
-                const overLimit = totalOutstanding > (c.creditLimit || 0) && c.accountType === 'credit';
-                html += `<tr style="${overLimit ? 'background:#fee;' : ''}">
-              <td>${c.name} ${overLimit ? '⚠️' : ''}</td>
+                const depBalance = c.accountType === 'deposit' ? c.depositBalance || 0 : 0;
+                html += `<tr>
+              <td>${c.name}</td>
               <td>${c.contact || '-'}</td>
               <td>${c.accountType}</td>
               <td>UGX ${totalOutstanding.toLocaleString()}</td>
-              <td>UGX ${(c.creditLimit || 0).toLocaleString()}</td>
+              <td>${c.accountType === 'deposit' ? 'UGX ' + depBalance.toLocaleString() : '-'}</td>
               <td style="text-align:center;">
                 <i class="fas fa-eye" onclick="viewCustomer(${c.id})" style="cursor:pointer;color:#6f42c1;"></i>
                 <i class="fas fa-trash-alt" onclick="deleteCustomer(${c.id})" style="cursor:pointer;color:var(--red);margin-left:0.5rem;"></i>
@@ -2054,6 +2110,19 @@
             <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
           `;
             card.innerHTML = html;
+
+            window.toggleCustomerFormFields = function() {
+                const accountType = document.getElementById('custAccountType').value;
+                const depositField = document.getElementById('custDepositField');
+                const balanceField = document.getElementById('custBalanceField');
+                if (accountType === 'deposit') {
+                    depositField.classList.remove('hidden');
+                    balanceField.style.display = 'none';
+                } else {
+                    depositField.classList.add('hidden');
+                    balanceField.style.display = 'grid';
+                }
+            };
 
             window.viewCustomer = function(id) {
                 const customer = customers.find(c => c.id === id);
@@ -2071,7 +2140,9 @@
                 msg += `Email: ${customer.email || 'N/A'}\n`;
                 msg += `Company: ${customer.company || 'N/A'}\n`;
                 msg += `Account Type: ${customer.accountType}\n`;
-                msg += `Credit Limit: UGX ${(customer.creditLimit || 0).toLocaleString()}\n`;
+                if (customer.accountType === 'deposit') {
+                    msg += `Deposit Balance: UGX ${(customer.depositBalance || 0).toLocaleString()}\n`;
+                }
                 msg += `Total Invoices: UGX ${totalInvoices.toLocaleString()}\n`;
                 msg += `Total Paid: UGX ${totalPaid.toLocaleString()}\n`;
                 msg += `Outstanding: UGX ${outstanding.toLocaleString()}\n`;
@@ -2106,10 +2177,16 @@
                 const company = document.getElementById('custCompany').value.trim();
                 const address = document.getElementById('custAddress').value.trim();
                 const accountType = document.getElementById('custAccountType').value;
-                const creditLimit = parseFloat(document.getElementById('custCreditLimit').value) || 0;
                 const openingBalance = parseFloat(document.getElementById('custOpeningBalance').value) || 0;
+                const depositAmount = parseFloat(document.getElementById('custDeposit').value) || 0;
 
                 if (!name) { toast('Name required', 'error'); return; }
+                
+                if (accountType === 'deposit' && depositAmount <= 0) {
+                    toast('Deposit amount required for deposit customers', 'error');
+                    return;
+                }
+
                 const newId = Math.max(...customers.map(c => c.id), 0) + 1;
                 const customer = {
                     id: newId,
@@ -2119,14 +2196,34 @@
                     address,
                     company,
                     accountType,
-                    creditLimit,
-                    balance: openingBalance,
-                    depositBalance: accountType === 'deposit' ? openingBalance : 0
+                    balance: accountType === 'credit' ? openingBalance : 0,
+                    depositBalance: accountType === 'deposit' ? depositAmount : 0
                 };
                 customers.push(customer);
                 saveData();
-                addAudit('Customer Added', `Added customer: ${name}`);
-                addActivity('system', `Customer added: ${name}`);
+
+                // If deposit customer, create a deposit record
+                if (accountType === 'deposit' && depositAmount > 0) {
+                    const deposit = {
+                        id: Date.now(),
+                        site: currentSite,
+                        date: new Date().toISOString().split('T')[0],
+                        customer: name,
+                        contact: contact,
+                        amount: depositAmount,
+                        used: 0,
+                        balance: depositAmount,
+                        status: 'active',
+                        notes: 'Initial deposit',
+                        paymentMethod: 'cash',
+                        transactions: []
+                    };
+                    deposits.push(deposit);
+                    saveData();
+                }
+
+                addAudit('Customer Added', `Added customer: ${name} (${accountType})`);
+                addActivity('system', `Customer added: ${name} (${accountType})`);
                 toast('Customer added!', 'success');
                 buildCustomersModal(card);
             };
@@ -2267,7 +2364,7 @@
 
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
-                    const status = perms[a] ? '✔️' : '❌';
+                    const status = perms[a] ? '✅' : '❌';
                     msg += `${status} ${actionLabels[a] || a}\n`;
                 });
                 msg += '\nEnter which actions to enable (comma separated):\n' + actions.map(a => actionLabels[a] || a)
@@ -2404,7 +2501,7 @@
             } else {
                 siteDeposits.forEach(d => {
                     const statusClass = d.status === 'active' ? 'active' : 'exhausted';
-                    const statusLabel = d.status === 'active' ? '✔️ Active' : '⛔ Exhausted';
+                    const statusLabel = d.status === 'active' ? '✅ Active' : '⛔ Exhausted';
                     html += `
                         <div class="deposit-card">
                             <div style="display:flex;justify-content:space-between;align-items:start;">
@@ -2482,7 +2579,7 @@
                 `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
                 `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
-            const customerOptions = customers.map(c =>
+            const customerOptions = customers.filter(c => c.accountType === 'deposit' || c.accountType === 'credit').map(c =>
                 `<option value="${c.id}">${c.name} (${c.accountType})</option>`
                 ).join('');
 
@@ -2498,10 +2595,12 @@
                         <select id="depCustomerSelect" required>
                             <option value="">-- Select Customer --</option>
                             ${customerOptions}
+                            <option value="new">➕ New Customer</option>
                         </select>
                     </div>
-                    <div><label>Or New Customer</label>
-                        <input id="depCustomerNew" placeholder="Enter new customer name" />
+                    <div id="newCustomerNameField" style="display:none;">
+                        <label>New Customer Name</label>
+                        <input id="depCustomerNew" placeholder="Enter customer name" />
                     </div>
                 </div>
                 <div><label>Contact</label><input id="depContact" placeholder="Phone/Email" /></div>
@@ -2519,6 +2618,15 @@
             </form>
           `;
 
+            document.getElementById('depCustomerSelect').onchange = function() {
+                const newField = document.getElementById('newCustomerNameField');
+                if (this.value === 'new') {
+                    newField.style.display = 'block';
+                } else {
+                    newField.style.display = 'none';
+                }
+            };
+
             document.getElementById('modalForm').onsubmit = function(e) {
                 e.preventDefault();
                 const site = document.getElementById('depSite').value;
@@ -2531,17 +2639,51 @@
                 const notes = document.getElementById('depNotes').value.trim();
 
                 let customerName = '';
-                if (customerSelect) {
+                let customerId = null;
+
+                if (customerSelect === 'new') {
+                    if (!customerNew) { toast('Enter customer name', 'error'); return; }
+                    // Check if customer exists
+                    let existing = customers.find(c => c.name.toLowerCase() === customerNew.toLowerCase());
+                    if (existing) {
+                        customerName = existing.name;
+                        customerId = existing.id;
+                    } else {
+                        // Create new customer
+                        const newCust = {
+                            id: nextCustomerId++,
+                            name: customerNew,
+                            contact: contact,
+                            email: '',
+                            address: '',
+                            company: '',
+                            accountType: 'deposit',
+                            balance: 0,
+                            depositBalance: 0
+                        };
+                        customers.push(newCust);
+                        customerName = newCust.name;
+                        customerId = newCust.id;
+                        addAudit('Customer Added', `Added deposit customer: ${customerNew}`);
+                    }
+                } else if (customerSelect) {
                     const cust = customers.find(c => c.id === parseInt(customerSelect));
-                    if (cust) customerName = cust.name;
-                } else if (customerNew) {
-                    customerName = customerNew;
+                    if (cust) {
+                        customerName = cust.name;
+                        customerId = cust.id;
+                    }
                 } else {
                     toast('Select or enter a customer', 'error');
                     return;
                 }
 
                 if (!amount || amount <= 0) { toast('Enter valid amount', 'error'); return; }
+
+                // Update customer's deposit balance
+                const customer = customers.find(c => c.id === customerId);
+                if (customer) {
+                    customer.depositBalance = (customer.depositBalance || 0) + amount;
+                }
 
                 const deposit = {
                     id: Date.now(),
@@ -2563,7 +2705,7 @@
                 addActivity('deposit', `New deposit: ${customerName} - UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Deposit of UGX ${amount.toLocaleString()} recorded for ${customerName}`, 'success');
+                toast(`✅ Deposit of UGX ${amount.toLocaleString()} recorded for ${customerName}`, 'success');
             };
         }
 
@@ -2664,7 +2806,7 @@
                 renderTable();
                 closeModal();
                 toast(
-                    `✔️ UGX ${total.toLocaleString()} deducted from ${deposit.customer}'s deposit. Balance: UGX ${deposit.balance.toLocaleString()}`,
+                    `✅ UGX ${total.toLocaleString()} deducted from ${deposit.customer}'s deposit. Balance: UGX ${deposit.balance.toLocaleString()}`,
                     'success');
             };
 
@@ -2811,7 +2953,7 @@
                 addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Refund request submitted for ${original.docNumber}`, 'success');
+                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
             };
         }
 
@@ -2894,7 +3036,7 @@
                     addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
                     renderTable();
                     buildRefundApprovalModal(card);
-                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
+                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
                 });
             };
 
@@ -3083,7 +3225,7 @@
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
                     addActivity('system', `Production: ${item} +${qty}`);
-                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -3107,7 +3249,7 @@
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
                 addActivity('system', `Materials received: ${name} +${qty}`);
-                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
             };
@@ -3201,6 +3343,8 @@
         window.toggleNewCustomer = toggleNewCustomer;
         window.saveNewCustomer = saveNewCustomer;
         window.cancelNewCustomer = cancelNewCustomer;
+        window.toggleCustomerFields = toggleCustomerFields;
+        window.toggleCustomerFormFields = toggleCustomerFormFields;
         window.loadCustomerInvoices = loadCustomerInvoices;
         window.updatePaymentDetails = updatePaymentDetails;
         window.updatePaymentBalance = updatePaymentBalance;
@@ -3235,7 +3379,7 @@
         window.confirmOk = confirmOk;
 
         renderTable();
-        console.log('✔️ Kajana Enterprises Ltd v9.4 - Fully Operational');
+        console.log('✅ Kajana Enterprises Ltd v9.7 - Fully Operational - All invoices start as "Sent"');
         console.log(
             `📊 ${transactions.length} transactions, ${customers.length} customers, ${users.length} users, ${deposits.length} deposits`
             );
