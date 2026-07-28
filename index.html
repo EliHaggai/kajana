@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise · Complete Management System</title>
+    <title>Kajana Enterprises Ltd · Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -239,7 +239,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v8.4</div>
+                <div class="subtitle">concrete · stone · mining · complete management v8.5</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -317,7 +317,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.4 · Partial Dispatch Fixed</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd · v8.5 · Credit Sale Fixed</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -731,7 +731,6 @@
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'pending').length;
-            // Cleared documents ready for dispatch (status = 'cleared' OR 'partial') - both can be dispatched
             const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && (t.status === 'cleared' || t.status === 'partial') && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
             const creditBal = siteData.filter(t => t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
             const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
@@ -967,7 +966,6 @@
                     if (deposit) {
                         deposit.status = 'exhausted';
                         if (deposit.balance > 0) {
-                            // Create a refund transaction for the balance
                             const refundTrans = {
                                 id: nextInvoiceId++,
                                 date: new Date().toISOString().split('T')[0],
@@ -1132,7 +1130,6 @@
                 if (!deposit) { toast('Deposit not found', 'error'); return; }
                 if (total > deposit.balance) { toast(`Insufficient balance! Available: UGX ${deposit.balance.toLocaleString()}`, 'error'); return; }
 
-                // Create sale transaction
                 const docNumber = generateInvoiceNumber();
                 const trans = {
                     id: nextInvoiceId++,
@@ -1159,14 +1156,12 @@
                 };
                 transactions.push(trans);
 
-                // Update deposit
                 deposit.used = (deposit.used || 0) + total;
                 deposit.balance = deposit.amount - deposit.used;
                 if (deposit.balance <= 0) deposit.status = 'exhausted';
                 if (!deposit.transactions) deposit.transactions = [];
                 deposit.transactions.push(docNumber);
 
-                // Update stock
                 updateStock(deposit.site || currentSite, item, qty, 'subtract');
 
                 saveData();
@@ -1177,7 +1172,6 @@
                 toast(`✔️ UGX ${total.toLocaleString()} deducted from ${deposit.customer}'s deposit. Balance: UGX ${deposit.balance.toLocaleString()}`, 'success');
             };
 
-            // Auto-fill price when item selected
             window.updateItemPrice = function() {
                 const sel = document.getElementById('useItemSelect');
                 const priceField = document.getElementById('usePrice');
@@ -1203,7 +1197,6 @@
                 const price = parseFloat(document.getElementById('usePrice').value) || 0;
                 const total = qty * price;
                 document.getElementById('useTotal').value = total;
-                // Update remaining balance
                 const id = parseInt(document.getElementById('useDepositSelect').value);
                 if (id) {
                     const deposit = deposits.find(d => d.id === id);
@@ -1250,7 +1243,7 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ──
+        // ── SALE Modal ── FIXED: Credit sales now save properly
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1280,7 +1273,6 @@
                 <div><label>Document Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
             `;
 
-            // Get active deposits for dropdown
             const depositOptions = deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0)
                 .map(d => `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`).join('');
 
@@ -1365,12 +1357,18 @@
                 if (payment === 'cash') {
                     cashField.style.display = 'block';
                     document.getElementById('modalCustomerInput').required = true;
+                    document.getElementById('modalCustomerSelect').required = false;
+                    document.getElementById('modalDepositSelect').required = false;
                 } else if (payment === 'credit') {
                     creditField.style.display = 'block';
                     if (creditFields) creditFields.style.display = 'grid';
+                    document.getElementById('modalCustomerInput').required = false;
                     document.getElementById('modalCustomerSelect').required = true;
+                    document.getElementById('modalDepositSelect').required = false;
                 } else if (payment === 'deposit') {
                     depositField.style.display = 'block';
+                    document.getElementById('modalCustomerInput').required = false;
+                    document.getElementById('modalCustomerSelect').required = false;
                     document.getElementById('modalDepositSelect').required = true;
                 }
             };
@@ -1393,7 +1391,11 @@
                 }
             };
 
-            document.getElementById('modalForm').onsubmit = function(e) { e.preventDefault(); saveTransaction('sale'); };
+            document.getElementById('modalForm').onsubmit = function(e) { 
+                e.preventDefault(); 
+                saveTransaction('sale'); 
+            };
+            
             const siteField = document.getElementById('modalSite');
             if (!canChooseSite) siteField.value = currentSite;
             siteField.onchange = function() { populateItems(this.value); };
@@ -1483,10 +1485,8 @@
             };
         }
 
-        // ── DISPATCH Modal ── FIXED: includes cleared AND partial documents ──
+        // ── DISPATCH Modal ──
         function buildDispatchModal(card) {
-            // Get cleared documents ready for dispatch (status = 'cleared' OR 'partial')
-            // Include both invoices and receipts
             const clearedDocuments = transactions.filter(t =>
                 t.site === currentSite &&
                 (t.status === 'cleared' || t.status === 'partial') &&
@@ -2379,7 +2379,7 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // TRANSACTION OPERATIONS
+        // TRANSACTION OPERATIONS - FIXED: Credit sales now save
         // ═══════════════════════════════════════════════════════════════
 
         function saveTransaction(type) {
@@ -2409,10 +2409,23 @@
             if (payment === 'cash') {
                 customer = document.getElementById('modalCustomerInput').value.trim() || 'Walk-in Customer';
             } else if (payment === 'credit') {
+                // FIXED: Get customer from select dropdown properly
                 const select = document.getElementById('modalCustomerSelect');
-                customer = select ? select.value || '' : '';
+                customer = select ? select.value : '';
+                // If no customer selected, use the input field value (for new credit customers)
+                if (!customer) {
+                    customer = document.getElementById('modalCustomerInput').value.trim();
+                }
+                if (!customer) {
+                    toast('Please select or enter a credit customer', 'error');
+                    return;
+                }
                 deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
                 balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
+                // For credit, balance = amount - deposit
+                if (deposit > 0) {
+                    balance = amount - deposit;
+                }
             } else if (payment === 'deposit') {
                 const select = document.getElementById('modalDepositSelect');
                 depositId = parseInt(select.value);
@@ -2459,21 +2472,26 @@
                 if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
             }
 
+            // For credit, ensure balance is calculated correctly
+            if (payment === 'credit' && deposit === 0) {
+                balance = amount; // Full credit, no deposit
+            }
+
             const trans = {
                 id: nextInvoiceId++,
                 date: new Date().toISOString().split('T')[0],
-                site,
-                item,
-                qty,
-                price,
-                amount,
-                customer: customer || (type === 'expense' ? 'Expense' : 'Walk-in Customer'),
-                contact,
-                address,
-                company,
+                site: site,
+                item: item,
+                qty: qty,
+                price: price,
+                amount: amount,
+                customer: customer,
+                contact: contact,
+                address: address,
+                company: company,
                 payment: payment,
-                deposit: payment === 'deposit' ? amount : deposit,
-                balance: payment === 'credit' ? balance : 0,
+                deposit: deposit,
+                balance: balance,
                 docNumber: docNumber,
                 docType: type === 'expense' ? 'expense' : 'invoice',
                 status: type === 'expense' ? 'expense' : 'pending',
@@ -2610,7 +2628,6 @@
             if (!trans) { toast('Document not found', 'error'); return; }
             if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot dispatch expense or refund', 'error'); return; }
             if (trans.status === 'cancelled') { toast('Cannot dispatch cancelled document', 'error'); return; }
-            // Allow dispatch for both 'cleared' and 'partial' status
             if (trans.status !== 'cleared' && trans.status !== 'partial') { toast('Document must be cleared first', 'error'); return; }
             
             const currentRemaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
@@ -2625,7 +2642,6 @@
                 loadedQty: (trans.dispatch?.loadedQty || 0) + loadedQty, 
                 balanceQty 
             };
-            // If balance is 0, mark as completed; otherwise keep as partial
             trans.status = balanceQty === 0 ? 'completed' : 'partial';
             
             loadingOrders.push({
@@ -2772,7 +2788,7 @@
         window.showItemDetails = showItemDetails;
 
         renderTable();
-        console.log('✔️ Kajana Enterprise System v8.4 loaded - Partial Dispatch Fixed');
+        console.log('✔️ Kajana Enterprises Ltd System v8.5 loaded - Credit Sale Fixed');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients, ${deposits.length} deposits`);
     </script>
 </body>
