@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise Ltd · Complete Management System</title>
+    <title>Kajana Enterprise · Complete Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -215,7 +215,7 @@
     <!-- LOGIN -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
+            <h1>⛰️ Kajana <span>Enterprise</span></h1>
             <div class="sub">Concrete &amp; Stone Mining · Complete Management</div>
             <form id="loginForm">
                 <label><i class="fas fa-user"></i> Username / Email</label>
@@ -238,8 +238,8 @@
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
-                <h1>⛰️ Kajana <span>Enterprise Ltd</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v8.3</div>
+                <h1>⛰️ Kajana <span>Enterprise</span></h1>
+                <div class="subtitle">concrete · stone · mining · complete management v8.4</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -317,7 +317,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.3 · Deposits Management</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.4 · Partial Dispatch Fixed</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -731,7 +731,8 @@
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'pending').length;
-            const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'cleared' && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
+            // Cleared documents ready for dispatch (status = 'cleared' OR 'partial') - both can be dispatched
+            const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && (t.status === 'cleared' || t.status === 'partial') && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
             const creditBal = siteData.filter(t => t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
             const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
             const totalDeposits = deposits.filter(d => d.site === currentSite).reduce((s, d) => s + d.balance, 0);
@@ -751,15 +752,16 @@
                     <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
-                    <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared transaction'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                     <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             } else if (role === 'dispatch') {
                 statsHTML = `
-                    <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready for loading' : 'No cleared transactions'}</div></div>
+                    <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">📦 Partial</div><div class="value">${siteData.filter(t => t.status === 'partial').length}</div><div class="sub">Partially loaded</div></div>
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
             } else {
@@ -767,7 +769,7 @@
                     <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
                     <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
-                    <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared & ready' : 'No cleared transaction'}</div></div>
+                    <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
                     <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
@@ -1278,6 +1280,10 @@
                 <div><label>Document Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
             `;
 
+            // Get active deposits for dropdown
+            const depositOptions = deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0)
+                .map(d => `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`).join('');
+
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
             <form id="modalForm">
@@ -1310,7 +1316,7 @@
                         <label>Select Deposit Customer</label>
                         <select id="modalDepositSelect" onchange="fillDepositCustomer()">
                             <option value="">-- Select Deposit --</option>
-                            ${deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0).map(d => `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`).join('')}
+                            ${depositOptions}
                         </select>
                     </div>
                 </div>
@@ -1477,33 +1483,36 @@
             };
         }
 
-        // ── DISPATCH Modal ──
+        // ── DISPATCH Modal ── FIXED: includes cleared AND partial documents ──
         function buildDispatchModal(card) {
+            // Get cleared documents ready for dispatch (status = 'cleared' OR 'partial')
+            // Include both invoices and receipts
             const clearedDocuments = transactions.filter(t =>
                 t.site === currentSite &&
-                t.status === 'cleared' &&
+                (t.status === 'cleared' || t.status === 'partial') &&
                 (t.docType === 'invoice' || t.docType === 'receipt') &&
                 (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0) &&
                 t.status !== 'cancelled'
             );
 
-            let options = '<option value="">-- Select Transaction --</option>';
+            let options = '<option value="">-- Select Cleared/Partial Document --</option>';
             if (clearedDocuments.length === 0) {
-                options += '<option value="" disabled>No cleared transactions available for dispatch</option>';
+                options += '<option value="" disabled>No cleared documents available for dispatch</option>';
             } else {
                 clearedDocuments.forEach(t => {
                     const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
-                    options += `<option value="${t.docNumber}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
+                    const statusLabel = t.status === 'partial' ? ' (Partial)' : '';
+                    options += `<option value="${t.docNumber}">${t.docNumber}${statusLabel} - ${t.customer || 'N/A'} - ${t.item} (${remaining} units remaining)</option>`;
                 });
             }
 
             card.innerHTML = `
             <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
             <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
-                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared and ready for dispatch
+                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared/partial and ready for dispatch
             </div>
             <form id="modalForm">
-                <div><label>Cleared Transaction</label>
+                <div><label>Cleared/Partial Document</label>
                     <select id="dispatchReceipt" required onchange="updateDispatchInfo()">
                         ${options}
                     </select>
@@ -2413,7 +2422,6 @@
                         customer = dep.customer;
                         deposit = amount;
                         balance = 0;
-                        // Check if deposit has enough balance
                         if (amount > dep.balance) {
                             toast(`Insufficient deposit balance! Available: UGX ${dep.balance.toLocaleString()}`, 'error');
                             return;
@@ -2476,7 +2484,6 @@
             };
             transactions.push(trans);
 
-            // Update deposit if payment method is deposit
             if (payment === 'deposit' && depositId) {
                 const dep = deposits.find(d => d.id === depositId);
                 if (dep) {
@@ -2603,7 +2610,8 @@
             if (!trans) { toast('Document not found', 'error'); return; }
             if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot dispatch expense or refund', 'error'); return; }
             if (trans.status === 'cancelled') { toast('Cannot dispatch cancelled document', 'error'); return; }
-            if (trans.status !== 'cleared') { toast('Document must be cleared first', 'error'); return; }
+            // Allow dispatch for both 'cleared' and 'partial' status
+            if (trans.status !== 'cleared' && trans.status !== 'partial') { toast('Document must be cleared first', 'error'); return; }
             
             const currentRemaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
             if (loadedQty > currentRemaining) { toast(`Only ${currentRemaining} units remaining`, 'error'); return; }
@@ -2617,6 +2625,7 @@
                 loadedQty: (trans.dispatch?.loadedQty || 0) + loadedQty, 
                 balanceQty 
             };
+            // If balance is 0, mark as completed; otherwise keep as partial
             trans.status = balanceQty === 0 ? 'completed' : 'partial';
             
             loadingOrders.push({
@@ -2657,7 +2666,7 @@
 
         function generateReport() {
             const data = getReportData();
-            let txt = `KAJANA Enterprise Ltd LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
+            let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Doc # | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
                 txt += `${t.date} | ${t.docNumber || 'N/A'} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
@@ -2763,7 +2772,7 @@
         window.showItemDetails = showItemDetails;
 
         renderTable();
-        console.log('✔️ Kajana Enterprise Ltd System v8.3 loaded - Deposits Management');
+        console.log('✔️ Kajana Enterprise System v8.4 loaded - Partial Dispatch Fixed');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients, ${deposits.length} deposits`);
     </script>
 </body>
