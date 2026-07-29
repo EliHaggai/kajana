@@ -260,7 +260,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v10.4</div>
+                <div class="subtitle">concrete · stone · mining · complete management v10.5</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -337,7 +337,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.4 · Fixed Table Sort + Permissions</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.5 · Expenses Hidden for Sales/Dispatch</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -380,7 +380,7 @@
 
         const DEFAULT_INVENTORY = {
             workshop: [
-                { name: 'Pavers', price: 20000, stock: 430, minStock: 100 },
+                { name: 'Pavers', price: 20000, stock: 500, minStock: 100 },
                 { name: 'Slabs', price: 35000, stock: 200, minStock: 50 },
                 { name: 'Road Cubs', price: 9000, stock: 800, minStock: 200 },
                 { name: 'Concrete Blocks', price: 12000, stock: 800, minStock: 300 },
@@ -556,6 +556,15 @@
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
                     docNumber: 'EXP-002', docType: 'expense', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {},
                     customerId: null },
+                // Add some extra entries for testing
+                { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Concrete Blocks', qty: 47, price: 12000, amount: 564000,
+                    customer: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd',
+                    payment: 'customer', deposit: 0, balance: 0, docNumber: 'RPT-0001', docType: 'receipt', status: 'partial', paid: true, paymentMode: 'customer',
+                    dispatch: { loaded: false }, customerId: 1 },
+                { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Road Cubs', qty: 45, price: 9000, amount: 405000,
+                    customer: 'okello', contact: '', address: '', company: '',
+                    payment: 'cash', deposit: 0, balance: 0, docNumber: 'RPT-0002', docType: 'receipt', status: 'partial', paid: true, paymentMode: 'cash',
+                    dispatch: { loaded: false }, customerId: null },
             ];
             auditLog = [{ timestamp: new Date().toISOString(), user: 'system', action: 'System Init', details: 'Database seeded with unified customers', site: 'workshop' }];
             saveData();
@@ -784,13 +793,11 @@
             let statsHTML = '';
 
             if (role === 'sales') {
-                // Sales dashboard - NO monthly sales, just today's sales and pending dispatch
                 statsHTML = `
                     <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for clearance' : 'All cleared'}</div></div>
                 `;
             } else if (role === 'dispatch') {
-                // Dispatch dashboard - NO monthly sales
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
@@ -808,7 +815,6 @@
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                 `;
             } else {
-                // GM, Manager, Accountant - clickable stats with monthly sales
                 statsHTML = `
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
@@ -834,14 +840,11 @@
 
             let filtered = transactions.filter(t => t.site === currentSite);
             
-            // Sales and Dispatch should NOT see expenses
-            if (hideExpenses) {
-                filtered = filtered.filter(t => t.docType !== 'expense');
-            }
-            
-            // Sales and Dispatch should NOT see refunds or adjustments
+            // FIXED: Sales and Dispatch should NOT see expenses, refunds, or adjustments
             if (isSales() || isDispatch()) {
-                filtered = filtered.filter(t => t.docType !== 'refund' && t.docType !== 'adjustment');
+                filtered = filtered.filter(t => t.docType !== 'expense' && t.docType !== 'refund' && t.docType !== 'adjustment');
+            } else if (hideExpenses) {
+                filtered = filtered.filter(t => t.docType !== 'expense');
             }
 
             // Sort by date descending (latest first)
@@ -1302,7 +1305,7 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── FIXED: "Add New Customer" appears first in dropdown ──
+        // ── SALE Modal ──
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1419,7 +1422,6 @@
                 items.forEach(item => {
                     const name = item.dataset.name?.toLowerCase() || '';
                     if (item.dataset.id === 'new') {
-                        // Always show "Add New Customer"
                         item.style.display = 'block';
                         hasVisible = true;
                         return;
@@ -1432,12 +1434,8 @@
                     }
                 });
                 
-                // Show no results message if nothing found (except add new)
                 let noResult = dropdownList.querySelector('.no-results');
-                const addNewItem = dropdownList.querySelector('.dropdown-item.add-new');
-                if (!hasVisible && addNewItem) {
-                    // Only add new is visible, which is fine
-                } else if (!hasVisible) {
+                if (!hasVisible) {
                     if (!noResult) {
                         noResult = document.createElement('div');
                         noResult.className = 'no-results';
@@ -1457,7 +1455,6 @@
                 const company = element.dataset.company || '';
                 const balance = parseFloat(element.dataset.balance) || 0;
                 
-                // Clear selection
                 document.querySelectorAll('#customerDropdownList .dropdown-item').forEach(el => {
                     el.classList.remove('selected');
                 });
@@ -1467,17 +1464,14 @@
                 document.getElementById('customerSearchInput').value = name || element.textContent.trim();
                 document.getElementById('customerDropdownList').style.display = 'none';
                 
-                // Hide new customer form
                 document.getElementById('newCustomerForm').classList.remove('show');
                 
                 if (id === 'new') {
-                    // Show new customer form
                     document.getElementById('newCustomerForm').classList.add('show');
                     document.getElementById('customerDetails').style.display = 'none';
                     document.getElementById('selectedCustomerId').value = '';
                     document.getElementById('customerSearchInput').value = '➕ Add New Customer';
                 } else if (id) {
-                    // Show customer details
                     const details = document.getElementById('customerDetails');
                     details.style.display = 'block';
                     const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : 'UGX -' + Math.abs(balance).toLocaleString();
@@ -1488,7 +1482,6 @@
                     `;
                 }
                 
-                // Close dropdown
                 setTimeout(() => {
                     document.getElementById('customerDropdownList').style.display = 'none';
                 }, 200);
@@ -1541,7 +1534,6 @@
                 addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()} during sale`);
                 addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
                 
-                // Add to dropdown (after "Add New Customer")
                 const list = document.getElementById('customerDropdownList');
                 const addNewItem = list.querySelector('.dropdown-item.add-new');
                 const newItem = document.createElement('div');
@@ -1562,13 +1554,11 @@
                     list.appendChild(newItem);
                 }
                 
-                // Select the new customer
                 selectCustomer(newItem);
                 document.getElementById('newCustomerForm').classList.remove('show');
                 toast(`✅ Customer ${name} added!`, 'success');
             };
 
-            // Click outside to close dropdown
             document.addEventListener('click', function(e) {
                 const container = document.querySelector('.searchable-dropdown');
                 if (container && !container.contains(e.target)) {
@@ -1604,15 +1594,12 @@
             populateItems(currentSite);
             document.getElementById('modalItemSelect').onchange = updatePrice;
             
-            // Initialize payment type toggle
             togglePaymentType();
             
-            // Click handler for dropdown items
             document.querySelectorAll('#customerDropdownList .dropdown-item').forEach(item => {
                 item.onclick = function() { selectCustomer(this); };
             });
             
-            // Search input focus shows dropdown
             document.getElementById('customerSearchInput').addEventListener('focus', function() {
                 document.getElementById('customerDropdownList').style.display = 'block';
                 filterCustomerDropdown();
@@ -2523,7 +2510,6 @@
                     customerCompany = existing.company || '';
                 }
             } else {
-                // Customer payment type - get from hidden selected ID
                 const selectedId = document.getElementById('selectedCustomerId')?.value;
                 if (selectedId && selectedId !== 'new') {
                     const customer = customers.find(c => c.id === parseInt(selectedId));
@@ -2535,7 +2521,6 @@
                         customerCompany = customer.company || '';
                     }
                 } else {
-                    // Check if new customer form was used
                     const newName = document.getElementById('newCustName')?.value?.trim();
                     if (newName) {
                         customerName = newName;
@@ -2575,8 +2560,6 @@
 
             const notes = document.getElementById('modalNotes')?.value || '';
 
-            // For customer payment type, this is either deposit (positive balance) or credit (negative balance)
-            // The sale reduces the customer's balance (deposit decreases, credit increases)
             const trans = {
                 id: nextInvoiceId++,
                 date: new Date().toISOString().split('T')[0],
@@ -2603,11 +2586,9 @@
             };
             transactions.push(trans);
 
-            // Update customer balance for customer payment type
             if (customerId && type !== 'expense' && paymentType === 'customer') {
                 const customer = customers.find(c => c.id === customerId);
                 if (customer) {
-                    // Customer balance decreases (deposit decreases or credit increases)
                     customer.balance = (customer.balance || 0) - amount;
                 }
             }
@@ -2889,7 +2870,7 @@
         window.deleteCustomer = window.deleteCustomer || function() {};
 
         renderTable();
-        console.log('✅ Kajana Enterprise System v10.4 loaded - Fixed Table Sort + Permissions');
+        console.log('✅ Kajana Enterprise System v10.5 loaded - Expenses hidden for Sales/Dispatch');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} unified customers`);
     </script>
 </body>
