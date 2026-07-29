@@ -185,11 +185,12 @@
         .searchable-dropdown { position: relative; }
         .searchable-dropdown input[type="text"] { width: 100%; padding: 0.6rem 1rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; font-size: 0.9rem; }
         .searchable-dropdown input[type="text"]:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
-        .searchable-dropdown .dropdown-list { position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #fff; border: 1px solid #d6d2cc; border-radius: 16px; margin-top: 4px; z-index: 100; display: none; box-shadow: var(--shadow); }
+        .searchable-dropdown .dropdown-list { position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; background: #fff; border: 1px solid #d6d2cc; border-radius: 16px; margin-top: 4px; z-index: 100; display: none; box-shadow: var(--shadow); }
         .searchable-dropdown .dropdown-list .dropdown-item { padding: 0.5rem 1rem; cursor: pointer; border-bottom: 1px solid #f1efeb; font-size: 0.85rem; }
         .searchable-dropdown .dropdown-list .dropdown-item:hover { background: #f5f3f0; }
         .searchable-dropdown .dropdown-list .dropdown-item:last-child { border-bottom: none; }
         .searchable-dropdown .dropdown-list .dropdown-item.selected { background: #f9d71c; font-weight: 600; }
+        .searchable-dropdown .dropdown-list .dropdown-item.add-new { background: #e8f5e9; font-weight: 600; border-top: 2px solid var(--yellow); }
         .searchable-dropdown .dropdown-list .no-results { padding: 0.5rem 1rem; color: #888; font-size: 0.85rem; text-align: center; }
 
         /* NEW CUSTOMER FORM */
@@ -259,7 +260,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v10.3</div>
+                <div class="subtitle">concrete · stone · mining · complete management v10.4</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -336,7 +337,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.3 · Searchable Customers</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.4 · Fixed Table Sort + Permissions</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -783,14 +784,13 @@
             let statsHTML = '';
 
             if (role === 'sales') {
-                // Sales dashboard - NO clickable stats
+                // Sales dashboard - NO monthly sales, just today's sales and pending dispatch
                 statsHTML = `
                     <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
                     <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for clearance' : 'All cleared'}</div></div>
-                    <div class="stat-card"><div class="label">📈 Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices</div></div>
                 `;
             } else if (role === 'dispatch') {
-                // Dispatch dashboard - NO clickable stats
+                // Dispatch dashboard - NO monthly sales
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
@@ -808,7 +808,7 @@
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                 `;
             } else {
-                // GM, Manager, Accountant - clickable stats
+                // GM, Manager, Accountant - clickable stats with monthly sales
                 statsHTML = `
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
@@ -833,15 +833,28 @@
             });
 
             let filtered = transactions.filter(t => t.site === currentSite);
+            
+            // Sales and Dispatch should NOT see expenses
             if (hideExpenses) {
                 filtered = filtered.filter(t => t.docType !== 'expense');
             }
+            
+            // Sales and Dispatch should NOT see refunds or adjustments
+            if (isSales() || isDispatch()) {
+                filtered = filtered.filter(t => t.docType !== 'refund' && t.docType !== 'adjustment');
+            }
+
+            // Sort by date descending (latest first)
+            filtered = filtered.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date) || b.id - a.id;
+            });
 
             if (!filtered.length) {
                 tbody.innerHTML = `<tr><td colspan="${hideFinancials ? 9 : 11}" style="text-align:center;padding:2rem;color:#777;">No transactions</td></tr>`;
                 renderStats();
                 return;
             }
+            
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
                 cleared: '<span class="badge-status cleared">✅ Cleared</span>',
@@ -853,26 +866,46 @@
                 refund: '<span class="badge-status refund">🔄 Refunded</span>',
                 cancelled: '<span class="badge-status cancelled">🚫 Cancelled</span>'
             };
+            
             tbody.innerHTML = filtered.map((t, i) => {
                 const st = t.status || 'pending';
-                const canClear = canClearInvoice() && (st === 'pending' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt');
+                
+                // Sales and Dispatch should NOT see unpaid status for credit sales
+                const showUnpaid = !(isSales() || isDispatch());
+                
+                const canClear = canClearInvoice() && (st === 'pending' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canCancel = canCancelInvoice() && (st === 'pending' || st === 'cleared' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
+                
+                // For Sales and Dispatch, show only basic statuses
+                let statusDisplay = statusMap[st] || statusMap.pending;
+                if (isSales() || isDispatch()) {
+                    if (st === 'pending' || st === 'cleared' || st === 'completed' || st === 'partial') {
+                        statusDisplay = statusMap[st] || statusMap.pending;
+                    } else {
+                        statusDisplay = '<span class="badge-status pending">📄 Invoice</span>';
+                    }
+                }
+                
                 const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 const docDisplay = t.docNumber || '-';
                 const paymentDisplay = t.payment === 'customer' ? 'Customer' : (t.payment || 'cash');
+                
+                // Format amount with UGX - for negative values
+                const amountDisplay = t.amount < 0 ? `UGX -${Math.abs(t.amount).toLocaleString()}` : `UGX ${t.amount.toLocaleString()}`;
+                
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
               <td><span class="badge-site ${t.site}">${t.site.toUpperCase()}</span></td>
               <td>${t.item}</td>
               <td>${t.qty}</td>
-              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : Number(t.amount).toLocaleString()}</td>
+              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : amountDisplay}</td>
               <td>${t.customer || '-'}</td>
               <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : paymentDisplay}</td>
               <td>${docDisplay}</td>
-              <td>${statusMap[st] || statusMap.pending} ${t.payment === 'customer' && t.status !== 'cancelled' && !t.paid ? ' ' + paidStatus : ''}</td>
+              <td>${statusDisplay} ${t.payment === 'customer' && t.status !== 'cancelled' && !t.paid && showUnpaid ? ' ' + paidStatus : ''}</td>
               <td class="action-icons" style="text-align:center;">
                 ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear/Receipt"></i>` : ''}
                 ${canCancel ? `<i class="fas fa-times-circle text-danger" onclick="cancelInvoice(${t.id})" title="Cancel"></i>` : ''}
@@ -981,7 +1014,8 @@
                     const balanceClass = c.balance > 0 ? 'balance-positive' : (c.balance < 0 ? 'balance-negative' : 'balance-zero');
                     const statusClass = c.balance > 0 ? 'deposit' : (c.balance < 0 ? 'credit' : 'neutral');
                     const statusLabel = c.balance > 0 ? '💰 Deposit' : (c.balance < 0 ? '💳 Credit' : '⚪ Neutral');
-                    const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString();
+                    // Format balance with UGX - for negative values
+                    const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString();
                     
                     const custTrans = transactions.filter(t => t.customer === c.name && t.site === currentSite);
                     const totalSpent = custTrans.filter(t => t.docType === 'invoice' || t.docType === 'receipt').reduce((s, t) => s + t.amount, 0);
@@ -1024,7 +1058,8 @@
                 msg += `Email: ${customer.email || 'N/A'}\n`;
                 msg += `Company: ${customer.company || 'N/A'}\n`;
                 msg += `Address: ${customer.address || 'N/A'}\n`;
-                msg += `Balance: ${customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString()}\n`;
+                const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : 'UGX -' + Math.abs(customer.balance).toLocaleString();
+                msg += `Balance: ${balanceDisplay}\n`;
                 msg += `Type: ${customer.balance > 0 ? 'Deposit' : (customer.balance < 0 ? 'Credit' : 'Neutral')}\n`;
                 msg += `\nTransaction History (${custTrans.length}):\n${'-'.repeat(40)}\n`;
                 
@@ -1032,7 +1067,8 @@
                     msg += 'No transactions found.\n';
                 } else {
                     custTrans.slice(-10).reverse().forEach(t => {
-                        msg += `${t.date} | ${t.docNumber} | ${t.item} x${t.qty} | UGX ${t.amount.toLocaleString()} | ${t.status}\n`;
+                        const amtDisplay = t.amount < 0 ? 'UGX -' + Math.abs(t.amount).toLocaleString() : 'UGX ' + t.amount.toLocaleString();
+                        msg += `${t.date} | ${t.docNumber} | ${t.item} x${t.qty} | ${amtDisplay} | ${t.status}\n`;
                     });
                 }
                 alert(msg);
@@ -1140,7 +1176,7 @@
         // ── ADJUST BALANCE Modal ──
         function buildAdjustBalanceModal(card) {
             const customerOptions = customers.map(c => 
-                `<option value="${c.id}">${c.name} (${c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString()})</option>`
+                `<option value="${c.id}">${c.name} (${c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString()})</option>`
             ).join('');
 
             card.innerHTML = `
@@ -1180,7 +1216,8 @@
                 if (!id) { info.innerHTML = ''; return; }
                 const customer = customers.find(c => c.id === id);
                 if (customer) {
-                    info.innerHTML = `<strong>${customer.name}</strong> | Current Balance: ${customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString()}`;
+                    const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : 'UGX -' + Math.abs(customer.balance).toLocaleString();
+                    info.innerHTML = `<strong>${customer.name}</strong> | Current Balance: ${balanceDisplay}`;
                 }
             };
 
@@ -1231,7 +1268,8 @@
                 addActivity('system', `Balance adjusted for ${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✅ ${customer.name}'s balance updated to ${newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : '-UGX ' + Math.abs(newBalance).toLocaleString()}`, 'success');
+                const newBalanceDisplay = newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : 'UGX -' + Math.abs(newBalance).toLocaleString();
+                toast(`✅ ${customer.name}'s balance updated to ${newBalanceDisplay}`, 'success');
             };
         }
 
@@ -1264,7 +1302,7 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── FIXED: Searchable customer dropdown + New Customer form ──
+        // ── SALE Modal ── FIXED: "Add New Customer" appears first in dropdown ──
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1276,12 +1314,14 @@
                 `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
                 `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
-            // Build customer options for the dropdown
-            const customerOptions = customers.map(c => {
-                const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString();
+            // Build customer options - "Add New Customer" FIRST
+            let customerOptionsHTML = `<div class="dropdown-item add-new" data-id="new" style="background:#e8f5e9;font-weight:600;border-bottom:2px solid var(--yellow);">➕ Add New Customer</div>`;
+            
+            customers.forEach(c => {
+                const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString();
                 const typeLabel = c.balance > 0 ? '💰' : (c.balance < 0 ? '💳' : '⚪');
-                return `<div class="dropdown-item" data-id="${c.id}" data-name="${c.name}" data-contact="${c.contact || ''}" data-address="${c.address || ''}" data-company="${c.company || ''}" data-balance="${c.balance}">${typeLabel} ${c.name} (${balanceDisplay})</div>`;
-            }).join('');
+                customerOptionsHTML += `<div class="dropdown-item" data-id="${c.id}" data-name="${c.name}" data-contact="${c.contact || ''}" data-address="${c.address || ''}" data-company="${c.company || ''}" data-balance="${c.balance}">${typeLabel} ${c.name} (${balanceDisplay})</div>`;
+            });
 
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
@@ -1308,8 +1348,7 @@
                         <div class="searchable-dropdown">
                             <input type="text" id="customerSearchInput" placeholder="Type to search customers..." oninput="filterCustomerDropdown()" />
                             <div class="dropdown-list" id="customerDropdownList">
-                                ${customerOptions}
-                                <div class="dropdown-item" data-id="new" style="background:#e8f5e9;font-weight:600;border-top:2px solid var(--yellow);">➕ Add New Customer</div>
+                                ${customerOptionsHTML}
                             </div>
                         </div>
                         <input type="hidden" id="selectedCustomerId" value="" />
@@ -1380,6 +1419,7 @@
                 items.forEach(item => {
                     const name = item.dataset.name?.toLowerCase() || '';
                     if (item.dataset.id === 'new') {
+                        // Always show "Add New Customer"
                         item.style.display = 'block';
                         hasVisible = true;
                         return;
@@ -1392,13 +1432,16 @@
                     }
                 });
                 
-                // Show no results message if nothing found
+                // Show no results message if nothing found (except add new)
                 let noResult = dropdownList.querySelector('.no-results');
-                if (!hasVisible) {
+                const addNewItem = dropdownList.querySelector('.dropdown-item.add-new');
+                if (!hasVisible && addNewItem) {
+                    // Only add new is visible, which is fine
+                } else if (!hasVisible) {
                     if (!noResult) {
                         noResult = document.createElement('div');
                         noResult.className = 'no-results';
-                        noResult.textContent = 'No customers found. Click "+ Add New Customer" to create one.';
+                        noResult.textContent = 'No customers found. Click "Add New Customer" to create one.';
                         dropdownList.appendChild(noResult);
                     }
                 } else if (noResult) {
@@ -1437,7 +1480,7 @@
                     // Show customer details
                     const details = document.getElementById('customerDetails');
                     details.style.display = 'block';
-                    const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : '-UGX ' + Math.abs(balance).toLocaleString();
+                    const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : 'UGX -' + Math.abs(balance).toLocaleString();
                     const typeLabel = balance > 0 ? 'Deposit' : (balance < 0 ? 'Credit' : 'Neutral');
                     details.innerHTML = `
                         <strong>${name}</strong> | ${company || 'Individual'}<br>
@@ -1498,8 +1541,9 @@
                 addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()} during sale`);
                 addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
                 
-                // Add to dropdown
+                // Add to dropdown (after "Add New Customer")
                 const list = document.getElementById('customerDropdownList');
+                const addNewItem = list.querySelector('.dropdown-item.add-new');
                 const newItem = document.createElement('div');
                 newItem.className = 'dropdown-item';
                 newItem.dataset.id = newCustomer.id;
@@ -1508,11 +1552,15 @@
                 newItem.dataset.address = newCustomer.address || '';
                 newItem.dataset.company = newCustomer.company || '';
                 newItem.dataset.balance = newCustomer.balance;
-                const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : '-UGX ' + Math.abs(balance).toLocaleString();
+                const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : 'UGX -' + Math.abs(balance).toLocaleString();
                 const typeLabel = balance > 0 ? '💰' : (balance < 0 ? '💳' : '⚪');
                 newItem.innerHTML = `${typeLabel} ${name} (${balanceDisplay})`;
                 newItem.onclick = function() { selectCustomer(this); };
-                list.insertBefore(newItem, list.querySelector('.dropdown-item[data-id="new"]'));
+                if (addNewItem) {
+                    list.insertBefore(newItem, addNewItem.nextSibling);
+                } else {
+                    list.appendChild(newItem);
+                }
                 
                 // Select the new customer
                 selectCustomer(newItem);
@@ -2494,7 +2542,6 @@
                         customerContact = document.getElementById('newCustContact')?.value?.trim() || '';
                         customerAddress = document.getElementById('newCustAddress')?.value?.trim() || '';
                         customerCompany = document.getElementById('newCustCompany')?.value?.trim() || '';
-                        // Check if customer exists
                         const existing = customers.find(c => c.name.toLowerCase() === customerName.toLowerCase());
                         if (existing) {
                             customerId = existing.id;
@@ -2528,6 +2575,8 @@
 
             const notes = document.getElementById('modalNotes')?.value || '';
 
+            // For customer payment type, this is either deposit (positive balance) or credit (negative balance)
+            // The sale reduces the customer's balance (deposit decreases, credit increases)
             const trans = {
                 id: nextInvoiceId++,
                 date: new Date().toISOString().split('T')[0],
@@ -2554,9 +2603,11 @@
             };
             transactions.push(trans);
 
+            // Update customer balance for customer payment type
             if (customerId && type !== 'expense' && paymentType === 'customer') {
                 const customer = customers.find(c => c.id === customerId);
                 if (customer) {
+                    // Customer balance decreases (deposit decreases or credit increases)
                     customer.balance = (customer.balance || 0) - amount;
                 }
             }
@@ -2733,7 +2784,8 @@
             let txt = `KAJANA ENTERPRISE LIMITED\n${currentSite.toUpperCase()} SITE REPORT\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(55)}\n\n`;
             txt += `Date | Doc # | Item | Qty | Amount | Customer | Status | Paid\n${'-'.repeat(55)}\n`;
             data.forEach(t => {
-                txt += `${t.date} | ${t.docNumber || 'N/A'} | ${t.item} | ${t.qty} | ${t.amount.toLocaleString()} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
+                const amtDisplay = t.amount < 0 ? 'UGX -' + Math.abs(t.amount).toLocaleString() : 'UGX ' + t.amount.toLocaleString();
+                txt += `${t.date} | ${t.docNumber || 'N/A'} | ${t.item} | ${t.qty} | ${amtDisplay} | ${t.customer || 'N/A'} | ${t.status} | ${t.paid ? 'Yes' : 'No'}\n`;
             });
             const sales = data.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const exp = data.filter(t => t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
@@ -2837,7 +2889,7 @@
         window.deleteCustomer = window.deleteCustomer || function() {};
 
         renderTable();
-        console.log('✅ Kajana Enterprise System v10.3 loaded - Searchable Customers + Sales/Dispatch stats fixed');
+        console.log('✅ Kajana Enterprise System v10.4 loaded - Fixed Table Sort + Permissions');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} unified customers`);
     </script>
 </body>
