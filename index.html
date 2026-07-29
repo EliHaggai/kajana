@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise Ltd · Complete Management System</title>
+    <title>Kajana Enterprise · Complete Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -61,8 +61,9 @@
 
         /* STATS */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem; }
-        .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: pointer; position: relative; overflow: hidden; }
-        .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px) scale(1.01); }
+        .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: default; position: relative; overflow: hidden; }
+        .stat-card.clickable { cursor: pointer; }
+        .stat-card.clickable:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px) scale(1.01); }
         .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; color: #5a5a5a; }
         .stat-card .value { font-weight: 700; font-size: 1.5rem; margin-top: 0.1rem; }
         .stat-card .sub { font-size: 0.7rem; color: #888; }
@@ -180,6 +181,21 @@
         .customer-card .status-badge.credit { background: #f8d7da; color: #721c24; }
         .customer-card .status-badge.neutral { background: #e9ecef; color: #6c757d; }
 
+        /* SEARCH DROPDOWN */
+        .searchable-dropdown { position: relative; }
+        .searchable-dropdown input[type="text"] { width: 100%; padding: 0.6rem 1rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; font-size: 0.9rem; }
+        .searchable-dropdown input[type="text"]:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
+        .searchable-dropdown .dropdown-list { position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #fff; border: 1px solid #d6d2cc; border-radius: 16px; margin-top: 4px; z-index: 100; display: none; box-shadow: var(--shadow); }
+        .searchable-dropdown .dropdown-list .dropdown-item { padding: 0.5rem 1rem; cursor: pointer; border-bottom: 1px solid #f1efeb; font-size: 0.85rem; }
+        .searchable-dropdown .dropdown-list .dropdown-item:hover { background: #f5f3f0; }
+        .searchable-dropdown .dropdown-list .dropdown-item:last-child { border-bottom: none; }
+        .searchable-dropdown .dropdown-list .dropdown-item.selected { background: #f9d71c; font-weight: 600; }
+        .searchable-dropdown .dropdown-list .no-results { padding: 0.5rem 1rem; color: #888; font-size: 0.85rem; text-align: center; }
+
+        /* NEW CUSTOMER FORM */
+        .new-customer-form { background: #f8f9fa; padding: 1rem; border-radius: 16px; margin-top: 0.5rem; border: 1px dashed #ccc; display: none; }
+        .new-customer-form.show { display: block; }
+
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
         .flag-stripes-mini { display: flex; gap: 2px; }
@@ -243,7 +259,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v10.2</div>
+                <div class="subtitle">concrete · stone · mining · complete management v10.3</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -320,7 +336,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd · v10.2 · Unified Customers (Cash + Customer)</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v10.3 · Searchable Customers</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -405,9 +421,6 @@
             { username: 'dispatch@adyel', password: 'password', role: 'dispatch', name: 'Dispatch Adyel', sites: ['adyel'] },
         ];
 
-        // Default unified customers with balances
-        // Positive balance = Deposit (customer has money with company)
-        // Negative balance = Credit (customer owes company)
         const DEFAULT_CUSTOMERS = [
             { id: 1, name: 'John Doe', contact: '+256 700 111', email: 'john@abc.com', address: 'Kampala', company: 'ABC Ltd', balance: 3800000 },
             { id: 2, name: 'Mary Smith', contact: '+256 700 222', email: 'mary@smith.com', address: 'Ngetta', company: '', balance: -550000 },
@@ -770,36 +783,40 @@
             let statsHTML = '';
 
             if (role === 'sales') {
+                // Sales dashboard - NO clickable stats
                 statsHTML = `
-                    <div class="stat-card" onclick="openModal('sale')"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card" onclick="openModal('dispatch')"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for clearance' : 'All cleared'}</div></div>
-                `;
-            } else if (role === 'cashier') {
-                statsHTML = `
-                    <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">👤 Daily Customer Sales</div><div class="value">UGX ${todayCustomerSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
-                    <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers with deposits</div></div>
-                    <div class="stat-card"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers with credit</div></div>
-                    <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
+                    <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${todaySales > 0 ? 'UGX ' + todaySales.toLocaleString() : '0'}</div><div class="sub">${siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for clearance' : 'All cleared'}</div></div>
+                    <div class="stat-card"><div class="label">📈 Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices</div></div>
                 `;
             } else if (role === 'dispatch') {
+                // Dispatch dashboard - NO clickable stats
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
                     <div class="stat-card"><div class="label">📦 Partial</div><div class="value">${siteData.filter(t => t.status === 'partial').length}</div><div class="sub">Partially loaded</div></div>
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
-            } else {
+            } else if (role === 'cashier') {
                 statsHTML = `
-                    <div class="stat-card"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
-                    <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
-                    <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
-                    <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
-                    <div class="stat-card"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
-                    <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">👤 Daily Customer Sales</div><div class="value">UGX ${todayCustomerSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
+                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers with deposits</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers with credit</div></div>
+                    <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
+                `;
+            } else {
+                // GM, Manager, Accountant - clickable stats
+                statsHTML = `
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
+                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
+                    <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
+                    <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
                 `;
             }
 
@@ -827,11 +844,11 @@
             }
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
-                cleared: '<span class="badge-status cleared">✔️ Cleared</span>',
-                completed: '<span class="badge-status completed">✔️ Completed</span>',
+                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
+                completed: '<span class="badge-status completed">✅ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
                 partial: '<span class="badge-status partial">📦 Partial</span>',
-                paid: '<span class="badge-status paid">✔️ Paid</span>',
+                paid: '<span class="badge-status paid">✅ Paid</span>',
                 unpaid: '<span class="badge-status unpaid">❌ Unpaid</span>',
                 refund: '<span class="badge-status refund">🔄 Refunded</span>',
                 cancelled: '<span class="badge-status cancelled">🚫 Cancelled</span>'
@@ -842,7 +859,7 @@
                 const canCancel = canCancelInvoice() && (st === 'pending' || st === 'cleared' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
-                const paidStatus = t.paid ? '<span class="badge-status paid">✔️ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
+                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 const docDisplay = t.docNumber || '-';
                 const paymentDisplay = t.payment === 'customer' ? 'Customer' : (t.payment || 'cash');
                 return `<tr>
@@ -1114,7 +1131,7 @@
                 saveData();
                 addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()}`);
                 addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
-                toast(`✔️ Customer ${name} added!`, 'success');
+                toast(`✅ Customer ${name} added!`, 'success');
                 closeModal();
                 buildCustomersModal(document.getElementById('modalCard'));
             };
@@ -1214,7 +1231,7 @@
                 addActivity('system', `Balance adjusted for ${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ ${customer.name}'s balance updated to ${newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : '-UGX ' + Math.abs(newBalance).toLocaleString()}`, 'success');
+                toast(`✅ ${customer.name}'s balance updated to ${newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : '-UGX ' + Math.abs(newBalance).toLocaleString()}`, 'success');
             };
         }
 
@@ -1247,7 +1264,7 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── FIXED: Only Cash and Customer options
+        // ── SALE Modal ── FIXED: Searchable customer dropdown + New Customer form ──
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1259,17 +1276,18 @@
                 `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
                 `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
+            // Build customer options for the dropdown
             const customerOptions = customers.map(c => {
                 const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString();
                 const typeLabel = c.balance > 0 ? '💰' : (c.balance < 0 ? '💳' : '⚪');
-                return `<option value="${c.id}">${typeLabel} ${c.name} (${balanceDisplay})</option>`;
+                return `<div class="dropdown-item" data-id="${c.id}" data-name="${c.name}" data-contact="${c.contact || ''}" data-address="${c.address || ''}" data-company="${c.company || ''}" data-balance="${c.balance}">${typeLabel} ${c.name} (${balanceDisplay})</div>`;
             }).join('');
 
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
             <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
                 <i class="fas fa-info-circle"></i> <strong>Cash</strong> = Walk-in customer paying immediately.<br>
-                <strong>Customer</strong> = Existing customer (deposit or credit).
+                <strong>Customer</strong> = Existing customer (deposit or credit). Their balance will be adjusted.
             </div>
             <form id="modalForm">
                 <div class="row2">
@@ -1286,14 +1304,45 @@
                     <div><label>Customer Name</label><input id="modalCustomerInput" placeholder="Enter customer name" /></div>
                 </div>
                 <div id="customerSelectField" style="display:none;">
-                    <div><label>Select Customer</label>
-                        <select id="modalCustomerSelect" required onchange="loadCustomerDetails()">
-                            <option value="">-- Select Customer --</option>
-                            ${customerOptions}
-                            <option value="new">➕ New Customer</option>
-                        </select>
+                    <div><label>Search / Select Customer</label>
+                        <div class="searchable-dropdown">
+                            <input type="text" id="customerSearchInput" placeholder="Type to search customers..." oninput="filterCustomerDropdown()" />
+                            <div class="dropdown-list" id="customerDropdownList">
+                                ${customerOptions}
+                                <div class="dropdown-item" data-id="new" style="background:#e8f5e9;font-weight:600;border-top:2px solid var(--yellow);">➕ Add New Customer</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedCustomerId" value="" />
                     </div>
                     <div id="customerDetails" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;display:none;"></div>
+                    
+                    <!-- New Customer Form -->
+                    <div class="new-customer-form" id="newCustomerForm">
+                        <div style="font-weight:600;margin-bottom:0.5rem;color:#6610f2;">📝 New Customer Details</div>
+                        <div class="row2">
+                            <div><label>Customer Name *</label><input id="newCustName" placeholder="Full name" /></div>
+                            <div><label>Contact</label><input id="newCustContact" placeholder="Phone/Email" /></div>
+                        </div>
+                        <div class="row2">
+                            <div><label>Email</label><input id="newCustEmail" placeholder="email@example.com" /></div>
+                            <div><label>Company</label><input id="newCustCompany" placeholder="Company name" /></div>
+                        </div>
+                        <div><label>Address</label><input id="newCustAddress" placeholder="Location" /></div>
+                        <div class="row2">
+                            <div><label>Initial Balance (UGX)</label>
+                                <input id="newCustBalance" type="number" step="any" placeholder="0" value="0" />
+                                <div style="font-size:0.7rem;color:#888;">Positive = Deposit, Negative = Credit</div>
+                            </div>
+                            <div><label>Balance Type</label>
+                                <select id="newCustBalanceType" onchange="setNewBalanceValue()">
+                                    <option value="0">Neutral (0)</option>
+                                    <option value="deposit">Deposit (Positive)</option>
+                                    <option value="credit">Credit (Negative)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-success" onclick="saveNewCustomerFromSale()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-check"></i> Add Customer & Use</button>
+                    </div>
                 </div>
 
                 <hr class="modal-divider">
@@ -1320,6 +1369,166 @@
             </form>
           `;
 
+            // ── Customer Dropdown Functions ──
+            window.filterCustomerDropdown = function() {
+                const searchInput = document.getElementById('customerSearchInput');
+                const dropdownList = document.getElementById('customerDropdownList');
+                const query = searchInput.value.toLowerCase().trim();
+                const items = dropdownList.querySelectorAll('.dropdown-item');
+                let hasVisible = false;
+                
+                items.forEach(item => {
+                    const name = item.dataset.name?.toLowerCase() || '';
+                    if (item.dataset.id === 'new') {
+                        item.style.display = 'block';
+                        hasVisible = true;
+                        return;
+                    }
+                    if (query === '' || name.includes(query)) {
+                        item.style.display = 'block';
+                        hasVisible = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show no results message if nothing found
+                let noResult = dropdownList.querySelector('.no-results');
+                if (!hasVisible) {
+                    if (!noResult) {
+                        noResult = document.createElement('div');
+                        noResult.className = 'no-results';
+                        noResult.textContent = 'No customers found. Click "+ Add New Customer" to create one.';
+                        dropdownList.appendChild(noResult);
+                    }
+                } else if (noResult) {
+                    noResult.remove();
+                }
+            };
+
+            window.selectCustomer = function(element) {
+                const id = element.dataset.id;
+                const name = element.dataset.name || '';
+                const contact = element.dataset.contact || '';
+                const address = element.dataset.address || '';
+                const company = element.dataset.company || '';
+                const balance = parseFloat(element.dataset.balance) || 0;
+                
+                // Clear selection
+                document.querySelectorAll('#customerDropdownList .dropdown-item').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                element.classList.add('selected');
+                
+                document.getElementById('selectedCustomerId').value = id;
+                document.getElementById('customerSearchInput').value = name || element.textContent.trim();
+                document.getElementById('customerDropdownList').style.display = 'none';
+                
+                // Hide new customer form
+                document.getElementById('newCustomerForm').classList.remove('show');
+                
+                if (id === 'new') {
+                    // Show new customer form
+                    document.getElementById('newCustomerForm').classList.add('show');
+                    document.getElementById('customerDetails').style.display = 'none';
+                    document.getElementById('selectedCustomerId').value = '';
+                    document.getElementById('customerSearchInput').value = '➕ Add New Customer';
+                } else if (id) {
+                    // Show customer details
+                    const details = document.getElementById('customerDetails');
+                    details.style.display = 'block';
+                    const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : '-UGX ' + Math.abs(balance).toLocaleString();
+                    const typeLabel = balance > 0 ? 'Deposit' : (balance < 0 ? 'Credit' : 'Neutral');
+                    details.innerHTML = `
+                        <strong>${name}</strong> | ${company || 'Individual'}<br>
+                        Balance: ${balanceDisplay} (${typeLabel}) | ${contact || 'No contact'}
+                    `;
+                }
+                
+                // Close dropdown
+                setTimeout(() => {
+                    document.getElementById('customerDropdownList').style.display = 'none';
+                }, 200);
+            };
+
+            window.toggleCustomerDropdown = function() {
+                const list = document.getElementById('customerDropdownList');
+                list.style.display = list.style.display === 'block' ? 'none' : 'block';
+                filterCustomerDropdown();
+            };
+
+            window.setNewBalanceValue = function() {
+                const type = document.getElementById('newCustBalanceType').value;
+                const balField = document.getElementById('newCustBalance');
+                const currentVal = parseFloat(balField.value) || 0;
+                if (type === 'deposit' && currentVal < 0) {
+                    balField.value = Math.abs(currentVal);
+                } else if (type === 'credit' && currentVal > 0) {
+                    balField.value = -Math.abs(currentVal);
+                } else if (type === '0') {
+                    balField.value = 0;
+                }
+            };
+
+            window.saveNewCustomerFromSale = function() {
+                const name = document.getElementById('newCustName').value.trim();
+                const contact = document.getElementById('newCustContact').value.trim();
+                const email = document.getElementById('newCustEmail').value.trim();
+                const company = document.getElementById('newCustCompany').value.trim();
+                const address = document.getElementById('newCustAddress').value.trim();
+                const balance = parseFloat(document.getElementById('newCustBalance').value) || 0;
+
+                if (!name) { toast('Customer name required', 'error'); return; }
+                if (customers.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                    toast('Customer already exists!', 'warning');
+                    return;
+                }
+
+                const newCustomer = {
+                    id: nextCustomerId++,
+                    name: name,
+                    contact: contact,
+                    email: email,
+                    address: address,
+                    company: company,
+                    balance: balance
+                };
+                customers.push(newCustomer);
+                saveData();
+                addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()} during sale`);
+                addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
+                
+                // Add to dropdown
+                const list = document.getElementById('customerDropdownList');
+                const newItem = document.createElement('div');
+                newItem.className = 'dropdown-item';
+                newItem.dataset.id = newCustomer.id;
+                newItem.dataset.name = newCustomer.name;
+                newItem.dataset.contact = newCustomer.contact || '';
+                newItem.dataset.address = newCustomer.address || '';
+                newItem.dataset.company = newCustomer.company || '';
+                newItem.dataset.balance = newCustomer.balance;
+                const balanceDisplay = balance >= 0 ? 'UGX ' + balance.toLocaleString() : '-UGX ' + Math.abs(balance).toLocaleString();
+                const typeLabel = balance > 0 ? '💰' : (balance < 0 ? '💳' : '⚪');
+                newItem.innerHTML = `${typeLabel} ${name} (${balanceDisplay})`;
+                newItem.onclick = function() { selectCustomer(this); };
+                list.insertBefore(newItem, list.querySelector('.dropdown-item[data-id="new"]'));
+                
+                // Select the new customer
+                selectCustomer(newItem);
+                document.getElementById('newCustomerForm').classList.remove('show');
+                toast(`✅ Customer ${name} added!`, 'success');
+            };
+
+            // Click outside to close dropdown
+            document.addEventListener('click', function(e) {
+                const container = document.querySelector('.searchable-dropdown');
+                if (container && !container.contains(e.target)) {
+                    const list = document.getElementById('customerDropdownList');
+                    if (list) list.style.display = 'none';
+                }
+            });
+
             window.togglePaymentType = function() {
                 const type = document.getElementById('modalPaymentType').value;
                 const cashField = document.getElementById('cashCustomerField');
@@ -1329,28 +1538,10 @@
                     cashField.style.display = 'block';
                     customerField.style.display = 'none';
                     document.getElementById('modalCustomerInput').required = true;
-                    document.getElementById('modalCustomerSelect').required = false;
                 } else {
                     cashField.style.display = 'none';
                     customerField.style.display = 'block';
                     document.getElementById('modalCustomerInput').required = false;
-                    document.getElementById('modalCustomerSelect').required = true;
-                }
-            };
-
-            window.loadCustomerDetails = function() {
-                const id = document.getElementById('modalCustomerSelect').value;
-                const details = document.getElementById('customerDetails');
-                if (!id || id === 'new') { details.style.display = 'none'; return; }
-                const customer = customers.find(c => c.id === parseInt(id));
-                if (customer) {
-                    details.style.display = 'block';
-                    const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString();
-                    const typeLabel = customer.balance > 0 ? 'Deposit' : (customer.balance < 0 ? 'Credit' : 'Neutral');
-                    details.innerHTML = `
-                        <strong>${customer.name}</strong> | ${customer.company || 'Individual'}<br>
-                        Balance: ${balanceDisplay} (${typeLabel}) | ${customer.contact || 'No contact'}
-                    `;
                 }
             };
 
@@ -1367,6 +1558,17 @@
             
             // Initialize payment type toggle
             togglePaymentType();
+            
+            // Click handler for dropdown items
+            document.querySelectorAll('#customerDropdownList .dropdown-item').forEach(item => {
+                item.onclick = function() { selectCustomer(this); };
+            });
+            
+            // Search input focus shows dropdown
+            document.getElementById('customerSearchInput').addEventListener('focus', function() {
+                document.getElementById('customerDropdownList').style.display = 'block';
+                filterCustomerDropdown();
+            });
         }
 
         // ── CLEAR/RECEIPT Modal ──
@@ -1579,7 +1781,7 @@
                 addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
                 renderTable();
                 closeModal();
-                toast(`✔️ Refund request submitted for ${original.docNumber}`, 'success');
+                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
             };
         }
 
@@ -1667,7 +1869,7 @@
                     addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
                     renderTable();
                     buildRefundApprovalModal(card);
-                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
+                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
                 }
             };
 
@@ -1889,7 +2091,7 @@
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
                     addActivity('system', `Production: ${item} +${qty}`);
-                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -1912,7 +2114,7 @@
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
                 addActivity('system', `Materials received: ${name} +${qty}`);
-                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
             };
@@ -1958,7 +2160,7 @@
                 html += `<tr><td>${u.username}</td><td>${u.role}</td>
               <td style="text-align:center;">
                 <button class="btn btn-sm" style="padding:0.1rem 0.8rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')">
-                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✔️ ' + permCount : 'Set'}
+                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✅ ' + permCount : 'Set'}
                 </button>
               </td></tr>`;
             });
@@ -1990,7 +2192,7 @@
                 let currentPerms = {};
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
-                    const status = perms[a] ? '✔️' : '❌';
+                    const status = perms[a] ? '✅' : '❌';
                     msg += `${status} ${a}\n`;
                     currentPerms[a] = perms[a] || false;
                 });
@@ -2264,9 +2466,7 @@
             let customerCompany = '';
 
             if (paymentType === 'cash') {
-                // Walk-in customer
                 customerName = document.getElementById('modalCustomerInput').value.trim() || 'Walk-in Customer';
-                // Check if this customer exists, if so use them
                 const existing = customers.find(c => c.name.toLowerCase() === customerName.toLowerCase());
                 if (existing) {
                     customerId = existing.id;
@@ -2275,35 +2475,10 @@
                     customerCompany = existing.company || '';
                 }
             } else {
-                // Customer (deposit/credit)
-                const select = document.getElementById('modalCustomerSelect');
-                const val = select ? select.value : '';
-                if (val === 'new') {
-                    const name = prompt('Enter new customer name:');
-                    if (!name) { toast('Customer name required', 'error'); return; }
-                    const contact = prompt('Contact (optional):') || '';
-                    const email = prompt('Email (optional):') || '';
-                    const company = prompt('Company (optional):') || '';
-                    const address = prompt('Address (optional):') || '';
-                    
-                    const newCustomer = {
-                        id: nextCustomerId++,
-                        name: name,
-                        contact: contact,
-                        email: email,
-                        address: address,
-                        company: company,
-                        balance: 0
-                    };
-                    customers.push(newCustomer);
-                    customerId = newCustomer.id;
-                    customerName = newCustomer.name;
-                    customerContact = newCustomer.contact;
-                    customerAddress = newCustomer.address;
-                    customerCompany = newCustomer.company;
-                    addAudit('Customer Added', `Added ${name} during sale`);
-                } else if (val) {
-                    const customer = customers.find(c => c.id === parseInt(val));
+                // Customer payment type - get from hidden selected ID
+                const selectedId = document.getElementById('selectedCustomerId')?.value;
+                if (selectedId && selectedId !== 'new') {
+                    const customer = customers.find(c => c.id === parseInt(selectedId));
                     if (customer) {
                         customerId = customer.id;
                         customerName = customer.name;
@@ -2311,9 +2486,23 @@
                         customerAddress = customer.address || '';
                         customerCompany = customer.company || '';
                     }
+                } else {
+                    // Check if new customer form was used
+                    const newName = document.getElementById('newCustName')?.value?.trim();
+                    if (newName) {
+                        customerName = newName;
+                        customerContact = document.getElementById('newCustContact')?.value?.trim() || '';
+                        customerAddress = document.getElementById('newCustAddress')?.value?.trim() || '';
+                        customerCompany = document.getElementById('newCustCompany')?.value?.trim() || '';
+                        // Check if customer exists
+                        const existing = customers.find(c => c.name.toLowerCase() === customerName.toLowerCase());
+                        if (existing) {
+                            customerId = existing.id;
+                        }
+                    }
                 }
                 if (!customerName) {
-                    toast('Please select a customer', 'error');
+                    toast('Please select a customer or add a new one', 'error');
                     return;
                 }
             }
@@ -2365,11 +2554,9 @@
             };
             transactions.push(trans);
 
-            // Update customer balance for customer payment type
             if (customerId && type !== 'expense' && paymentType === 'customer') {
                 const customer = customers.find(c => c.id === customerId);
                 if (customer) {
-                    // Customer balance decreases (they owe more or deposit decreases)
                     customer.balance = (customer.balance || 0) - amount;
                 }
             }
@@ -2418,7 +2605,7 @@
             addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
             addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
             renderTable();
-            toast(`✔️ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
+            toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
         }
 
         function cancelInvoice(id) {
@@ -2437,7 +2624,7 @@
                 addAudit('Document Cancelled', `Cancelled ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cancelled: ${trans.docNumber}`);
                 renderTable();
-                toast(`✔️ ${trans.docNumber} cancelled`, 'warning');
+                toast(`✅ ${trans.docNumber} cancelled`, 'warning');
             }
         }
 
@@ -2522,7 +2709,7 @@
             addActivity('dispatch', `Dispatched: ${receipt} - ${trans.item} x${loadedQty}`);
             renderTable();
             closeModal();
-            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -2622,6 +2809,11 @@
         window.calcTotal = calcTotal;
         window.updatePrice = updatePrice;
         window.togglePaymentType = togglePaymentType;
+        window.filterCustomerDropdown = filterCustomerDropdown;
+        window.selectCustomer = selectCustomer;
+        window.toggleCustomerDropdown = toggleCustomerDropdown;
+        window.setNewBalanceValue = setNewBalanceValue;
+        window.saveNewCustomerFromSale = saveNewCustomerFromSale;
         window.updateDispatchInfo = updateDispatchInfo;
         window.updateDispatchBalance = updateDispatchBalance;
         window.clearInvoice = clearInvoice;
@@ -2633,7 +2825,6 @@
         window.exportBackup = exportBackup;
         window.logout = logout;
         window.populateItems = populateItems;
-        window.loadCustomerDetails = loadCustomerDetails;
         window.recordProductionStock = window.recordProductionStock || function() {};
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
         window.toggleSetting = window.toggleSetting || function() {};
@@ -2646,7 +2837,7 @@
         window.deleteCustomer = window.deleteCustomer || function() {};
 
         renderTable();
-        console.log('✔️ Kajana Enterprise System v10.2 loaded - Merged Deposit+Credit into Customer');
+        console.log('✅ Kajana Enterprise System v10.3 loaded - Searchable Customers + Sales/Dispatch stats fixed');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} unified customers`);
     </script>
 </body>
