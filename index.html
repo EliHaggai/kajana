@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprise · Complete Management System</title>
+    <title>Kajana Enterprise Ltd · Complete Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -120,7 +120,6 @@
         .badge-status.unpaid { background: #f8d7da; color: #721c24; }
         .badge-status.refund { background: #fff3cd; color: #856404; }
         .badge-status.cancelled { background: #e9ecef; color: #6c757d; }
-        .badge-status.pending-refund { background: #fff3cd; color: #856404; }
         .badge-status.active { background: #d4edda; color: #155724; }
         .badge-status.exhausted { background: #e9ecef; color: #6c757d; }
         .action-icons i { margin: 0 3px; color: #5f5f5f; cursor: pointer; transition: var(--transition); font-size: 1rem; }
@@ -140,6 +139,7 @@
         .modal-card .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 2rem; }
         .modal-divider { border: none; border-top: 2px dashed #ddd; margin: 1.2rem 0; }
+        .modal-card .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
 
         /* TOGGLE SWITCH */
         .toggle-container { display: flex; align-items: center; gap: 0.8rem; margin: 0.3rem 0; }
@@ -163,18 +163,22 @@
         /* SETTINGS */
         .settings-group { background: #f5f3f0; padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
         .settings-group h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
+        .settings-group .perm-item { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid #efedea; }
+        .settings-group .perm-item:last-child { border-bottom: none; }
+        .settings-group .perm-item .perm-label { font-size: 0.8rem; }
 
-        /* DEPOSIT CARDS */
-        .deposit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
-        .deposit-card { background: #fff; border-radius: 16px; padding: 1rem 1.2rem; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); }
-        .deposit-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
-        .deposit-card .customer-name { font-weight: 700; font-size: 1.1rem; }
-        .deposit-card .deposit-amount { font-size: 1.5rem; font-weight: 700; color: var(--black); }
-        .deposit-card .used-amount { color: var(--red); }
-        .deposit-card .balance-amount { color: #1a7a3a; }
-        .deposit-card .status-badge { font-size: 0.7rem; padding: 0.2rem 0.8rem; border-radius: 20px; }
-        .deposit-card .status-badge.active { background: #d4edda; color: #155724; }
-        .deposit-card .status-badge.exhausted { background: #e9ecef; color: #6c757d; }
+        /* CUSTOMER CARDS */
+        .customer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .customer-card { background: #fff; border-radius: 16px; padding: 1rem 1.2rem; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); }
+        .customer-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+        .customer-card .customer-name { font-weight: 700; font-size: 1.1rem; }
+        .customer-card .balance-positive { color: #1a7a3a; font-weight: 700; font-size: 1.3rem; }
+        .customer-card .balance-negative { color: var(--red); font-weight: 700; font-size: 1.3rem; }
+        .customer-card .balance-zero { color: #888; font-weight: 700; font-size: 1.3rem; }
+        .customer-card .status-badge { font-size: 0.7rem; padding: 0.2rem 0.8rem; border-radius: 20px; }
+        .customer-card .status-badge.deposit { background: #d4edda; color: #155724; }
+        .customer-card .status-badge.credit { background: #f8d7da; color: #721c24; }
+        .customer-card .status-badge.neutral { background: #e9ecef; color: #6c757d; }
 
         /* FOOTER */
         .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
@@ -239,7 +243,7 @@
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprise</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v8.5</div>
+                <div class="subtitle">concrete · stone · mining · complete management v10.2</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -283,11 +287,10 @@
                 <button class="btn btn-success" id="btnDispatch" onclick="openModal('dispatch')"><i class="fas fa-truck"></i> Dispatch</button>
                 <button class="btn btn-purple" id="btnInventory" onclick="openModal('inventory')"><i class="fas fa-boxes"></i> Manage Stock</button>
                 <button class="btn btn-orange" id="btnProduction" onclick="openModal('production')"><i class="fas fa-industry"></i> Production & Materials</button>
-                <button class="btn btn-indigo" id="btnDeposits" onclick="openModal('deposits')"><i class="fas fa-hand-holding-usd"></i> Deposits</button>
+                <button class="btn btn-indigo" id="btnCustomers" onclick="openModal('customers')"><i class="fas fa-users"></i> Customers</button>
                 <button class="btn btn-yellow" onclick="openModal('report')"><i class="fas fa-chart-bar"></i> Reports</button>
                 <button class="btn btn-dark" id="btnSettings" onclick="openModal('settings')"><i class="fas fa-cog"></i> Settings</button>
                 <button class="btn btn-outline-primary" id="btnUsers" onclick="openModal('users')"><i class="fas fa-users-cog"></i> Users</button>
-                <button class="btn btn-outline-primary" id="btnClients" onclick="openModal('clients')"><i class="fas fa-user-tie"></i> Credit Clients</button>
                 <button class="btn btn-outline-primary" id="btnAudit" onclick="openModal('audit')"><i class="fas fa-history"></i> Audit</button>
                 <button class="btn btn-teal" id="btnClearInvoice" onclick="openModal('clear')"><i class="fas fa-check-double"></i> Clear/Receipt</button>
                 <button class="btn btn-pink" id="btnRefund" onclick="openModal('refund')"><i class="fas fa-undo-alt"></i> Refund</button>
@@ -317,7 +320,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd · v8.5 · Credit Sale Fixed</div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd Ltd · v10.2 · Unified Customers (Cash + Customer)</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -330,21 +333,20 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════
-        // DATA LAYER
+        // DATA LAYER - UNIFIED CUSTOMERS
         // ═══════════════════════════════════════════════════════════════
 
-        const STORAGE_KEY = 'kajana_data_v8';
+        const STORAGE_KEY = 'kajana_data_v10';
         let transactions = [];
         let auditLog = [];
         let loadingOrders = [];
         let refundRequests = [];
-        let deposits = [];
         let nextInvoiceId = 1;
         let nextReceiptId = 1;
         let currentSite = 'workshop';
         let currentUser = null;
         let inventoryItems = {};
-        let creditClients = [];
+        let customers = [];
         let userPermissions = {};
         let productionLog = [];
         let dailyExpenseLimit = 500000;
@@ -356,6 +358,8 @@
             defaultCurrency: 'UGX',
             dateFormat: 'DD/MM/YYYY'
         };
+        let nextCustomerId = 100;
+        let users = [];
 
         const DEFAULT_INVENTORY = {
             workshop: [
@@ -401,17 +405,19 @@
             { username: 'dispatch@adyel', password: 'password', role: 'dispatch', name: 'Dispatch Adyel', sites: ['adyel'] },
         ];
 
-        const DEFAULT_CLIENTS = [
-            { name: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd', creditLimit: 5000000 },
-            { name: 'Mary Smith', contact: '+256 700 222', address: 'Ngetta', company: '', creditLimit: 3000000 },
-            { name: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc', creditLimit: 4000000 },
-            { name: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '', creditLimit: 8000000 },
-            { name: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt', creditLimit: 10000000 },
-            { name: 'David Otieno', contact: '+256 700 666', address: 'Adyel', company: 'Otieno Constructions', creditLimit: 2500000 },
+        // Default unified customers with balances
+        // Positive balance = Deposit (customer has money with company)
+        // Negative balance = Credit (customer owes company)
+        const DEFAULT_CUSTOMERS = [
+            { id: 1, name: 'John Doe', contact: '+256 700 111', email: 'john@abc.com', address: 'Kampala', company: 'ABC Ltd', balance: 3800000 },
+            { id: 2, name: 'Mary Smith', contact: '+256 700 222', email: 'mary@smith.com', address: 'Ngetta', company: '', balance: -550000 },
+            { id: 3, name: 'James Ochieng', contact: '+256 700 333', email: 'james@builders.com', address: 'Adyel', company: 'Builders Inc', balance: 0 },
+            { id: 4, name: 'Ngetta Constructions', contact: '+256 700 444', email: 'info@ngettaconst.com', address: 'Ngetta', company: '', balance: -700000 },
+            { id: 5, name: 'City Council', contact: '+256 700 555', email: 'procurement@citycouncil.com', address: 'Adyel', company: 'Govt', balance: 0 },
+            { id: 6, name: 'David Otieno', contact: '+256 700 666', email: 'david@otieno.com', address: 'Adyel', company: 'Otieno Constructions', balance: 2500000 },
         ];
 
-        let users = [];
-
+        // ── Data Functions ──
         function loadData() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -421,13 +427,13 @@
                     auditLog = data.auditLog || [];
                     loadingOrders = data.loadingOrders || [];
                     refundRequests = data.refundRequests || [];
-                    deposits = data.deposits || [];
                     productionLog = data.productionLog || [];
                     nextInvoiceId = data.nextInvoiceId || 1;
                     nextReceiptId = data.nextReceiptId || 1;
+                    nextCustomerId = data.nextCustomerId || 100;
                     inventoryItems = data.inventory || JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
-                    users = data.users || [...DEFAULT_USERS];
-                    creditClients = data.creditClients || [...DEFAULT_CLIENTS];
+                    users = data.users || JSON.parse(JSON.stringify(DEFAULT_USERS));
+                    customers = data.customers || JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS));
                     userPermissions = data.userPermissions || {};
                     dailyExpenseLimit = data.dailyExpenseLimit || 500000;
                     systemSettings = data.systemSettings || systemSettings;
@@ -439,7 +445,7 @@
 
         function saveData() {
             try {
-                const data = { transactions, auditLog, loadingOrders, refundRequests, deposits, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings };
+                const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, nextCustomerId, inventory: inventoryItems, users, customers, userPermissions, dailyExpenseLimit, systemSettings };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) { console.warn('Save error', e); }
         }
@@ -495,50 +501,65 @@
         }
 
         function seedData() {
-            if (loadData()) return;
             inventoryItems = JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
-            users = [...DEFAULT_USERS];
-            creditClients = [...DEFAULT_CLIENTS];
+            users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+            customers = JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS));
             productionLog = [];
             loadingOrders = [];
             refundRequests = [];
-            deposits = [
-                { id: 1, customer: 'John Doe', contact: '+256 700 111', date: new Date().toISOString().split('T')[0], amount: 5000000, used: 1200000, balance: 3800000, status: 'active', notes: 'Initial deposit for construction materials', transactions: ['INV-001'] },
-                { id: 2, customer: 'Mary Smith', contact: '+256 700 222', date: new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0], amount: 3000000, used: 3000000, balance: 0, status: 'exhausted', notes: 'Fully used for stone dust', transactions: ['INV-002'] }
-            ];
+            nextCustomerId = 100;
+            
             const d = (n) => new Date(Date.now() - n * 86400000).toISOString().split('T')[0];
             transactions = [
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Pavers', qty: 120, price: 20000, amount: 2400000,
                     customer: 'John Doe', contact: '+256 700 111', address: 'Kampala', company: 'ABC Ltd',
-                    payment: 'cash', deposit: 0, balance: 0, docNumber: 'INV-001', docType: 'invoice', status: 'completed', paid: true, paymentMode: 'cash',
-                    dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120, balanceQty: 0 } },
+                    payment: 'customer', deposit: 0, balance: 0, docNumber: 'INV-001', docType: 'invoice', status: 'completed', paid: true, paymentMode: 'customer',
+                    dispatch: { loaded: true, vehicle: 'Truck', plate: 'UBA 123X', driver: 'Peter', loadedQty: 120, balanceQty: 0 },
+                    customerId: 1 },
                 { id: nextInvoiceId++, date: d(1), site: 'workshop', item: 'Pavers', qty: 50, price: 20000, amount: 1000000,
                     customer: 'Opio', contact: '+256 700 777', address: 'Kampala', company: '', payment: 'cash',
                     deposit: 0, balance: 0, docNumber: 'RPT-0002', docType: 'receipt', status: 'cleared', paid: true, paymentMode: 'cash',
-                    dispatch: { loaded: false }, originalInvoice: 'INV-006' },
+                    dispatch: { loaded: false }, originalInvoice: 'INV-006', customerId: null },
                 { id: nextInvoiceId++, date: d(2), site: 'adyel', item: 'Hollow Section', qty: 80, price: 14000, amount: 1120000,
                     customer: 'James Ochieng', contact: '+256 700 333', address: 'Adyel', company: 'Builders Inc',
                     payment: 'cash', deposit: 0, balance: 0, docNumber: 'INV-003', docType: 'invoice', status: 'completed', paid: true, paymentMode: 'cash',
-                    dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80, balanceQty: 0 } },
+                    dispatch: { loaded: true, vehicle: 'Van', plate: 'UBC 456', driver: 'Sarah', loadedQty: 80, balanceQty: 0 },
+                    customerId: 3 },
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Fuel', qty: 1, price: 450000, amount: 450000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
-                    docNumber: 'EXP-001', docType: 'expense', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {} },
+                    docNumber: 'EXP-001', docType: 'expense', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {},
+                    customerId: null },
                 { id: nextInvoiceId++, date: d(3), site: 'ngetta', item: 'Gravel 10t', qty: 10, price: 120000, amount: 1200000,
                     customer: 'Ngetta Constructions', contact: '+256 700 444', address: 'Ngetta', company: '',
-                    payment: 'credit', deposit: 500000, balance: 700000, docNumber: 'INV-004', docType: 'invoice', status: 'pending', paid: false, paymentMode: '',
-                    dispatch: { loaded: false } },
+                    payment: 'customer', deposit: 0, balance: 0, docNumber: 'INV-004', docType: 'invoice', status: 'pending', paid: false, paymentMode: '',
+                    dispatch: { loaded: false }, customerId: 4 },
                 { id: nextInvoiceId++, date: d(1), site: 'adyel', item: 'Road Cubs', qty: 200, price: 9000, amount: 1800000,
                     customer: 'City Council', contact: '+256 700 555', address: 'Adyel', company: 'Govt',
                     payment: 'cash', deposit: 0, balance: 0, docNumber: 'INV-005', docType: 'invoice', status: 'completed', paid: true, paymentMode: 'cash',
-                    dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200, balanceQty: 0 } },
+                    dispatch: { loaded: true, vehicle: 'Flatbed', plate: 'UBD 789', driver: 'Robert', loadedQty: 200, balanceQty: 0 },
+                    customerId: 5 },
                 { id: nextInvoiceId++, date: d(0), site: 'workshop', item: 'Maintenance', qty: 1, price: 320000, amount: 320000,
                     customer: '', contact: '', address: '', company: '', payment: 'cash', deposit: 0, balance: 0,
-                    docNumber: 'EXP-002', docType: 'expense', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {} },
+                    docNumber: 'EXP-002', docType: 'expense', status: 'expense', paid: true, paymentMode: 'cash', dispatch: {},
+                    customerId: null },
             ];
-            auditLog = [{ timestamp: new Date().toISOString(), user: 'system', action: 'System Init', details: 'Database seeded', site: 'workshop' }];
+            auditLog = [{ timestamp: new Date().toISOString(), user: 'system', action: 'System Init', details: 'Database seeded with unified customers', site: 'workshop' }];
             saveData();
         }
-        seedData();
+
+        // ── Initialize Data ──
+        if (!loadData()) {
+            seedData();
+        } else {
+            if (!users || users.length === 0) {
+                users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                saveData();
+            }
+            if (!customers || customers.length === 0) {
+                customers = JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS));
+                saveData();
+            }
+        }
 
         // ── Helpers ──
         function getItemsForSite(site) { return inventoryItems[site] || []; }
@@ -586,14 +607,13 @@
         function canCreateSale() { return isGM() || isManager() || isSales(); }
         function canRequestRefund() { return isGM() || isManager() || isCashier(); }
         function canApproveRefund() { return isGM() || isManager() || isAccountant(); }
-        function canManageDeposits() { return isGM() || isManager() || isAccountant() || isCashier(); }
+        function canManageCustomers() { return isGM() || isManager() || isAccountant() || isCashier(); }
 
         // ── Permissions ──
         function canCreateExpense() { return isGM() || isManager() || isCashier(); }
         function canDispatch() { return isGM() || isManager() || isDispatch(); }
         function canManageInventory() { return isGM() || isManager() || isDispatch(); }
         function canManageUsers() { return isGM(); }
-        function canManageClients() { return isGM() || isManager(); }
         function canViewAudit() { return isGM() || isManager() || isAccountant(); }
         function canDeleteTransaction() { return isGM() || isManager(); }
         function canEditTransaction() { return isGM() || isManager(); }
@@ -609,8 +629,17 @@
             e.preventDefault();
             const username = document.getElementById('loginUser').value.trim();
             const password = document.getElementById('loginPass').value.trim();
+            
+            if (!users || users.length === 0) {
+                users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                saveData();
+            }
+            
             const user = users.find(u => u.username === username && u.password === password);
-            if (!user) { toast('Invalid credentials', 'error'); return; }
+            if (!user) { 
+                toast('Invalid credentials. Try gm@kajana.com / password', 'error'); 
+                return; 
+            }
 
             let site = user.sites[0] || 'workshop';
             currentUser = { ...user, currentSite: site };
@@ -642,9 +671,8 @@
             document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
             document.getElementById('btnInventory').style.display = canManageInventory() ? 'inline-flex' : 'none';
             document.getElementById('btnProduction').style.display = canManageProduction() ? 'inline-flex' : 'none';
-            document.getElementById('btnDeposits').style.display = canManageDeposits() ? 'inline-flex' : 'none';
+            document.getElementById('btnCustomers').style.display = canManageCustomers() ? 'inline-flex' : 'none';
             document.getElementById('btnUsers').style.display = canManageUsers() ? 'inline-flex' : 'none';
-            document.getElementById('btnClients').style.display = canManageClients() ? 'inline-flex' : 'none';
             document.getElementById('btnAudit').style.display = canViewAudit() ? 'inline-flex' : 'none';
             document.getElementById('btnClearInvoice').style.display = canClearInvoice() ? 'inline-flex' : 'none';
             document.getElementById('btnRefund').style.display = canRequestRefund() ? 'inline-flex' : 'none';
@@ -723,18 +751,18 @@
             const today = new Date().toISOString().split('T')[0];
             const month = today.slice(0, 7);
             
-            // Only count invoices and receipts (not expenses or refunds)
             const todaySales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const todayCashSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund' && t.payment === 'cash').reduce((s, o) => s + o.amount, 0);
-            const todayCreditSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund' && t.payment === 'credit').reduce((s, o) => s + o.amount, 0);
+            const todayCustomerSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund' && t.payment === 'customer').reduce((s, o) => s + o.amount, 0);
             const monthSales = siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'pending').length;
             const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && (t.status === 'cleared' || t.status === 'partial') && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
-            const creditBal = siteData.filter(t => t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
+            
+            const totalDepositBalance = customers.filter(c => c.balance > 0).reduce((s, c) => s + c.balance, 0);
+            const totalCreditBalance = customers.filter(c => c.balance < 0).reduce((s, c) => s + Math.abs(c.balance), 0);
             const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
-            const totalDeposits = deposits.filter(d => d.site === currentSite).reduce((s, d) => s + d.balance, 0);
 
             const hideFinancials = isSales() || isDispatch();
             const role = getUserRole();
@@ -749,17 +777,17 @@
             } else if (role === 'cashier') {
                 statsHTML = `
                     <div class="stat-card"><div class="label">💰 Daily Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">💳 Daily Credit Sales</div><div class="value">UGX ${todayCreditSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'credit' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card"><div class="label">👤 Daily Customer Sales</div><div class="value">UGX ${todayCustomerSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
+                    <div class="stat-card"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
                     <div class="stat-card"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">💳 Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                    <div class="stat-card"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers with deposits</div></div>
+                    <div class="stat-card"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers with credit</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
-                    <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             } else if (role === 'dispatch') {
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
                     <div class="stat-card"><div class="label">📦 Partial</div><div class="value">${siteData.filter(t => t.status === 'partial').length}</div><div class="sub">Partially loaded</div></div>
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
@@ -769,9 +797,9 @@
                     <div class="stat-card"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
                     <div class="stat-card"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
                     <div class="stat-card"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">Credit Balances</div><div class="value">UGX ${creditBal.toLocaleString()}</div><div class="sub">Total outstanding</div></div>
+                    <div class="stat-card"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
+                    <div class="stat-card"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
                     <div class="stat-card"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
-                    <div class="stat-card"><div class="label">💰 Active Deposits</div><div class="value">UGX ${totalDeposits.toLocaleString()}</div><div class="sub">Customer deposit balances</div></div>
                 `;
             }
 
@@ -799,11 +827,11 @@
             }
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
-                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
-                completed: '<span class="badge-status completed">✅ Completed</span>',
+                cleared: '<span class="badge-status cleared">✔️ Cleared</span>',
+                completed: '<span class="badge-status completed">✔️ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
                 partial: '<span class="badge-status partial">📦 Partial</span>',
-                paid: '<span class="badge-status paid">✅ Paid</span>',
+                paid: '<span class="badge-status paid">✔️ Paid</span>',
                 unpaid: '<span class="badge-status unpaid">❌ Unpaid</span>',
                 refund: '<span class="badge-status refund">🔄 Refunded</span>',
                 cancelled: '<span class="badge-status cancelled">🚫 Cancelled</span>'
@@ -814,8 +842,9 @@
                 const canCancel = canCancelInvoice() && (st === 'pending' || st === 'cleared' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canDelete = canDeleteTransaction();
                 const canEdit = canEditTransaction();
-                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
+                const paidStatus = t.paid ? '<span class="badge-status paid">✔️ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 const docDisplay = t.docNumber || '-';
+                const paymentDisplay = t.payment === 'customer' ? 'Customer' : (t.payment || 'cash');
                 return `<tr>
               <td>${i+1}</td>
               <td>${t.date}</td>
@@ -824,9 +853,9 @@
               <td>${t.qty}</td>
               <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : Number(t.amount).toLocaleString()}</td>
               <td>${t.customer || '-'}</td>
-              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : (t.payment || 'cash')}</td>
+              <td class="financial-col" style="${hideFinancials ? 'display:none;' : ''}">${hideFinancials ? '' : paymentDisplay}</td>
               <td>${docDisplay}</td>
-              <td>${statusMap[st] || statusMap.pending} ${t.payment === 'credit' && t.status !== 'cancelled' ? ' ' + paidStatus : ''}</td>
+              <td>${statusMap[st] || statusMap.pending} ${t.payment === 'customer' && t.status !== 'cancelled' && !t.paid ? ' ' + paidStatus : ''}</td>
               <td class="action-icons" style="text-align:center;">
                 ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear/Receipt"></i>` : ''}
                 ${canCancel ? `<i class="fas fa-times-circle text-danger" onclick="cancelInvoice(${t.id})" title="Cancel"></i>` : ''}
@@ -878,78 +907,86 @@
 
             const paymentData = {
                 cash: transactions.filter(t => t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0),
-                credit: transactions.filter(t => t.payment === 'credit' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0)
+                customer: transactions.filter(t => t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0)
             };
             const ctx3 = document.getElementById('paymentChart').getContext('2d');
             if (chartInstances.payment) chartInstances.payment.destroy();
             chartInstances.payment = new Chart(ctx3, {
                 type: 'pie',
-                data: { labels: ['Cash', 'Credit'], datasets: [{ data: [paymentData.cash, paymentData.credit], backgroundColor: ['#1a7a3a', '#d71921'], borderWidth: 2 }] },
+                data: { labels: ['Cash', 'Customer'], datasets: [{ data: [paymentData.cash, paymentData.customer], backgroundColor: ['#1a7a3a', '#6610f2'], borderWidth: 2 }] },
                 options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // DEPOSITS MANAGEMENT
+        // UNIFIED CUSTOMERS MANAGEMENT
         // ═══════════════════════════════════════════════════════════════
 
-        function buildDepositsModal(card) {
-            if (!canManageDeposits()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Accountant, Manager, and GM can manage deposits.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+        function buildCustomersModal(card) {
+            if (!canManageCustomers()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage customers.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
                 return;
             }
 
-            const siteDeposits = deposits.filter(d => d.site === currentSite);
-            const totalDeposits = siteDeposits.reduce((s, d) => s + d.amount, 0);
-            const totalUsed = siteDeposits.reduce((s, d) => s + d.used, 0);
-            const totalBalance = siteDeposits.reduce((s, d) => s + d.balance, 0);
+            const totalDeposit = customers.filter(c => c.balance > 0).reduce((s, c) => s + c.balance, 0);
+            const totalCredit = customers.filter(c => c.balance < 0).reduce((s, c) => s + Math.abs(c.balance), 0);
 
             let html = `
-            <h3><i class="fas fa-hand-holding-usd"></i> Customer Deposits - ${currentSite.toUpperCase()}</h3>
+            <h3><i class="fas fa-users"></i> Customers - ${currentSite.toUpperCase()}</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
-                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid var(--yellow);">
+                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid #1a7a3a;">
                     <div style="font-size:0.7rem;color:#888;">Total Deposits</div>
-                    <div style="font-size:1.3rem;font-weight:700;">UGX ${totalDeposits.toLocaleString()}</div>
+                    <div style="font-size:1.3rem;font-weight:700;color:#1a7a3a;">UGX ${totalDeposit.toLocaleString()}</div>
+                    <div style="font-size:0.7rem;color:#888;">${customers.filter(c => c.balance > 0).length} customers</div>
                 </div>
                 <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid var(--red);">
-                    <div style="font-size:0.7rem;color:#888;">Used Amount</div>
-                    <div style="font-size:1.3rem;font-weight:700;color:var(--red);">UGX ${totalUsed.toLocaleString()}</div>
+                    <div style="font-size:0.7rem;color:#888;">Total Credits</div>
+                    <div style="font-size:1.3rem;font-weight:700;color:var(--red);">UGX ${totalCredit.toLocaleString()}</div>
+                    <div style="font-size:0.7rem;color:#888;">${customers.filter(c => c.balance < 0).length} customers</div>
                 </div>
-                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid #1a7a3a;">
-                    <div style="font-size:0.7rem;color:#888;">Balance</div>
-                    <div style="font-size:1.3rem;font-weight:700;color:#1a7a3a;">UGX ${totalBalance.toLocaleString()}</div>
+                <div style="background:#f5f3f0;padding:0.8rem;border-radius:12px;text-align:center;border-left:4px solid #6c757d;">
+                    <div style="font-size:0.7rem;color:#888;">Net Position</div>
+                    <div style="font-size:1.3rem;font-weight:700;color:${totalDeposit - totalCredit >= 0 ? '#1a7a3a' : 'var(--red)'};">UGX ${(totalDeposit - totalCredit).toLocaleString()}</div>
+                    <div style="font-size:0.7rem;color:#888;">${totalDeposit - totalCredit >= 0 ? 'Net Deposits' : 'Net Credits'}</div>
                 </div>
             </div>
             <div style="display:flex;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;">
-                <button class="btn btn-primary" onclick="openModal('newDeposit')"><i class="fas fa-plus"></i> New Deposit</button>
-                <button class="btn btn-success" onclick="openModal('useDeposit')"><i class="fas fa-shopping-cart"></i> Use Deposit</button>
+                <button class="btn btn-primary" onclick="openModal('newCustomer')"><i class="fas fa-user-plus"></i> Add Customer</button>
+                <button class="btn btn-success" onclick="openModal('adjustBalance')"><i class="fas fa-coins"></i> Adjust Balance</button>
             </div>
-            <div class="deposit-grid">
+            <div class="customer-grid">
           `;
 
-            if (siteDeposits.length === 0) {
-                html += `<p style="color:#888;padding:1rem 0;">No deposits found for this site.</p>`;
+            if (customers.length === 0) {
+                html += `<p style="color:#888;padding:1rem 0;">No customers found.</p>`;
             } else {
-                siteDeposits.forEach(d => {
-                    const statusClass = d.status === 'active' ? 'active' : 'exhausted';
-                    const statusLabel = d.status === 'active' ? '✅ Active' : '⛔ Exhausted';
+                customers.forEach(c => {
+                    const balanceClass = c.balance > 0 ? 'balance-positive' : (c.balance < 0 ? 'balance-negative' : 'balance-zero');
+                    const statusClass = c.balance > 0 ? 'deposit' : (c.balance < 0 ? 'credit' : 'neutral');
+                    const statusLabel = c.balance > 0 ? '💰 Deposit' : (c.balance < 0 ? '💳 Credit' : '⚪ Neutral');
+                    const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString();
+                    
+                    const custTrans = transactions.filter(t => t.customer === c.name && t.site === currentSite);
+                    const totalSpent = custTrans.filter(t => t.docType === 'invoice' || t.docType === 'receipt').reduce((s, t) => s + t.amount, 0);
+                    
                     html += `
-                        <div class="deposit-card">
+                        <div class="customer-card">
                             <div style="display:flex;justify-content:space-between;align-items:start;">
                                 <div>
-                                    <div class="customer-name">${d.customer}</div>
-                                    <div style="font-size:0.8rem;color:#888;">${d.contact || 'No contact'}</div>
+                                    <div class="customer-name">${c.name}</div>
+                                    <div style="font-size:0.8rem;color:#888;">${c.contact || 'No contact'} | ${c.company || 'Individual'}</div>
+                                    <div style="font-size:0.75rem;color:#888;margin-top:0.2rem;">${c.email || ''} ${c.address ? '| ' + c.address : ''}</div>
                                 </div>
                                 <span class="status-badge ${statusClass}">${statusLabel}</span>
                             </div>
                             <div style="margin-top:0.5rem;">
-                                <div><span style="color:#888;">Deposit:</span> <span class="deposit-amount">UGX ${d.amount.toLocaleString()}</span></div>
-                                <div><span style="color:#888;">Used:</span> <span class="used-amount">UGX ${d.used.toLocaleString()}</span></div>
-                                <div><span style="color:#888;">Balance:</span> <span class="balance-amount">UGX ${d.balance.toLocaleString()}</span></div>
-                                <div style="font-size:0.7rem;color:#888;margin-top:0.3rem;">Date: ${d.date} | ${d.transactions ? d.transactions.length : 0} transactions</div>
-                                ${d.notes ? `<div style="font-size:0.75rem;color:#888;margin-top:0.2rem;">📝 ${d.notes}</div>` : ''}
+                                <div><span style="color:#888;">Balance:</span> <span class="${balanceClass}">${balanceDisplay}</span></div>
+                                <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">${custTrans.length} transactions | Total spent: UGX ${totalSpent.toLocaleString()}</div>
                             </div>
-                            ${d.status === 'active' ? `<button class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.5rem;background:#dc3545;color:#fff;border:none;border-radius:20px;" onclick="closeDeposit(${d.id})"><i class="fas fa-times"></i> Close Deposit</button>` : ''}
+                            <div style="margin-top:0.5rem;display:flex;gap:0.3rem;flex-wrap:wrap;">
+                                <button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.65rem;background:#6f42c1;color:#fff;border:none;border-radius:12px;" onclick="viewCustomer(${c.id})"><i class="fas fa-eye"></i> View</button>
+                                <button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.65rem;background:#dc3545;color:#fff;border:none;border-radius:12px;" onclick="deleteCustomer(${c.id})"><i class="fas fa-trash"></i></button>
+                            </div>
                         </div>
                     `;
                 });
@@ -960,256 +997,224 @@
           `;
             card.innerHTML = html;
 
-            window.closeDeposit = function(id) {
-                if (confirm('Close this deposit? Any remaining balance will be refunded.')) {
-                    const deposit = deposits.find(d => d.id === id);
-                    if (deposit) {
-                        deposit.status = 'exhausted';
-                        if (deposit.balance > 0) {
-                            const refundTrans = {
-                                id: nextInvoiceId++,
-                                date: new Date().toISOString().split('T')[0],
-                                site: deposit.site || currentSite,
-                                item: 'DEPOSIT REFUND: ' + deposit.customer,
-                                qty: 1,
-                                price: -deposit.balance,
-                                amount: -deposit.balance,
-                                customer: deposit.customer,
-                                contact: deposit.contact || '',
-                                address: '',
-                                company: '',
-                                payment: 'cash',
-                                deposit: 0,
-                                balance: 0,
-                                docNumber: 'REF-DEP-' + String(deposit.id),
-                                docType: 'refund',
-                                status: 'refund',
-                                paid: true,
-                                paymentMode: 'cash',
-                                dispatch: { loaded: false },
-                                refundReason: 'Deposit closure refund',
-                                originalReceipt: deposit.customer + ' deposit'
-                            };
-                            transactions.push(refundTrans);
-                            addAudit('Deposit Closed', `Deposit for ${deposit.customer} closed with balance refund of UGX ${deposit.balance.toLocaleString()}`);
-                            addActivity('deposit', `Deposit closed for ${deposit.customer} - refunded UGX ${deposit.balance.toLocaleString()}`);
-                        } else {
-                            addAudit('Deposit Closed', `Deposit for ${deposit.customer} closed - fully used`);
-                            addActivity('deposit', `Deposit closed for ${deposit.customer} - fully used`);
-                        }
-                        saveData();
-                        renderTable();
-                        buildDepositsModal(card);
-                        toast(`Deposit for ${deposit.customer} closed`, 'success');
-                    }
+            window.viewCustomer = function(id) {
+                const customer = customers.find(c => c.id === id);
+                if (!customer) return;
+                const custTrans = transactions.filter(t => t.customer === customer.name && t.site === currentSite);
+                
+                let msg = `📋 ${customer.name}\n${'='.repeat(40)}\n`;
+                msg += `Contact: ${customer.contact || 'N/A'}\n`;
+                msg += `Email: ${customer.email || 'N/A'}\n`;
+                msg += `Company: ${customer.company || 'N/A'}\n`;
+                msg += `Address: ${customer.address || 'N/A'}\n`;
+                msg += `Balance: ${customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString()}\n`;
+                msg += `Type: ${customer.balance > 0 ? 'Deposit' : (customer.balance < 0 ? 'Credit' : 'Neutral')}\n`;
+                msg += `\nTransaction History (${custTrans.length}):\n${'-'.repeat(40)}\n`;
+                
+                if (custTrans.length === 0) {
+                    msg += 'No transactions found.\n';
+                } else {
+                    custTrans.slice(-10).reverse().forEach(t => {
+                        msg += `${t.date} | ${t.docNumber} | ${t.item} x${t.qty} | UGX ${t.amount.toLocaleString()} | ${t.status}\n`;
+                    });
+                }
+                alert(msg);
+            };
+
+            window.deleteCustomer = function(id) {
+                const customer = customers.find(c => c.id === id);
+                if (!customer) return;
+                const hasTransactions = transactions.some(t => t.customer === customer.name);
+                if (hasTransactions) {
+                    toast('Cannot delete customer with transaction history', 'error');
+                    return;
+                }
+                if (confirm(`Delete ${customer.name}?`)) {
+                    customers = customers.filter(c => c.id !== id);
+                    saveData();
+                    addAudit('Customer Deleted', `Deleted ${customer.name}`);
+                    toast('Customer deleted', 'warning');
+                    buildCustomersModal(card);
                 }
             };
         }
 
-        // ── NEW DEPOSIT Modal ──
-        function buildNewDepositModal(card) {
-            const canChooseSite = isGM();
-            const siteOptions = canChooseSite ?
-                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
-                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
-
+        // ── NEW CUSTOMER Modal ──
+        function buildNewCustomerModal(card) {
             card.innerHTML = `
-            <h3><i class="fas fa-hand-holding-usd"></i> New Customer Deposit</h3>
+            <h3><i class="fas fa-user-plus"></i> Add New Customer</h3>
             <form id="modalForm">
                 <div class="row2">
-                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-                    <div><label>Date</label><input id="depositDate" type="date" value="${new Date().toISOString().split('T')[0]}" required /></div>
+                    <div><label>Customer Name *</label><input id="custName" placeholder="Full name" required /></div>
+                    <div><label>Contact</label><input id="custContact" placeholder="Phone/Email" /></div>
                 </div>
                 <div class="row2">
-                    <div><label>Customer Name *</label><input id="depositCustomer" placeholder="Full name" required /></div>
-                    <div><label>Contact</label><input id="depositContact" placeholder="Phone/Email" /></div>
+                    <div><label>Email</label><input id="custEmail" placeholder="email@example.com" /></div>
+                    <div><label>Company</label><input id="custCompany" placeholder="Company name" /></div>
                 </div>
+                <div><label>Address</label><input id="custAddress" placeholder="Location" /></div>
                 <div class="row2">
-                    <div><label>Deposit Amount (UGX) *</label><input id="depositAmount" type="number" step="any" placeholder="0" required /></div>
-                    <div><label>Payment Method</label>
-                        <select id="depositPayment"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option><option value="cheque">Cheque</option></select>
+                    <div><label>Initial Balance (UGX)</label>
+                        <input id="custBalance" type="number" step="any" placeholder="0" value="0" />
+                        <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">Positive = Deposit, Negative = Credit</div>
+                    </div>
+                    <div><label>Balance Type</label>
+                        <select id="custBalanceType" onchange="setBalanceValue()">
+                            <option value="0">Neutral (0)</option>
+                            <option value="deposit">Deposit (Positive)</option>
+                            <option value="credit">Credit (Negative)</option>
+                        </select>
                     </div>
                 </div>
-                <div><label>Notes</label><input id="depositNotes" placeholder="Optional notes" /></div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="background:#6610f2;border-color:#6610f2;"><i class="fas fa-save"></i> Save Deposit</button>
+                    <button type="submit" class="btn btn-primary" style="background:#6610f2;border-color:#6610f2;"><i class="fas fa-save"></i> Add Customer</button>
                 </div>
             </form>
           `;
+
+            window.setBalanceValue = function() {
+                const type = document.getElementById('custBalanceType').value;
+                const balField = document.getElementById('custBalance');
+                const currentVal = parseFloat(balField.value) || 0;
+                if (type === 'deposit' && currentVal < 0) {
+                    balField.value = Math.abs(currentVal);
+                } else if (type === 'credit' && currentVal > 0) {
+                    balField.value = -Math.abs(currentVal);
+                } else if (type === '0') {
+                    balField.value = 0;
+                }
+            };
+
             document.getElementById('modalForm').onsubmit = function(e) {
                 e.preventDefault();
-                const site = document.getElementById('modalSite').value;
-                const date = document.getElementById('depositDate').value;
-                const customer = document.getElementById('depositCustomer').value.trim();
-                const contact = document.getElementById('depositContact').value.trim();
-                const amount = parseFloat(document.getElementById('depositAmount').value);
-                const payment = document.getElementById('depositPayment').value;
-                const notes = document.getElementById('depositNotes').value.trim();
+                const name = document.getElementById('custName').value.trim();
+                const contact = document.getElementById('custContact').value.trim();
+                const email = document.getElementById('custEmail').value.trim();
+                const company = document.getElementById('custCompany').value.trim();
+                const address = document.getElementById('custAddress').value.trim();
+                const balance = parseFloat(document.getElementById('custBalance').value) || 0;
 
-                if (!customer || !amount || amount <= 0) { toast('Fill all required fields', 'error'); return; }
+                if (!name) { toast('Customer name required', 'error'); return; }
+                if (customers.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                    toast('Customer already exists!', 'warning');
+                    return;
+                }
 
-                const deposit = {
-                    id: Date.now(),
-                    site: site,
-                    date: date,
-                    customer: customer,
+                const newCustomer = {
+                    id: nextCustomerId++,
+                    name: name,
                     contact: contact,
-                    amount: amount,
-                    used: 0,
-                    balance: amount,
-                    status: 'active',
-                    notes: notes,
-                    paymentMethod: payment,
-                    transactions: []
+                    email: email,
+                    address: address,
+                    company: company,
+                    balance: balance
                 };
-                deposits.push(deposit);
+                customers.push(newCustomer);
                 saveData();
-                addAudit('Deposit Created', `Deposit of UGX ${amount.toLocaleString()} for ${customer} at ${site}`);
-                addActivity('deposit', `New deposit: ${customer} - UGX ${amount.toLocaleString()}`);
-                renderTable();
+                addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()}`);
+                addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
+                toast(`✔️ Customer ${name} added!`, 'success');
                 closeModal();
-                toast(`✅ Deposit of UGX ${amount.toLocaleString()} recorded for ${customer}`, 'success');
+                buildCustomersModal(document.getElementById('modalCard'));
             };
         }
 
-        // ── USE DEPOSIT Modal ──
-        function buildUseDepositModal(card) {
-            const activeDeposits = deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0);
-            const siteItems = getItemsForSite(currentSite);
-
-            let depositOptions = '<option value="">-- Select Deposit --</option>';
-            activeDeposits.forEach(d => {
-                depositOptions += `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`;
-            });
-
-            let itemOptions = '<option value="">-- Select Item --</option>';
-            siteItems.forEach(i => {
-                itemOptions += `<option value="${i.name}" data-price="${i.price}" data-stock="${i.stock || 0}">${i.name} (UGX ${i.price.toLocaleString()}) - Stock: ${i.stock || 0}</option>`;
-            });
+        // ── ADJUST BALANCE Modal ──
+        function buildAdjustBalanceModal(card) {
+            const customerOptions = customers.map(c => 
+                `<option value="${c.id}">${c.name} (${c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString()})</option>`
+            ).join('');
 
             card.innerHTML = `
-            <h3><i class="fas fa-shopping-cart"></i> Use Deposit for Purchase</h3>
-            <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Deduct from customer deposit for items purchased</p>
+            <h3><i class="fas fa-coins"></i> Adjust Customer Balance</h3>
+            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> Positive adjustment = Customer deposits money (increases balance).<br>
+                Negative adjustment = Customer takes credit (decreases balance).
+            </div>
             <form id="modalForm">
-                <div><label>Select Deposit</label>
-                    <select id="useDepositSelect" required onchange="updateDepositInfo()">
-                        ${depositOptions}
+                <div><label>Select Customer</label>
+                    <select id="adjCustomer" required>
+                        <option value="">-- Select Customer --</option>
+                        ${customerOptions}
                     </select>
                 </div>
-                <div id="depositInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div id="customerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
                 <div class="row2">
-                    <div><label>Item</label>
-                        <select id="useItemSelect" required onchange="updateItemPrice()">
-                            ${itemOptions}
+                    <div><label>Adjustment Amount (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Type</label>
+                        <select id="adjType">
+                            <option value="deposit">Deposit (Customer pays us)</option>
+                            <option value="credit">Credit (Customer owes us)</option>
                         </select>
                     </div>
-                    <div><label>Quantity</label><input id="useQty" type="number" step="any" placeholder="0" required oninput="calculateUseTotal()" /></div>
                 </div>
-                <div class="row2">
-                    <div><label>Unit Price (UGX)</label><input id="usePrice" type="number" step="any" placeholder="0" oninput="calculateUseTotal()" /></div>
-                    <div><label>Total (UGX)</label><input id="useTotal" type="number" step="any" placeholder="0" readonly /></div>
-                </div>
-                <div><label>Remaining Balance After Purchase</label><input id="useRemaining" type="number" step="any" placeholder="0" readonly style="background:#e9ecef;" /></div>
+                <div><label>Reason / Notes</label><input id="adjNotes" placeholder="Reason for adjustment" /></div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Purchase</button>
+                    <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Apply Adjustment</button>
                 </div>
             </form>
           `;
+
+            document.getElementById('adjCustomer').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('customerInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const customer = customers.find(c => c.id === id);
+                if (customer) {
+                    info.innerHTML = `<strong>${customer.name}</strong> | Current Balance: ${customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString()}`;
+                }
+            };
+
             document.getElementById('modalForm').onsubmit = function(e) {
                 e.preventDefault();
-                const depositId = parseInt(document.getElementById('useDepositSelect').value);
-                const item = document.getElementById('useItemSelect').value;
-                const qty = parseFloat(document.getElementById('useQty').value);
-                const total = parseFloat(document.getElementById('useTotal').value);
-                const price = parseFloat(document.getElementById('usePrice').value);
+                const id = parseInt(document.getElementById('adjCustomer').value);
+                const amount = parseFloat(document.getElementById('adjAmount').value);
+                const type = document.getElementById('adjType').value;
+                const notes = document.getElementById('adjNotes').value.trim();
 
-                if (!depositId || !item || !qty || qty <= 0 || !total || total <= 0) { toast('Fill all fields', 'error'); return; }
-                const deposit = deposits.find(d => d.id === depositId);
-                if (!deposit) { toast('Deposit not found', 'error'); return; }
-                if (total > deposit.balance) { toast(`Insufficient balance! Available: UGX ${deposit.balance.toLocaleString()}`, 'error'); return; }
+                if (!id || !amount || amount <= 0) { toast('Select customer and enter valid amount', 'error'); return; }
+                const customer = customers.find(c => c.id === id);
+                if (!customer) { toast('Customer not found', 'error'); return; }
 
-                const docNumber = generateInvoiceNumber();
+                const adjustment = type === 'deposit' ? amount : -amount;
+                const newBalance = customer.balance + adjustment;
+
+                const docNumber = type === 'deposit' ? 'DEP-ADJ-' + String(nextInvoiceId++).padStart(4, '0') : 'CRD-ADJ-' + String(nextInvoiceId++).padStart(4, '0');
                 const trans = {
                     id: nextInvoiceId++,
                     date: new Date().toISOString().split('T')[0],
-                    site: deposit.site || currentSite,
-                    item: item,
-                    qty: qty,
-                    price: price,
-                    amount: total,
-                    customer: deposit.customer,
-                    contact: deposit.contact || '',
-                    address: '',
-                    company: '',
-                    payment: 'deposit',
-                    deposit: total,
+                    site: currentSite,
+                    item: type === 'deposit' ? 'DEPOSIT ADJUSTMENT' : 'CREDIT ADJUSTMENT',
+                    qty: 1,
+                    price: Math.abs(adjustment),
+                    amount: Math.abs(adjustment),
+                    customer: customer.name,
+                    contact: customer.contact || '',
+                    address: customer.address || '',
+                    company: customer.company || '',
+                    payment: 'customer',
+                    deposit: 0,
                     balance: 0,
                     docNumber: docNumber,
-                    docType: 'invoice',
-                    status: 'pending',
+                    docType: 'adjustment',
+                    status: 'completed',
                     paid: true,
-                    paymentMode: 'deposit',
+                    paymentMode: 'customer',
                     dispatch: { loaded: false },
-                    depositId: deposit.id
+                    customerId: customer.id,
+                    notes: notes || (type === 'deposit' ? 'Deposit adjustment' : 'Credit adjustment')
                 };
                 transactions.push(trans);
 
-                deposit.used = (deposit.used || 0) + total;
-                deposit.balance = deposit.amount - deposit.used;
-                if (deposit.balance <= 0) deposit.status = 'exhausted';
-                if (!deposit.transactions) deposit.transactions = [];
-                deposit.transactions.push(docNumber);
-
-                updateStock(deposit.site || currentSite, item, qty, 'subtract');
-
+                customer.balance = newBalance;
                 saveData();
-                addAudit('Deposit Used', `UGX ${total.toLocaleString()} used from ${deposit.customer}'s deposit for ${item} x${qty}`);
-                addActivity('deposit', `Deposit used: ${deposit.customer} - UGX ${total.toLocaleString()} for ${item}`);
+                addAudit('Balance Adjusted', `${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()} (${notes || 'No reason'})`);
+                addActivity('system', `Balance adjusted for ${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()}`);
                 renderTable();
                 closeModal();
-                toast(`✅ UGX ${total.toLocaleString()} deducted from ${deposit.customer}'s deposit. Balance: UGX ${deposit.balance.toLocaleString()}`, 'success');
-            };
-
-            window.updateItemPrice = function() {
-                const sel = document.getElementById('useItemSelect');
-                const priceField = document.getElementById('usePrice');
-                if (sel && priceField) {
-                    const opt = sel.options[sel.selectedIndex];
-                    priceField.value = opt?.dataset?.price || 0;
-                    calculateUseTotal();
-                }
-            };
-
-            window.updateDepositInfo = function() {
-                const id = parseInt(document.getElementById('useDepositSelect').value);
-                const info = document.getElementById('depositInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const deposit = deposits.find(d => d.id === id);
-                if (deposit) {
-                    info.innerHTML = `<strong>${deposit.customer}</strong> | Balance: UGX ${deposit.balance.toLocaleString()} | Contact: ${deposit.contact || 'N/A'}`;
-                }
-            };
-
-            window.calculateUseTotal = function() {
-                const qty = parseFloat(document.getElementById('useQty').value) || 0;
-                const price = parseFloat(document.getElementById('usePrice').value) || 0;
-                const total = qty * price;
-                document.getElementById('useTotal').value = total;
-                const id = parseInt(document.getElementById('useDepositSelect').value);
-                if (id) {
-                    const deposit = deposits.find(d => d.id === id);
-                    if (deposit) {
-                        const remaining = Math.max(0, deposit.balance - total);
-                        document.getElementById('useRemaining').value = remaining;
-                        if (total > deposit.balance) {
-                            document.getElementById('useRemaining').style.color = 'var(--red)';
-                        } else {
-                            document.getElementById('useRemaining').style.color = '#1a7a3a';
-                        }
-                    }
-                }
+                toast(`✔️ ${customer.name}'s balance updated to ${newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : '-UGX ' + Math.abs(newBalance).toLocaleString()}`, 'success');
             };
         }
 
@@ -1230,20 +1235,19 @@
             else if (type === 'users') buildUsersModal(card);
             else if (type === 'inventory') buildInventoryModal(card);
             else if (type === 'production') buildProductionModal(card);
-            else if (type === 'clients') buildClientsModal(card);
+            else if (type === 'customers') buildCustomersModal(card);
+            else if (type === 'newCustomer') buildNewCustomerModal(card);
+            else if (type === 'adjustBalance') buildAdjustBalanceModal(card);
             else if (type === 'audit') buildAuditModal(card);
             else if (type === 'clear') buildClearModal(card);
             else if (type === 'refund') buildRefundRequestModal(card);
             else if (type === 'refundRequests') buildRefundApprovalModal(card);
             else if (type === 'settings') buildSettingsModal(card);
-            else if (type === 'deposits') buildDepositsModal(card);
-            else if (type === 'newDeposit') buildNewDepositModal(card);
-            else if (type === 'useDeposit') buildUseDepositModal(card);
         }
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── FIXED: Credit sales now save properly
+        // ── SALE Modal ── FIXED: Only Cash and Customer options
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1251,72 +1255,46 @@
             }
 
             const canChooseSite = isGM();
-            const isSalesAgent = isSales();
             const siteOptions = canChooseSite ?
                 `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
                 `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
-            const clientOptions = creditClients.map(c => `<option value="${c.name}">${c.name} (${c.company || 'Individual'})</option>`).join('');
-
-            const creditFieldsHTML = isSalesAgent ? '' : `
-                <div class="row2" id="creditFields" style="display:none;">
-                    <div><label>Deposit (UGX)</label><input id="modalDeposit" type="number" step="any" placeholder="0" oninput="calcBalance()" /></div>
-                    <div><label>Balance (UGX)</label><input id="modalBalance" type="number" step="any" placeholder="0" readonly /></div>
-                </div>
-            `;
-
-            const invoiceField = isSalesAgent ? `
-                <div><label>Invoice Number (Auto-generated)</label>
-                    <input id="modalReceipt" value="${generateInvoiceNumber()}" disabled style="background:#e9ecef;" />
-                </div>
-            ` : `
-                <div><label>Document Number</label><input id="modalReceipt" placeholder="Auto-generated if empty" /></div>
-            `;
-
-            const depositOptions = deposits.filter(d => d.site === currentSite && d.status === 'active' && d.balance > 0)
-                .map(d => `<option value="${d.id}">${d.customer} - UGX ${d.balance.toLocaleString()} remaining</option>`).join('');
+            const customerOptions = customers.map(c => {
+                const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : '-UGX ' + Math.abs(c.balance).toLocaleString();
+                const typeLabel = c.balance > 0 ? '💰' : (c.balance < 0 ? '💳' : '⚪');
+                return `<option value="${c.id}">${typeLabel} ${c.name} (${balanceDisplay})</option>`;
+            }).join('');
 
             card.innerHTML = `
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
+            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> <strong>Cash</strong> = Walk-in customer paying immediately.<br>
+                <strong>Customer</strong> = Existing customer (deposit or credit).
+            </div>
             <form id="modalForm">
                 <div class="row2">
-                    <div><label>Payment Mode *</label>
-                        <select id="modalPayment" required onchange="togglePaymentMode()">
-                            <option value="cash">Cash</option>
-                            <option value="credit">Credit</option>
-                            <option value="deposit">Deposit</option>
+                    <div><label>Payment Type *</label>
+                        <select id="modalPaymentType" required onchange="togglePaymentType()">
+                            <option value="cash">Cash (Walk-in)</option>
+                            <option value="customer">Customer (Deposit/Credit)</option>
                         </select>
                     </div>
                     <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
                 </div>
 
-                <hr class="modal-divider">
-
-                <div id="customerFieldContainer">
-                    <div id="cashCustomerField">
-                        <label>Customer Name</label>
-                        <input id="modalCustomerInput" type="text" placeholder="Enter customer name" />
-                    </div>
-                    <div id="creditCustomerField" style="display:none;">
-                        <label>Select Credit Client</label>
-                        <select id="modalCustomerSelect" onchange="fillCustomerDetails()">
-                            <option value="">-- Select Client --</option>
-                            ${clientOptions}
+                <div id="cashCustomerField">
+                    <div><label>Customer Name</label><input id="modalCustomerInput" placeholder="Enter customer name" /></div>
+                </div>
+                <div id="customerSelectField" style="display:none;">
+                    <div><label>Select Customer</label>
+                        <select id="modalCustomerSelect" required onchange="loadCustomerDetails()">
+                            <option value="">-- Select Customer --</option>
+                            ${customerOptions}
+                            <option value="new">➕ New Customer</option>
                         </select>
                     </div>
-                    <div id="depositCustomerField" style="display:none;">
-                        <label>Select Deposit Customer</label>
-                        <select id="modalDepositSelect" onchange="fillDepositCustomer()">
-                            <option value="">-- Select Deposit --</option>
-                            ${depositOptions}
-                        </select>
-                    </div>
+                    <div id="customerDetails" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;display:none;"></div>
                 </div>
-                <div class="row2">
-                    <div><label>Contact</label><input id="modalContact" placeholder="Phone/Email" /></div>
-                    <div><label>Address</label><input id="modalAddress" placeholder="Location" /></div>
-                </div>
-                <div><label>Company</label><input id="modalCompany" placeholder="Company name" /></div>
 
                 <hr class="modal-divider">
 
@@ -1329,12 +1307,12 @@
                     <div><label>Total (UGX)</label><input id="modalAmount" type="number" step="any" placeholder="0" readonly /></div>
                 </div>
 
-                ${creditFieldsHTML}
-
                 <hr class="modal-divider">
 
-                ${invoiceField}
-
+                <div><label>Document #</label>
+                    <input id="modalReceipt" value="${generateInvoiceNumber()}" disabled style="background:#e9ecef;" />
+                </div>
+                <div><label>Notes</label><input id="modalNotes" placeholder="Optional notes" /></div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Save</button>
@@ -1342,52 +1320,37 @@
             </form>
           `;
 
-            window.togglePaymentMode = function() {
-                const payment = document.getElementById('modalPayment').value;
+            window.togglePaymentType = function() {
+                const type = document.getElementById('modalPaymentType').value;
                 const cashField = document.getElementById('cashCustomerField');
-                const creditField = document.getElementById('creditCustomerField');
-                const depositField = document.getElementById('depositCustomerField');
-                const creditFields = document.getElementById('creditFields');
+                const customerField = document.getElementById('customerSelectField');
                 
-                cashField.style.display = 'none';
-                creditField.style.display = 'none';
-                depositField.style.display = 'none';
-                if (creditFields) creditFields.style.display = 'none';
-
-                if (payment === 'cash') {
+                if (type === 'cash') {
                     cashField.style.display = 'block';
+                    customerField.style.display = 'none';
                     document.getElementById('modalCustomerInput').required = true;
                     document.getElementById('modalCustomerSelect').required = false;
-                    document.getElementById('modalDepositSelect').required = false;
-                } else if (payment === 'credit') {
-                    creditField.style.display = 'block';
-                    if (creditFields) creditFields.style.display = 'grid';
+                } else {
+                    cashField.style.display = 'none';
+                    customerField.style.display = 'block';
                     document.getElementById('modalCustomerInput').required = false;
                     document.getElementById('modalCustomerSelect').required = true;
-                    document.getElementById('modalDepositSelect').required = false;
-                } else if (payment === 'deposit') {
-                    depositField.style.display = 'block';
-                    document.getElementById('modalCustomerInput').required = false;
-                    document.getElementById('modalCustomerSelect').required = false;
-                    document.getElementById('modalDepositSelect').required = true;
                 }
             };
 
-            window.fillDepositCustomer = function() {
-                const sel = document.getElementById('modalDepositSelect');
-                const id = parseInt(sel.value);
-                if (id) {
-                    const deposit = deposits.find(d => d.id === id);
-                    if (deposit) {
-                        document.getElementById('modalContact').value = deposit.contact || '';
-                        document.getElementById('modalAddress').value = '';
-                        document.getElementById('modalCompany').value = '';
-                        document.getElementById('modalCustomerInput').value = deposit.customer;
-                    }
-                } else {
-                    document.getElementById('modalContact').value = '';
-                    document.getElementById('modalAddress').value = '';
-                    document.getElementById('modalCompany').value = '';
+            window.loadCustomerDetails = function() {
+                const id = document.getElementById('modalCustomerSelect').value;
+                const details = document.getElementById('customerDetails');
+                if (!id || id === 'new') { details.style.display = 'none'; return; }
+                const customer = customers.find(c => c.id === parseInt(id));
+                if (customer) {
+                    details.style.display = 'block';
+                    const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : '-UGX ' + Math.abs(customer.balance).toLocaleString();
+                    const typeLabel = customer.balance > 0 ? 'Deposit' : (customer.balance < 0 ? 'Credit' : 'Neutral');
+                    details.innerHTML = `
+                        <strong>${customer.name}</strong> | ${customer.company || 'Individual'}<br>
+                        Balance: ${balanceDisplay} (${typeLabel}) | ${customer.contact || 'No contact'}
+                    `;
                 }
             };
 
@@ -1401,28 +1364,9 @@
             siteField.onchange = function() { populateItems(this.value); };
             populateItems(currentSite);
             document.getElementById('modalItemSelect').onchange = updatePrice;
-            window.togglePaymentMode();
-
-            if (isSalesAgent) {
-                document.getElementById('creditFields')?.remove();
-            }
-
-            window.fillCustomerDetails = function() {
-                const sel = document.getElementById('modalCustomerSelect');
-                const val = sel.value;
-                if (val) {
-                    const client = creditClients.find(c => c.name === val);
-                    if (client) {
-                        document.getElementById('modalContact').value = client.contact || '';
-                        document.getElementById('modalAddress').value = client.address || '';
-                        document.getElementById('modalCompany').value = client.company || '';
-                    }
-                } else {
-                    document.getElementById('modalContact').value = '';
-                    document.getElementById('modalAddress').value = '';
-                    document.getElementById('modalCompany').value = '';
-                }
-            };
+            
+            // Initialize payment type toggle
+            togglePaymentType();
         }
 
         // ── CLEAR/RECEIPT Modal ──
@@ -1453,7 +1397,7 @@
                         <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
                     </div>
                     <div><label>Payment Mode</label>
-                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="cheque">Cheque</option></select>
+                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="customer">Customer</option></select>
                     </div>
                 </div>
                 <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
@@ -1635,7 +1579,7 @@
                 addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
                 renderTable();
                 closeModal();
-                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
+                toast(`✔️ Refund request submitted for ${original.docNumber}`, 'success');
             };
         }
 
@@ -1707,7 +1651,8 @@
                         paymentMode: request.method,
                         dispatch: { loaded: false },
                         refundReason: request.reason,
-                        originalReceipt: request.docNumber
+                        originalReceipt: request.docNumber,
+                        customerId: null
                     };
                     transactions.push(refund);
                     
@@ -1722,7 +1667,7 @@
                     addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
                     renderTable();
                     buildRefundApprovalModal(card);
-                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
+                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
                 }
             };
 
@@ -1944,7 +1889,7 @@
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
                     addActivity('system', `Production: ${item} +${qty}`);
-                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -1967,75 +1912,9 @@
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
                 addActivity('system', `Materials received: ${name} +${qty}`);
-                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
-            };
-        }
-
-        // ── CLIENTS Modal ──
-        function buildClientsModal(card) {
-            if (!canManageClients()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM and Manager can manage credit clients.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            let html = `<h3><i class="fas fa-user-tie"></i> Credit Clients</h3>
-            <form id="clientForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
-              <div class="row2">
-                <div><label>Client Name *</label><input id="clientName" placeholder="Full name" required /></div>
-                <div><label>Contact</label><input id="clientContact" placeholder="Phone/Email" /></div>
-              </div>
-              <div class="row2">
-                <div><label>Address</label><input id="clientAddress" placeholder="Location" /></div>
-                <div><label>Company</label><input id="clientCompany" placeholder="Company name" /></div>
-              </div>
-              <div><label>Credit Limit (UGX)</label><input id="clientLimit" type="number" placeholder="0" value="1000000" /></div>
-              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add Client</button>
-            </form>
-            <div style="max-height:260px;overflow-y:auto;">
-              <table style="font-size:0.8rem;min-width:auto;">
-                <thead><tr><th>Name</th><th>Contact</th><th>Company</th><th>Limit</th><th style="text-align:center;">Action</th></tr></thead>
-                <tbody>
-          `;
-            creditClients.forEach((c, idx) => {
-                const totalOutstanding = transactions.filter(t => t.customer === c.name && t.payment === 'credit' && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + (o.balance || 0), 0);
-                const overLimit = totalOutstanding > (c.creditLimit || 0);
-                html += `<tr style="${overLimit ? 'background:#fee;' : ''}">
-              <td>${c.name} ${overLimit ? '⚠️' : ''}</td>
-              <td>${c.contact || '-'}</td>
-              <td>${c.company || '-'}</td>
-              <td>UGX ${(c.creditLimit || 0).toLocaleString()}</td>
-              <td style="text-align:center;"><i class="fas fa-trash-alt" onclick="deleteClient(${idx})" style="cursor:pointer;color:var(--red);"></i></td>
-            </tr>`;
-            });
-            html += `</tbody></table></div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-            card.innerHTML = html;
-
-            document.getElementById('clientForm').onsubmit = function(e) {
-                e.preventDefault();
-                const name = document.getElementById('clientName').value.trim();
-                const contact = document.getElementById('clientContact').value.trim();
-                const address = document.getElementById('clientAddress').value.trim();
-                const company = document.getElementById('clientCompany').value.trim();
-                const limit = parseFloat(document.getElementById('clientLimit').value) || 1000000;
-                if (!name) { toast('Name required', 'error'); return; }
-                creditClients.push({ name, contact, address, company, creditLimit: limit });
-                saveData();
-                addAudit('Client Add', `Added credit client: ${name}`);
-                addActivity('system', `Added credit client: ${name}`);
-                toast('Client added!', 'success');
-                buildClientsModal(card);
-            };
-
-            window.deleteClient = function(idx) {
-                if (!confirm('Delete this client?')) return;
-                creditClients.splice(idx, 1);
-                saveData();
-                addAudit('Client Delete', `Deleted credit client`);
-                toast('Client deleted', 'warning');
-                buildClientsModal(card);
             };
         }
 
@@ -2079,7 +1958,7 @@
                 html += `<tr><td>${u.username}</td><td>${u.role}</td>
               <td style="text-align:center;">
                 <button class="btn btn-sm" style="padding:0.1rem 0.8rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')">
-                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✅ ' + permCount : 'Set'}
+                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✔️ ' + permCount : 'Set'}
                 </button>
               </td></tr>`;
             });
@@ -2106,12 +1985,12 @@
 
             window.editPermissions = function(username) {
                 const perms = userPermissions[username] || {};
-                const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_clients', 'view_reports',
-                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice', 'manage_deposits'];
+                const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_customers', 'view_reports',
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice'];
                 let currentPerms = {};
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
-                    const status = perms[a] ? '✅' : '❌';
+                    const status = perms[a] ? '✔️' : '❌';
                     msg += `${status} ${a}\n`;
                     currentPerms[a] = perms[a] || false;
                 });
@@ -2340,18 +2219,6 @@
             const total = qty * price;
             const amt = document.getElementById('modalAmount');
             if (amt) amt.value = total;
-            calcBalance();
-        }
-
-        function calcBalance() {
-            const amtField = document.getElementById('modalAmount');
-            const depField = document.getElementById('modalDeposit');
-            const balField = document.getElementById('modalBalance');
-            if (amtField && depField && balField) {
-                const amt = parseFloat(amtField.value) || 0;
-                const dep = parseFloat(depField.value) || 0;
-                balField.value = Math.max(0, amt - dep);
-            }
         }
 
         function updateDispatchInfo() {
@@ -2379,7 +2246,7 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // TRANSACTION OPERATIONS - FIXED: Credit sales now save
+        // TRANSACTION OPERATIONS
         // ═══════════════════════════════════════════════════════════════
 
         function saveTransaction(type) {
@@ -2389,74 +2256,72 @@
             const qty = parseFloat(document.getElementById('modalQty').value);
             const amount = parseFloat(document.getElementById('modalAmount').value);
             
-            const isSalesAgent = isSales();
-            const payment = document.getElementById('modalPayment').value;
-            let docNumber;
-            if (type === 'expense') {
-                docNumber = 'EXP-' + String(nextInvoiceId).padStart(4, '0');
-                nextInvoiceId++;
-            } else if (isSalesAgent) {
-                docNumber = document.getElementById('modalReceipt').value;
-            } else {
-                docNumber = document.getElementById('modalReceipt').value.trim() || generateInvoiceNumber();
-            }
-            
-            let customer = '';
-            let deposit = 0;
-            let balance = 0;
-            let depositId = null;
+            const paymentType = document.getElementById('modalPaymentType')?.value || 'cash';
+            let customerId = null;
+            let customerName = '';
+            let customerContact = '';
+            let customerAddress = '';
+            let customerCompany = '';
 
-            if (payment === 'cash') {
-                customer = document.getElementById('modalCustomerInput').value.trim() || 'Walk-in Customer';
-            } else if (payment === 'credit') {
-                // FIXED: Get customer from select dropdown properly
+            if (paymentType === 'cash') {
+                // Walk-in customer
+                customerName = document.getElementById('modalCustomerInput').value.trim() || 'Walk-in Customer';
+                // Check if this customer exists, if so use them
+                const existing = customers.find(c => c.name.toLowerCase() === customerName.toLowerCase());
+                if (existing) {
+                    customerId = existing.id;
+                    customerContact = existing.contact || '';
+                    customerAddress = existing.address || '';
+                    customerCompany = existing.company || '';
+                }
+            } else {
+                // Customer (deposit/credit)
                 const select = document.getElementById('modalCustomerSelect');
-                customer = select ? select.value : '';
-                // If no customer selected, use the input field value (for new credit customers)
-                if (!customer) {
-                    customer = document.getElementById('modalCustomerInput').value.trim();
-                }
-                if (!customer) {
-                    toast('Please select or enter a credit customer', 'error');
-                    return;
-                }
-                deposit = parseFloat(document.getElementById('modalDeposit')?.value) || 0;
-                balance = parseFloat(document.getElementById('modalBalance')?.value) || 0;
-                // For credit, balance = amount - deposit
-                if (deposit > 0) {
-                    balance = amount - deposit;
-                }
-            } else if (payment === 'deposit') {
-                const select = document.getElementById('modalDepositSelect');
-                depositId = parseInt(select.value);
-                if (depositId) {
-                    const dep = deposits.find(d => d.id === depositId);
-                    if (dep) {
-                        customer = dep.customer;
-                        deposit = amount;
-                        balance = 0;
-                        if (amount > dep.balance) {
-                            toast(`Insufficient deposit balance! Available: UGX ${dep.balance.toLocaleString()}`, 'error');
-                            return;
-                        }
-                    } else {
-                        toast('Invalid deposit selected', 'error');
-                        return;
+                const val = select ? select.value : '';
+                if (val === 'new') {
+                    const name = prompt('Enter new customer name:');
+                    if (!name) { toast('Customer name required', 'error'); return; }
+                    const contact = prompt('Contact (optional):') || '';
+                    const email = prompt('Email (optional):') || '';
+                    const company = prompt('Company (optional):') || '';
+                    const address = prompt('Address (optional):') || '';
+                    
+                    const newCustomer = {
+                        id: nextCustomerId++,
+                        name: name,
+                        contact: contact,
+                        email: email,
+                        address: address,
+                        company: company,
+                        balance: 0
+                    };
+                    customers.push(newCustomer);
+                    customerId = newCustomer.id;
+                    customerName = newCustomer.name;
+                    customerContact = newCustomer.contact;
+                    customerAddress = newCustomer.address;
+                    customerCompany = newCustomer.company;
+                    addAudit('Customer Added', `Added ${name} during sale`);
+                } else if (val) {
+                    const customer = customers.find(c => c.id === parseInt(val));
+                    if (customer) {
+                        customerId = customer.id;
+                        customerName = customer.name;
+                        customerContact = customer.contact || '';
+                        customerAddress = customer.address || '';
+                        customerCompany = customer.company || '';
                     }
-                } else {
-                    toast('Please select a deposit', 'error');
+                }
+                if (!customerName) {
+                    toast('Please select a customer', 'error');
                     return;
                 }
             }
-            
-            const contact = document.getElementById('modalContact')?.value || '';
-            const address = document.getElementById('modalAddress')?.value || '';
-            const company = document.getElementById('modalCompany')?.value || '';
-            const price = parseFloat(document.getElementById('modalPrice')?.value) || 0;
+
+            const docNumber = type === 'expense' ? ('EXP-' + String(nextInvoiceId).padStart(4, '0')) : generateInvoiceNumber();
+            if (type === 'expense') nextInvoiceId++;
 
             if (!item || !qty || !amount) { toast('Fill all required fields', 'error'); return; }
-            if (!customer) { toast('Please enter/select a customer', 'error'); return; }
-            if (transactions.find(t => t.docNumber === docNumber)) { toast('Document # already exists!', 'error'); return; }
 
             if (type === 'expense' && isCashier()) {
                 const today = new Date().toISOString().split('T')[0];
@@ -2472,10 +2337,7 @@
                 if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
             }
 
-            // For credit, ensure balance is calculated correctly
-            if (payment === 'credit' && deposit === 0) {
-                balance = amount; // Full credit, no deposit
-            }
+            const notes = document.getElementById('modalNotes')?.value || '';
 
             const trans = {
                 id: nextInvoiceId++,
@@ -2483,33 +2345,32 @@
                 site: site,
                 item: item,
                 qty: qty,
-                price: price,
+                price: parseFloat(document.getElementById('modalPrice')?.value) || 0,
                 amount: amount,
-                customer: customer,
-                contact: contact,
-                address: address,
-                company: company,
-                payment: payment,
-                deposit: deposit,
-                balance: balance,
+                customer: customerName,
+                contact: customerContact,
+                address: customerAddress,
+                company: customerCompany,
+                payment: paymentType,
+                deposit: 0,
+                balance: 0,
                 docNumber: docNumber,
                 docType: type === 'expense' ? 'expense' : 'invoice',
                 status: type === 'expense' ? 'expense' : 'pending',
-                paid: payment === 'cash' || payment === 'deposit',
-                paymentMode: payment === 'deposit' ? 'deposit' : (payment === 'cash' ? 'cash' : ''),
+                paid: paymentType === 'cash',
+                paymentMode: paymentType,
                 dispatch: { loaded: false },
-                depositId: depositId
+                customerId: customerId,
+                notes: notes
             };
             transactions.push(trans);
 
-            if (payment === 'deposit' && depositId) {
-                const dep = deposits.find(d => d.id === depositId);
-                if (dep) {
-                    dep.used = (dep.used || 0) + amount;
-                    dep.balance = dep.amount - dep.used;
-                    if (dep.balance <= 0) dep.status = 'exhausted';
-                    if (!dep.transactions) dep.transactions = [];
-                    dep.transactions.push(docNumber);
+            // Update customer balance for customer payment type
+            if (customerId && type !== 'expense' && paymentType === 'customer') {
+                const customer = customers.find(c => c.id === customerId);
+                if (customer) {
+                    // Customer balance decreases (they owe more or deposit decreases)
+                    customer.balance = (customer.balance || 0) - amount;
                 }
             }
 
@@ -2519,7 +2380,7 @@
 
             saveData();
             addAudit(type === 'expense' ? 'Expense Added' : 'Sale Created',
-                `${type === 'expense' ? 'Expense' : 'Sale'}: ${docNumber} - ${item} x${qty} = UGX ${amount}`);
+                `${type === 'expense' ? 'Expense' : 'Sale'}: ${docNumber} - ${item} x${qty} = UGX ${amount} (${paymentType})`);
             addActivity(type === 'expense' ? 'expense' : 'sale', 
                 `${type === 'expense' ? 'Expense' : 'Sale'}: ${item} x${qty} - ${docNumber}`);
             renderTable();
@@ -2557,7 +2418,7 @@
             addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
             addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
             renderTable();
-            toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
+            toast(`✔️ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
         }
 
         function cancelInvoice(id) {
@@ -2576,7 +2437,7 @@
                 addAudit('Document Cancelled', `Cancelled ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cancelled: ${trans.docNumber}`);
                 renderTable();
-                toast(`✅ ${trans.docNumber} cancelled`, 'warning');
+                toast(`✔️ ${trans.docNumber} cancelled`, 'warning');
             }
         }
 
@@ -2661,7 +2522,7 @@
             addActivity('dispatch', `Dispatched: ${receipt} - ${trans.item} x${loadedQty}`);
             renderTable();
             closeModal();
-            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -2724,7 +2585,7 @@
         // ═══════════════════════════════════════════════════════════════
 
         function exportBackup() {
-            const data = { transactions, auditLog, loadingOrders, refundRequests, deposits, productionLog, nextInvoiceId, nextReceiptId, inventory: inventoryItems, users, creditClients, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
+            const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, nextCustomerId, inventory: inventoryItems, users, customers, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -2759,9 +2620,8 @@
         window.openModal = openModal;
         window.closeModal = closeModal;
         window.calcTotal = calcTotal;
-        window.calcBalance = calcBalance;
         window.updatePrice = updatePrice;
-        window.togglePaymentMode = window.togglePaymentMode || function() {};
+        window.togglePaymentType = togglePaymentType;
         window.updateDispatchInfo = updateDispatchInfo;
         window.updateDispatchBalance = updateDispatchBalance;
         window.clearInvoice = clearInvoice;
@@ -2773,23 +2633,21 @@
         window.exportBackup = exportBackup;
         window.logout = logout;
         window.populateItems = populateItems;
-        window.fillCustomerDetails = window.fillCustomerDetails || function() {};
-        window.fillDepositCustomer = window.fillDepositCustomer || function() {};
+        window.loadCustomerDetails = loadCustomerDetails;
         window.recordProductionStock = window.recordProductionStock || function() {};
         window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
         window.toggleSetting = window.toggleSetting || function() {};
         window.editPrice = window.editPrice || function() {};
         window.approveRefund = window.approveRefund || function() {};
         window.rejectRefund = window.rejectRefund || function() {};
-        window.closeDeposit = window.closeDeposit || function() {};
-        window.updateItemPrice = window.updateItemPrice || function() {};
-        window.updateDepositInfo = window.updateDepositInfo || function() {};
-        window.calculateUseTotal = window.calculateUseTotal || function() {};
         window.showItemDetails = showItemDetails;
+        window.setBalanceValue = window.setBalanceValue || function() {};
+        window.viewCustomer = window.viewCustomer || function() {};
+        window.deleteCustomer = window.deleteCustomer || function() {};
 
         renderTable();
-        console.log('✅ Kajana Enterprise System v8.5 loaded - Credit Sale Fixed');
-        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${creditClients.length} credit clients, ${deposits.length} deposits`);
+        console.log('✔️ Kajana Enterprise System v10.2 loaded - Merged Deposit+Credit into Customer');
+        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} unified customers`);
     </script>
 </body>
 </html>
