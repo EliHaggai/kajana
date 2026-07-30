@@ -273,6 +273,21 @@
         .confirm-box .btn-group .btn-confirm-success:hover { background: #0f5e2c; }
         .confirm-box .btn-group .btn-confirm-warning { background: #b8870a; border-color: #b8870a; color: #fff; }
         .confirm-box .btn-group .btn-confirm-warning:hover { background: #9a7408; }
+
+        /* DISPATCH NOTE PRINT STYLES */
+        .dispatch-note { font-family: 'Courier New', monospace; padding: 20px; max-width: 700px; margin: 0 auto; background: #fff; }
+        .dispatch-note .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .dispatch-note .header h2 { font-size: 22px; margin: 0; }
+        .dispatch-note .header .sub { font-size: 14px; color: #555; }
+        .dispatch-note .details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 20px; margin: 10px 0; }
+        .dispatch-note .details .label { font-weight: bold; }
+        .dispatch-note .items-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .dispatch-note .items-table th, .dispatch-note .items-table td { border: 1px solid #000; padding: 6px 10px; text-align: left; font-size: 13px; }
+        .dispatch-note .items-table th { background: #f0f0f0; }
+        .dispatch-note .footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px dashed #999; font-size: 12px; color: #666; }
+        .dispatch-note .signature { display: flex; justify-content: space-between; margin-top: 30px; }
+        .dispatch-note .signature div { text-align: center; }
+        .dispatch-note .signature .line { display: inline-block; width: 180px; border-bottom: 1px solid #000; margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -505,7 +520,7 @@
                 okBtn.className = 'btn btn-confirm';
                 okBtn.textContent = 'Yes, Proceed';
             } else if (type === 'success') {
-                icon.textContent = '✅';
+                icon.textContent = '✔️';
                 icon.className = 'icon success';
                 okBtn.className = 'btn btn-confirm-success';
                 okBtn.textContent = 'Yes, Proceed';
@@ -960,7 +975,7 @@
             } else if (role === 'dispatch') {
                 statsHTML = `
                     <div class="stat-card"><div class="label">📋 Ready for Loading</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card"><div class="label">✅ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
+                    <div class="stat-card"><div class="label">✔️ Completed</div><div class="value">${siteData.filter(t => t.status === 'completed').length}</div><div class="sub">Fully dispatched</div></div>
                     <div class="stat-card"><div class="label">📦 Partial</div><div class="value">${siteData.filter(t => t.status === 'partial').length}</div><div class="sub">Partially loaded</div></div>
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
@@ -969,7 +984,7 @@
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.paid).length} transactions</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
-                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
@@ -978,7 +993,7 @@
                 statsHTML = `
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
-                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
@@ -1029,11 +1044,11 @@
             
             const statusMap = {
                 pending: '<span class="badge-status pending">⏳ Pending</span>',
-                cleared: '<span class="badge-status cleared">✅ Cleared</span>',
-                completed: '<span class="badge-status completed">✅ Completed</span>',
+                cleared: '<span class="badge-status cleared">✔️ Cleared</span>',
+                completed: '<span class="badge-status completed">✔️ Completed</span>',
                 expense: '<span class="badge-status expense">💰 Expense</span>',
                 partial: '<span class="badge-status partial">📦 Partial</span>',
-                paid: '<span class="badge-status paid">✅ Paid</span>',
+                paid: '<span class="badge-status paid">✔️ Paid</span>',
                 unpaid: '<span class="badge-status unpaid">❌ Unpaid</span>',
                 refund: '<span class="badge-status refund">🔄 Refunded</span>',
                 cancelled: '<span class="badge-status cancelled">🚫 Cancelled</span>'
@@ -1057,7 +1072,7 @@
                     }
                 }
                 
-                const paidStatus = t.paid ? '<span class="badge-status paid">✅ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
+                const paidStatus = t.paid ? '<span class="badge-status paid">✔️ Paid</span>' : '<span class="badge-status unpaid">❌ Unpaid</span>';
                 const docDisplay = t.docNumber || '-';
                 const paymentDisplay = t.payment === 'customer' ? 'Customer' : (t.payment || 'cash');
                 const amountDisplay = t.amount < 0 ? `UGX -${Math.abs(t.amount).toLocaleString()}` : `UGX ${t.amount.toLocaleString()}`;
@@ -1377,7 +1392,7 @@
                 
                 selectCustomer(newItem);
                 document.getElementById('newCustomerForm').classList.remove('show');
-                toast(`✅ Customer ${name} added!`, 'success');
+                toast(`✔️ Customer ${name} added!`, 'success');
             };
 
             document.addEventListener('click', function(e) {
@@ -1523,7 +1538,7 @@
                 renderTable();
                 closeModal();
                 const newBalanceDisplay = newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : 'UGX -' + Math.abs(newBalance).toLocaleString();
-                toast(`✅ ${customer.name}'s balance updated to ${newBalanceDisplay}`, 'success');
+                toast(`✔️ ${customer.name}'s balance updated to ${newBalanceDisplay}`, 'success');
             };
         }
 
@@ -1762,7 +1777,7 @@
                 saveData();
                 addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()}`);
                 addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
-                toast(`✅ Customer ${name} added!`, 'success');
+                toast(`✔️ Customer ${name} added!`, 'success');
                 closeModal();
                 buildCustomersModal(document.getElementById('modalCard'));
             };
@@ -1879,7 +1894,7 @@
             addActivity('expense', `Expense: ${category} - UGX ${amount.toLocaleString()}`);
             renderTable();
             closeModal();
-            toast(`✅ Expense recorded!`, 'success');
+            toast(`✔️ Expense recorded!`, 'success');
         }
 
         // ── DISPATCH Modal ──
@@ -1986,7 +2001,7 @@
             addActivity('dispatch', `Dispatched: ${receipt} - ${trans.item} x${loadedQty}`);
             renderTable();
             closeModal();
-            toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
+            toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
         // ── RECEIPT Modal (E-receipt) ──
@@ -2057,7 +2072,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear </button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear & Generate Dispatch Note</button>
                 </div>
             </form>
           `;
@@ -2081,6 +2096,114 @@
             };
         }
 
+        // ── Print Dispatch Note ──
+        function printDispatchNote(trans) {
+            const today = new Date().toISOString().split('T')[0];
+            const note = `
+            <div class="dispatch-note">
+                <div class="header">
+                    <h2>📦 DISPATCH NOTE</h2>
+                    <div class="sub">KAJANA ENTERPRISES LTD</div>
+                    <div class="sub">Concrete & Stone Mining · ${currentSite.toUpperCase()}</div>
+                    <div style="font-size:12px;margin-top:2px;">Date: ${today}</div>
+                </div>
+                <div style="background:#f0f8ff;padding:10px;border-radius:8px;margin-bottom:15px;border-left:4px solid #1a7a3a;">
+                    <strong>✔️ ORDER CLEARED FOR DISPATCH</strong>
+                    <div style="font-size:13px;margin-top:3px;">Receipt #${trans.docNumber} | Original Invoice: ${trans.originalInvoice || 'N/A'}</div>
+                </div>
+                <div class="details">
+                    <div><span class="label">Customer:</span> ${trans.customer || 'N/A'}</div>
+                    <div><span class="label">Contact:</span> ${trans.contact || 'N/A'}</div>
+                    <div><span class="label">Company:</span> ${trans.company || 'N/A'}</div>
+                    <div><span class="label">Address:</span> ${trans.address || 'N/A'}</div>
+                    <div><span class="label">Order Date:</span> ${trans.date}</div>
+                    <div><span class="label">Cleared By:</span> ${currentUser?.name || 'System'}</div>
+                </div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>${trans.item}</td>
+                            <td>${trans.qty}</td>
+                            <td>UGX ${trans.price.toLocaleString()}</td>
+                            <td>UGX ${trans.amount.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight:bold;background:#f5f3f0;">
+                            <td colspan="4" style="text-align:right;">TOTAL AMOUNT:</td>
+                            <td>UGX ${trans.amount.toLocaleString()}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div style="margin:10px 0;padding:8px 12px;background:#fef3cd;border-radius:6px;font-size:12px;">
+                    <strong>📌 Status:</strong> ${trans.paid ? '✔️ Paid' : '⏳ Unpaid (Credit)'} | <strong>Payment Mode:</strong> ${trans.paymentMode || trans.payment || 'N/A'}
+                </div>
+                <div class="signature">
+                    <div>
+                        <div class="line"></div>
+                        <div style="font-size:11px;color:#666;">Dispatched By</div>
+                    </div>
+                    <div>
+                        <div class="line"></div>
+                        <div style="font-size:11px;color:#666;">Received By</div>
+                    </div>
+                    <div>
+                        <div class="line"></div>
+                        <div style="font-size:11px;color:#666;">Date</div>
+                    </div>
+                </div>
+                <div class="footer">
+                    This is a computer-generated dispatch note. Please verify all items before loading.<br>
+                    For inquiries: +256 700 000 000 | info@kajana.com
+                </div>
+            </div>
+            `;
+
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            printWindow.document.write(`
+                <html><head><title>Dispatch Note - ${trans.docNumber}</title>
+                <style>
+                    body { font-family: 'Courier New', monospace; background: #fff; margin: 0; padding: 20px; }
+                    .dispatch-note { max-width: 700px; margin: 0 auto; }
+                    .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 15px; }
+                    .header h2 { font-size: 22px; margin: 0; }
+                    .header .sub { font-size: 14px; color: #555; }
+                    .details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 20px; margin: 10px 0; }
+                    .details .label { font-weight: bold; }
+                    .items-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                    .items-table th, .items-table td { border: 1px solid #000; padding: 6px 10px; text-align: left; font-size: 13px; }
+                    .items-table th { background: #f0f0f0; }
+                    .footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px dashed #999; font-size: 12px; color: #666; }
+                    .signature { display: flex; justify-content: space-between; margin-top: 30px; }
+                    .signature div { text-align: center; }
+                    .signature .line { display: inline-block; width: 180px; border-bottom: 1px solid #000; margin-top: 30px; }
+                    .btn-print { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+                    .btn-print:hover { background: #333; }
+                    @media print { .btn-print { display: none; } }
+                </style>
+                </head><body>
+                <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+                ${note}
+                <script>
+                    window.onload = function() { 
+                        setTimeout(function() { window.print(); }, 300);
+                    }
+                <\/script>
+                </body></html>
+            `);
+            printWindow.document.close();
+        }
+
         function clearInvoice(id, paidStatus, paymentMode) {
             const trans = transactions.find(t => t.id === id);
             if (!trans) return;
@@ -2091,9 +2214,14 @@
             if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot clear expense or refund', 'error'); return; }
             if (trans.status === 'cancelled') { toast('Cannot clear cancelled document', 'error'); return; }
             
-            showConfirm('Clear Invoice', `Clear ${trans.docNumber} for ${trans.customer || 'N/A'} and Generate a dispatch note.`, 'success', function() {
+            showConfirm('Clear Invoice', `Clear ${trans.docNumber} for ${trans.customer || 'N/A'} and generate a dispatch note.`, 'success', function() {
                 const newReceiptNumber = generateReceiptNumber();
                 const oldDocNumber = trans.docNumber;
+                
+                // Store original payment info before clearing
+                const wasCashSale = trans.payment === 'cash' && trans.paid === true;
+                const wasCustomerDeposit = trans.payment === 'customer' && trans.paid === true;
+                const wasUnpaidCustomer = trans.payment === 'customer' && trans.paid === false;
                 
                 trans.status = 'cleared';
                 trans.paid = paidStatus === 'paid';
@@ -2107,12 +2235,37 @@
                 }
                 
                 trans.originalInvoice = oldDocNumber;
+                trans.clearedBy = currentUser?.name || 'System';
+                trans.clearedDate = new Date().toISOString();
+                
+                // Update customer balance if this was a customer transaction
+                if (trans.customerId && trans.payment === 'customer') {
+                    const customer = customers.find(c => c.id === trans.customerId);
+                    if (customer) {
+                        // If it was already paid (deposit), balance stays the same
+                        // If it was unpaid (credit), the credit is now cleared
+                        if (!wasUnpaidCustomer) {
+                            // Already paid, no balance change
+                        }
+                        // For unpaid customer transactions being cleared as paid
+                        // The credit is reduced
+                        if (wasUnpaidCustomer && paidStatus === 'paid') {
+                            // The customer's credit is reduced by the amount
+                            // Since we already deducted when creating the invoice
+                            // No additional change needed
+                        }
+                    }
+                }
                 
                 saveData();
                 addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
                 renderTable();
-                toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
+                
+                // Print dispatch note
+                printDispatchNote(trans);
+                
+                toast(`✔️ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
             });
         }
 
@@ -2123,16 +2276,57 @@
             if (trans.docType === 'expense') { toast('Cannot cancel expenses', 'error'); return; }
             if (trans.status === 'completed') { toast('Cannot cancel completed/dispatched document', 'error'); return; }
             
-            showConfirm('Cancel Invoice', `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`, 'danger', function() {
+            // Check if this is a cleared receipt that needs financial reversal
+            const isClearedReceipt = trans.status === 'cleared' && trans.docType === 'receipt';
+            
+            let warningMessage = `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`;
+            if (isClearedReceipt) {
+                warningMessage += `\n\n⚠️ This will REVERSE the financial impact:\n• If it was a CASH SALE: Cash at Hand will decrease by UGX ${trans.amount.toLocaleString()}\n• If it was a CUSTOMER DEPOSIT: Customer balance will be restored`;
+            }
+            
+            showConfirm('Cancel Invoice', warningMessage, 'danger', function() {
+                // Financial reversal for cleared receipts
+                if (isClearedReceipt) {
+                    // Reverse the financial impact based on payment type
+                    if (trans.payment === 'cash' && trans.paid === true) {
+                        // Cash sale reversal - Cash at Hand decreases
+                        // This is handled by removing the transaction from calculations
+                        addAudit('Cash Sale Reversed', `Cancelled cash sale ${trans.docNumber} - UGX ${trans.amount.toLocaleString()} reversed from Cash at Hand`);
+                    } else if (trans.payment === 'customer' && trans.paid === true) {
+                        // Customer deposit reversal - Restore customer balance
+                        if (trans.customerId) {
+                            const customer = customers.find(c => c.id === trans.customerId);
+                            if (customer) {
+                                customer.balance = (customer.balance || 0) + trans.amount;
+                                addAudit('Customer Balance Restored', `Restored UGX ${trans.amount.toLocaleString()} to ${customer.name} (cancelled receipt ${trans.docNumber})`);
+                            }
+                        }
+                    } else if (trans.payment === 'customer' && trans.paid === false) {
+                        // Unpaid customer transaction - restore credit
+                        if (trans.customerId) {
+                            const customer = customers.find(c => c.id === trans.customerId);
+                            if (customer) {
+                                customer.balance = (customer.balance || 0) + trans.amount;
+                                addAudit('Customer Credit Restored', `Restored UGX ${trans.amount.toLocaleString()} credit to ${customer.name} (cancelled receipt ${trans.docNumber})`);
+                            }
+                        }
+                    }
+                }
+                
                 trans.status = 'cancelled';
+                trans.cancelledDate = new Date().toISOString();
+                trans.cancelledBy = currentUser?.name || 'System';
+                
+                // Return stock if not dispatched
                 if (!trans.dispatch?.loaded) {
                     updateStock(trans.site, trans.item, trans.qty, 'add');
                 }
+                
                 saveData();
                 addAudit('Document Cancelled', `Cancelled ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cancelled: ${trans.docNumber}`);
                 renderTable();
-                toast(`✅ ${trans.docNumber} cancelled`, 'warning');
+                toast(`✔️ ${trans.docNumber} cancelled`, 'warning');
             });
         }
 
@@ -2273,7 +2467,7 @@
                 addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
                 renderTable();
                 closeModal();
-                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
+                toast(`✔️ Refund request submitted for ${original.docNumber}`, 'success');
             };
         }
 
@@ -2353,6 +2547,7 @@
                     const original = transactions.find(t => t.id === request.invoiceId);
                     if (original) {
                         original.status = 'refund';
+                        // Reverse stock
                         updateStock(original.site, original.item, original.qty, 'add');
                     }
                     
@@ -2361,7 +2556,7 @@
                     addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
                     renderTable();
                     buildRefundApprovalModal(card);
-                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
+                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
                 });
             };
 
@@ -2547,7 +2742,7 @@
                     saveData();
                     addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
                     addActivity('system', `Production: ${item} +${qty}`);
-                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
+                    toast(`✔️ Production recorded: ${item} +${qty}`, 'success');
                     buildProductionModal(card);
                     renderTable();
                 } else {
@@ -2570,7 +2765,7 @@
                 saveData();
                 addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
                 addActivity('system', `Materials received: ${name} +${qty}`);
-                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
+                toast(`✔️ Materials recorded: ${name} +${qty}`, 'success');
                 buildProductionModal(card);
                 renderTable();
             };
@@ -2616,7 +2811,7 @@
                 html += `<tr><td>${u.username}</td><td>${u.role}</td>
               <td style="text-align:center;">
                 <button class="btn btn-sm" style="padding:0.1rem 0.8rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')">
-                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✅ ' + permCount : 'Set'}
+                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✔️ ' + permCount : 'Set'}
                 </button>
               </td></tr>`;
             });
@@ -2648,7 +2843,7 @@
                 let currentPerms = {};
                 let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
                 actions.forEach(a => {
-                    const status = perms[a] ? '✅' : '❌';
+                    const status = perms[a] ? '✔️' : '❌';
                     msg += `${status} ${a}\n`;
                     currentPerms[a] = perms[a] || false;
                 });
@@ -3261,7 +3456,7 @@
             a.click();
             URL.revokeObjectURL(url);
             addAudit('Report Generated', `${reportType} PDF report`);
-            toast('✅ PDF report generated!', 'success');
+            toast('✔️ PDF report generated!', 'success');
         }
 
         function exportCSV() {
@@ -3312,7 +3507,7 @@
             a.click();
             URL.revokeObjectURL(url);
             addAudit('Report Generated', `${reportType} CSV report`);
-            toast('✅ CSV report generated!', 'success');
+            toast('✔️ CSV report generated!', 'success');
         }
 
         function printReport() {
@@ -3560,7 +3755,7 @@
             addActivity('sale', `Sale: ${item} x${qty} - ${docNumber}`);
             renderTable();
             closeModal();
-            toast(`✅ Invoice ${docNumber} saved!`, 'success');
+            toast(`✔️ Invoice ${docNumber} saved!`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -3618,7 +3813,7 @@
         window.filterCustomers = filterCustomers;
 
         renderTable();
-        console.log('✅ Kajana Enterprises Ltd v11.0 - Complete System');
+        console.log('✔️ Kajana Enterprises Ltd v11.0 - Complete System');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} customers`);
     </script>
 </body>
