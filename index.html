@@ -301,6 +301,8 @@
         .add-item-btn { background: var(--yellow); border: none; padding: 0.5rem 1.5rem; border-radius: 40px; font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
         .add-item-btn:hover { background: #e8c815; transform: translateY(-2px); }
         .item-counter { font-size: 0.75rem; color: #888; margin-left: 0.5rem; }
+
+        .edit-badge { background: #6f42c1; color: #fff; padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.6rem; margin-left: 0.3rem; }
     </style>
 </head>
 <body>
@@ -1069,7 +1071,7 @@
                 const canClear = canClearInvoice() && (st === 'pending' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canCancel = canCancelInvoice() && (st === 'pending' || st === 'cleared' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
                 const canDelete = canDeleteTransaction();
-                const canEdit = canEditTransaction();
+                const canEdit = canEditTransaction() && (t.docType !== 'expense' || isGM());
                 
                 let statusDisplay = statusMap[st] || statusMap.pending;
                 if (isSales() || isDispatch()) {
@@ -1100,8 +1102,9 @@
                 ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear/Receipt"></i>` : ''}
                 ${canCancel ? `<i class="fas fa-times-circle text-danger" onclick="cancelInvoice(${t.id})" title="Cancel"></i>` : ''}
                 ${canDelete ? `<i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})" title="Delete"></i>` : ''}
-                ${canEdit ? `<i class="fas fa-edit" onclick="editTrans(${t.id})" title="Edit"></i>` : ''}
+                ${canEdit ? `<i class="fas fa-edit text-primary" onclick="editTransaction(${t.id})" title="Edit Transaction" style="color:#6f42c1;"></i>` : ''}
                 ${t.dispatch?.loaded ? `<i class="fas fa-truck" style="color:#1a7a3a;" title="Dispatched"></i>` : ''}
+                ${t.edited ? `<span class="edit-badge">✎ Edited</span>` : ''}
               </td>
             </tr>`;
             }).join('');
@@ -1109,6 +1112,455 @@
             renderStock();
             if (isGM()) renderCharts();
             if (isGM()) updateActivityFeed();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EDIT TRANSACTION - FULL EDIT FOR GM AND MANAGER
+        // ═══════════════════════════════════════════════════════════════
+
+        function editTransaction(id) {
+            if (!canEditTransaction()) {
+                toast('Only GM and Manager can edit transactions', 'error');
+                return;
+            }
+
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) {
+                toast('Transaction not found', 'error');
+                return;
+            }
+
+            // Don't allow editing of refunded or completed transactions unless GM
+            if ((trans.status === 'refund' || trans.status === 'completed') && !isGM()) {
+                toast('Only GM can edit completed or refunded transactions', 'error');
+                return;
+            }
+
+            openEditTransactionModal(trans);
+        }
+
+        function openEditTransactionModal(trans) {
+            const card = document.getElementById('modalCard');
+            const overlay = document.getElementById('modalOverlay');
+            overlay.style.display = 'flex';
+
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop" ${trans.site === 'workshop' ? 'selected' : ''}>Workshop</option>
+                 <option value="ngetta" ${trans.site === 'ngetta' ? 'selected' : ''}>Ngetta Site</option>
+                 <option value="adyel" ${trans.site === 'adyel' ? 'selected' : ''}>Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            // Prepare customer options
+            let customerOptionsHTML = `<option value="">-- Select Customer --</option>`;
+            customers.forEach(c => {
+                const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString();
+                const selected = c.id === trans.customerId ? 'selected' : '';
+                customerOptionsHTML += `<option value="${c.id}" ${selected} data-name="${c.name}" data-contact="${c.contact || ''}" data-address="${c.address || ''}" data-company="${c.company || ''}">${c.name} (${balanceDisplay})</option>`;
+            });
+
+            // Build item rows for editing
+            let itemRowsHTML = '';
+            const items = trans.items || [{ item: trans.item, qty: trans.qty, price: trans.price, amount: trans.amount }];
+            
+            // Get items for the site
+            const siteItems = getItemsForSite(trans.site);
+            
+            items.forEach((item, idx) => {
+                const itemOptions = siteItems.map(si => {
+                    const selected = si.name === item.item ? 'selected' : '';
+                    return `<option value="${si.name}" data-price="${si.price}" data-stock="${si.stock || 0}" ${selected}>${si.name} (UGX ${si.price.toLocaleString()}) - Stock: ${si.stock || 0}</option>`;
+                }).join('');
+
+                const isFirst = idx === 0;
+                itemRowsHTML += `
+                    <div class="item-row" data-row-index="${idx}">
+                        ${!isFirst ? `<button type="button" class="remove-item" onclick="removeEditItemRow(this)" title="Remove item"><i class="fas fa-times"></i></button>` : ''}
+                        <div class="row2">
+                            <div><label>Item</label>
+                                <select class="item-select edit-item-select" onchange="updateEditItemTotal(this)" required>
+                                    <option value="">-- Select --</option>
+                                    ${itemOptions}
+                                </select>
+                            </div>
+                            <div><label>Qty</label>
+                                <input type="number" class="item-qty edit-item-qty" step="any" value="${item.qty}" required oninput="updateEditItemTotal(this)" />
+                            </div>
+                            <div><label>Unit Price</label>
+                                <input type="number" class="item-price edit-item-price" step="any" value="${item.price}" required oninput="updateEditItemTotal(this)" />
+                            </div>
+                            <div><label>Total</label>
+                                <input type="number" class="item-total edit-item-total" step="any" value="${item.amount}" readonly />
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-edit"></i> Edit Transaction <span style="font-size:0.7rem;color:#888;">${trans.docNumber}</span></h3>
+            <div style="background:#fef3cd;padding:0.8rem 1.2rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;border-left:4px solid #b8870a;">
+                <i class="fas fa-info-circle"></i> <strong>Editing Transaction:</strong> ${trans.docNumber}<br>
+                <span style="font-size:0.75rem;color:#888;">Changes will synchronize with stock, customer balances, and financial reports.</span>
+                ${trans.edited ? `<div style="margin-top:0.3rem;font-size:0.75rem;color:#6f42c1;">Previously edited on ${new Date(trans.editedDate).toLocaleString()} by ${trans.editedBy || 'Unknown'}</div>` : ''}
+            </div>
+            <form id="editModalForm">
+                <div class="row2">
+                    <div><label>Document Type</label>
+                        <select id="editDocType">
+                            <option value="invoice" ${trans.docType === 'invoice' ? 'selected' : ''}>Invoice</option>
+                            <option value="receipt" ${trans.docType === 'receipt' ? 'selected' : ''}>Receipt</option>
+                            ${trans.docType === 'expense' ? `<option value="expense" selected>Expense</option>` : ''}
+                            ${trans.docType === 'adjustment' ? `<option value="adjustment" selected>Adjustment</option>` : ''}
+                        </select>
+                    </div>
+                    <div><label>Status</label>
+                        <select id="editStatus">
+                            <option value="pending" ${trans.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="cleared" ${trans.status === 'cleared' ? 'selected' : ''}>Cleared</option>
+                            <option value="partial" ${trans.status === 'partial' ? 'selected' : ''}>Partial</option>
+                            <option value="completed" ${trans.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="cancelled" ${trans.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            <option value="refund" ${trans.status === 'refund' ? 'selected' : ''}>Refund</option>
+                            <option value="expense" ${trans.status === 'expense' ? 'selected' : ''}>Expense</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div><label>Date</label>
+                        <input type="date" id="editDate" value="${trans.date}" required />
+                    </div>
+                    <div><label>Site</label>
+                        <select id="editSite" ${!canChooseSite ? 'disabled' : ''}>
+                            ${siteOptions}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div><label>Payment Type</label>
+                        <select id="editPaymentType">
+                            <option value="cash" ${trans.payment === 'cash' ? 'selected' : ''}>Cash</option>
+                            <option value="customer" ${trans.payment === 'customer' ? 'selected' : ''}>Customer</option>
+                            <option value="deposit" ${trans.payment === 'deposit' ? 'selected' : ''}>Deposit</option>
+                            <option value="bank_deposit" ${trans.payment === 'bank_deposit' ? 'selected' : ''}>Bank Deposit</option>
+                        </select>
+                    </div>
+                    <div><label>Payment Status</label>
+                        <select id="editPaidStatus">
+                            <option value="true" ${trans.paid ? 'selected' : ''}>Paid</option>
+                            <option value="false" ${!trans.paid ? 'selected' : ''}>Unpaid</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div><label>Customer</label>
+                    <select id="editCustomer" onchange="updateEditCustomerInfo()">
+                        ${customerOptionsHTML}
+                    </select>
+                </div>
+                <div id="editCustomerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;display:${trans.customerId ? 'block' : 'none'};">
+                    ${trans.customerId ? `<strong>${trans.customer}</strong> | ${trans.company || 'Individual'}<br>Contact: ${trans.contact || 'N/A'} | Address: ${trans.address || 'N/A'}` : 'No customer selected'}
+                </div>
+
+                <hr class="modal-divider">
+
+                <div id="editItemsContainer">
+                    ${itemRowsHTML}
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin:0.5rem 0 1rem 0;flex-wrap:wrap;gap:0.5rem;">
+                    <button type="button" class="add-item-btn" onclick="addEditItemRow()">
+                        <i class="fas fa-plus-circle"></i> Add Item <span class="item-counter" id="editItemCounter">(${items.length})</span>
+                    </button>
+                    <div style="font-size:0.8rem;color:#888;">
+                        <i class="fas fa-info-circle"></i> Add or remove items from this transaction
+                    </div>
+                </div>
+
+                <div class="grand-total-box">
+                    <div>
+                        <div class="label">GRAND TOTAL</div>
+                        <div style="font-size:0.7rem;opacity:0.6;">Updated total for all items</div>
+                    </div>
+                    <div class="value" id="editGrandTotal">UGX ${trans.amount.toLocaleString()}</div>
+                </div>
+
+                <hr class="modal-divider">
+
+                <div><label>Document Number</label>
+                    <input id="editDocNumber" value="${trans.docNumber}" disabled style="background:#e9ecef;" />
+                </div>
+                <div><label>Notes</label>
+                    <input id="editNotes" value="${trans.notes || ''}" placeholder="Optional notes" />
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:#6f42c1;border-color:#6f42c1;"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+            </form>
+          `;
+
+            // Setup edit form submission
+            document.getElementById('editModalForm').onsubmit = function(e) {
+                e.preventDefault();
+                saveEditTransaction(trans.id);
+            };
+
+            // Setup customer info update
+            window.updateEditCustomerInfo = function() {
+                const select = document.getElementById('editCustomer');
+                const info = document.getElementById('editCustomerInfo');
+                const id = parseInt(select.value);
+                if (!id) { info.style.display = 'none'; return; }
+                const customer = customers.find(c => c.id === id);
+                if (customer) {
+                    info.style.display = 'block';
+                    info.innerHTML = `<strong>${customer.name}</strong> | ${customer.company || 'Individual'}<br>Contact: ${customer.contact || 'N/A'} | Address: ${customer.address || 'N/A'}`;
+                }
+            };
+
+            // Setup item functions for edit mode
+            window.addEditItemRow = function() {
+                const container = document.getElementById('editItemsContainer');
+                const site = document.getElementById('editSite').value;
+                const items = getItemsForSite(site);
+                const rowIndex = container.querySelectorAll('.item-row').length;
+                
+                const itemOptions = items.map(si => {
+                    return `<option value="${si.name}" data-price="${si.price}" data-stock="${si.stock || 0}">${si.name} (UGX ${si.price.toLocaleString()}) - Stock: ${si.stock || 0}</option>`;
+                }).join('');
+
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.setAttribute('data-row-index', rowIndex);
+                div.innerHTML = `
+                    <button type="button" class="remove-item" onclick="removeEditItemRow(this)" title="Remove item"><i class="fas fa-times"></i></button>
+                    <div class="row2">
+                        <div><label>Item</label>
+                            <select class="item-select edit-item-select" onchange="updateEditItemTotal(this)" required>
+                                <option value="">-- Select --</option>
+                                ${itemOptions}
+                            </select>
+                        </div>
+                        <div><label>Qty</label>
+                            <input type="number" class="item-qty edit-item-qty" step="any" placeholder="0" required oninput="updateEditItemTotal(this)" />
+                        </div>
+                        <div><label>Unit Price</label>
+                            <input type="number" class="item-price edit-item-price" step="any" placeholder="0" required oninput="updateEditItemTotal(this)" />
+                        </div>
+                        <div><label>Total</label>
+                            <input type="number" class="item-total edit-item-total" step="any" placeholder="0" readonly />
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+                updateEditItemCounter();
+                calculateEditGrandTotal();
+            };
+
+            window.removeEditItemRow = function(btn) {
+                const row = btn.closest('.item-row');
+                const container = document.getElementById('editItemsContainer');
+                if (container.querySelectorAll('.item-row').length <= 1) {
+                    toast('At least one item is required', 'warning');
+                    return;
+                }
+                row.remove();
+                updateEditItemCounter();
+                calculateEditGrandTotal();
+            };
+
+            window.updateEditItemTotal = function(input) {
+                const row = input.closest('.item-row');
+                const qty = parseFloat(row.querySelector('.edit-item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.edit-item-price').value) || 0;
+                const total = qty * price;
+                row.querySelector('.edit-item-total').value = total.toFixed(2);
+                calculateEditGrandTotal();
+            };
+
+            window.calculateEditGrandTotal = function() {
+                const rows = document.querySelectorAll('#editItemsContainer .item-row');
+                let grandTotal = 0;
+                rows.forEach(row => {
+                    const total = parseFloat(row.querySelector('.edit-item-total').value) || 0;
+                    grandTotal += total;
+                });
+                document.getElementById('editGrandTotal').textContent = 'UGX ' + grandTotal.toLocaleString();
+            };
+
+            window.updateEditItemCounter = function() {
+                const count = document.querySelectorAll('#editItemsContainer .item-row').length;
+                document.getElementById('editItemCounter').textContent = `(${count})`;
+            };
+
+            // Populate edit item selects when site changes
+            document.getElementById('editSite').onchange = function() {
+                const site = this.value;
+                const selects = document.querySelectorAll('.edit-item-select');
+                const items = getItemsForSite(site);
+                selects.forEach(select => {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">-- Select --</option>';
+                    items.forEach(item => {
+                        const stock = item.stock || 0;
+                        const selected = currentValue === item.name ? 'selected' : '';
+                        select.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}" ${selected}>${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
+                    });
+                });
+                calculateEditGrandTotal();
+            };
+
+            // Initial calculation
+            calculateEditGrandTotal();
+            updateEditItemCounter();
+
+            // Set initial site for item population
+            setTimeout(() => {
+                const site = document.getElementById('editSite').value;
+                const selects = document.querySelectorAll('.edit-item-select');
+                const items = getItemsForSite(site);
+                selects.forEach(select => {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">-- Select --</option>';
+                    items.forEach(item => {
+                        const stock = item.stock || 0;
+                        const selected = currentValue === item.name ? 'selected' : '';
+                        select.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}" ${selected}>${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
+                    });
+                });
+            }, 50);
+        }
+
+        function saveEditTransaction(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) {
+                toast('Transaction not found', 'error');
+                return;
+            }
+
+            // Collect all data from edit form
+            const docType = document.getElementById('editDocType').value;
+            const status = document.getElementById('editStatus').value;
+            const date = document.getElementById('editDate').value;
+            const site = document.getElementById('editSite').value;
+            const paymentType = document.getElementById('editPaymentType').value;
+            const paid = document.getElementById('editPaidStatus').value === 'true';
+            const customerId = parseInt(document.getElementById('editCustomer').value) || null;
+            const notes = document.getElementById('editNotes').value.trim();
+
+            // Collect items
+            const rows = document.querySelectorAll('#editItemsContainer .item-row');
+            const items = [];
+            let totalAmount = 0;
+            let allValid = true;
+
+            rows.forEach(row => {
+                const item = row.querySelector('.edit-item-select').value;
+                const qty = parseFloat(row.querySelector('.edit-item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.edit-item-price').value) || 0;
+                const amount = qty * price;
+
+                if (!item || qty <= 0 || price <= 0) {
+                    allValid = false;
+                    return;
+                }
+
+                items.push({ item, qty, price, amount });
+                totalAmount += amount;
+            });
+
+            if (!allValid || items.length === 0) {
+                toast('Please fill all item fields correctly', 'error');
+                return;
+            }
+
+            // Get customer info
+            let customerName = '';
+            let customerContact = '';
+            let customerAddress = '';
+            let customerCompany = '';
+            if (customerId) {
+                const customer = customers.find(c => c.id === customerId);
+                if (customer) {
+                    customerName = customer.name;
+                    customerContact = customer.contact || '';
+                    customerAddress = customer.address || '';
+                    customerCompany = customer.company || '';
+                }
+            }
+
+            // --- REVERSE ORIGINAL TRANSACTION IMPACT ---
+            // Reverse old stock changes
+            const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
+            oldItems.forEach(item => {
+                updateStock(trans.site, item.item, item.qty, 'add');
+            });
+
+            // Reverse old customer balance
+            if (trans.customerId && (trans.payment === 'customer' || trans.payment === 'deposit')) {
+                const oldCustomer = customers.find(c => c.id === trans.customerId);
+                if (oldCustomer) {
+                    if (trans.payment === 'customer') {
+                        oldCustomer.balance = (oldCustomer.balance || 0) + trans.amount;
+                    } else if (trans.payment === 'deposit') {
+                        oldCustomer.balance = (oldCustomer.balance || 0) - trans.amount;
+                    }
+                }
+            }
+
+            // --- APPLY NEW TRANSACTION IMPACT ---
+            // Apply new stock changes
+            items.forEach(item => {
+                updateStock(site, item.item, item.qty, 'subtract');
+            });
+
+            // Apply new customer balance
+            if (customerId && (paymentType === 'customer' || paymentType === 'deposit')) {
+                const customer = customers.find(c => c.id === customerId);
+                if (customer) {
+                    if (paymentType === 'customer') {
+                        customer.balance = (customer.balance || 0) - totalAmount;
+                    } else if (paymentType === 'deposit') {
+                        customer.balance = (customer.balance || 0) + totalAmount;
+                    }
+                }
+            }
+
+            // --- UPDATE TRANSACTION ---
+            const itemNames = items.map(i => i.item).join(' + ');
+            const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+
+            trans.date = date;
+            trans.site = site;
+            trans.item = itemNames;
+            trans.qty = totalQty;
+            trans.price = totalQty > 0 ? totalAmount / totalQty : 0;
+            trans.amount = totalAmount;
+            trans.customer = customerName;
+            trans.contact = customerContact;
+            trans.address = customerAddress;
+            trans.company = customerCompany;
+            trans.payment = paymentType;
+            trans.paid = paid;
+            trans.paymentMode = paymentType;
+            trans.customerId = customerId;
+            trans.notes = notes;
+            trans.docType = docType;
+            trans.status = status;
+            trans.items = items;
+            trans.edited = true;
+            trans.editedDate = new Date().toISOString();
+            trans.editedBy = currentUser?.name || 'System';
+
+            saveData();
+            addAudit('Transaction Edited', `${trans.docNumber} edited by ${currentUser?.name} - New total: UGX ${totalAmount.toLocaleString()}`);
+            addActivity('system', `Transaction ${trans.docNumber} edited by ${currentUser?.name}`);
+            renderTable();
+            closeModal();
+            toast(`✔️ ${trans.docNumber} updated successfully!`, 'success');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1259,31 +1711,10 @@
 
                 <div id="itemsContainer">
                     <!-- Item rows will be dynamically added here -->
-                    <div id="itemRowTemplate" style="display:none;">
-                        <div class="item-row" data-row-index="0">
-                            <button type="button" class="remove-item" onclick="removeItemRow(this)" title="Remove item"><i class="fas fa-times"></i></button>
-                            <div class="row2">
-                                <div><label>Item</label>
-                                    <select class="item-select" onchange="updateItemTotal(this)" required>
-                                        <option value="">-- Select --</option>
-                                    </select>
-                                </div>
-                                <div><label>Qty</label>
-                                    <input type="number" class="item-qty" step="any" placeholder="0" required oninput="updateItemTotal(this)" />
-                                </div>
-                                <div><label>Unit Price</label>
-                                    <input type="number" class="item-price" step="any" placeholder="0" required oninput="updateItemTotal(this)" />
-                                </div>
-                                <div><label>Total</label>
-                                    <input type="number" class="item-total" step="any" placeholder="0" readonly />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;align-items:center;margin:0.5rem 0 1rem 0;flex-wrap:wrap;gap:0.5rem;">
-                    <button type="button" class="add-item-btn" onclick="addItemRow()">
+                    <button type="button" class="add-item-btn" onclick="addSaleItemRow()">
                         <i class="fas fa-plus-circle"></i> Add Item <span class="item-counter" id="itemCounter">(1)</span>
                     </button>
                     <div style="font-size:0.8rem;color:#888;">
@@ -1314,10 +1745,9 @@
 
             // Initialize with first item row
             setTimeout(() => {
-                addItemRow();
-                // Populate initial items for the site
+                addSaleItemRow();
                 const site = document.getElementById('modalSite').value;
-                populateAllItemSelects(site);
+                populateSaleItemSelects(site);
             }, 50);
 
             window.filterCustomerDropdown = function() {
@@ -1469,48 +1899,46 @@
                 }
             };
 
-            // Multi-item functions
-            window.addItemRow = function() {
+            // Sale item functions
+            window.addSaleItemRow = function() {
                 const container = document.getElementById('itemsContainer');
-                const template = document.getElementById('itemRowTemplate');
-                const clone = template.cloneNode(true);
-                clone.style.display = 'block';
-                clone.id = '';
-                const rowIndex = container.querySelectorAll('.item-row').length;
-                clone.setAttribute('data-row-index', rowIndex);
-                
-                // Update remove button visibility
-                const removeBtn = clone.querySelector('.remove-item');
-                if (rowIndex === 0) {
-                    removeBtn.style.display = 'none';
-                } else {
-                    removeBtn.style.display = 'flex';
-                }
-                
-                // Populate item select
                 const site = document.getElementById('modalSite').value;
-                const select = clone.querySelector('.item-select');
                 const items = getItemsForSite(site);
-                select.innerHTML = '<option value="">-- Select --</option>';
-                items.forEach(item => {
-                    const stock = item.stock || 0;
-                    select.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}">${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
-                });
+                const rowIndex = container.querySelectorAll('.item-row').length;
                 
-                // Set up event listeners
-                const qtyInput = clone.querySelector('.item-qty');
-                const priceInput = clone.querySelector('.item-price');
-                
-                select.onchange = function() { updateItemTotal(this); };
-                qtyInput.oninput = function() { updateItemTotal(this); };
-                priceInput.oninput = function() { updateItemTotal(this); };
-                
-                container.appendChild(clone);
-                updateItemCounter();
-                calculateGrandTotal();
+                const itemOptions = items.map(si => {
+                    return `<option value="${si.name}" data-price="${si.price}" data-stock="${si.stock || 0}">${si.name} (UGX ${si.price.toLocaleString()}) - Stock: ${si.stock || 0}</option>`;
+                }).join('');
+
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.setAttribute('data-row-index', rowIndex);
+                div.innerHTML = `
+                    ${rowIndex > 0 ? `<button type="button" class="remove-item" onclick="removeSaleItemRow(this)" title="Remove item"><i class="fas fa-times"></i></button>` : ''}
+                    <div class="row2">
+                        <div><label>Item</label>
+                            <select class="item-select sale-item-select" onchange="updateSaleItemTotal(this)" required>
+                                <option value="">-- Select --</option>
+                                ${itemOptions}
+                            </select>
+                        </div>
+                        <div><label>Qty</label>
+                            <input type="number" class="item-qty sale-item-qty" step="any" placeholder="0" required oninput="updateSaleItemTotal(this)" />
+                        </div>
+                        <div><label>Unit Price</label>
+                            <input type="number" class="item-price sale-item-price" step="any" placeholder="0" required oninput="updateSaleItemTotal(this)" />
+                        </div>
+                        <div><label>Total</label>
+                            <input type="number" class="item-total sale-item-total" step="any" placeholder="0" readonly />
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+                updateSaleItemCounter();
+                calculateSaleGrandTotal();
             };
 
-            window.removeItemRow = function(btn) {
+            window.removeSaleItemRow = function(btn) {
                 const row = btn.closest('.item-row');
                 const container = document.getElementById('itemsContainer');
                 if (container.querySelectorAll('.item-row').length <= 1) {
@@ -1518,36 +1946,36 @@
                     return;
                 }
                 row.remove();
-                updateItemCounter();
-                calculateGrandTotal();
+                updateSaleItemCounter();
+                calculateSaleGrandTotal();
             };
 
-            window.updateItemTotal = function(input) {
+            window.updateSaleItemTotal = function(input) {
                 const row = input.closest('.item-row');
-                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const qty = parseFloat(row.querySelector('.sale-item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.sale-item-price').value) || 0;
                 const total = qty * price;
-                row.querySelector('.item-total').value = total.toFixed(2);
-                calculateGrandTotal();
+                row.querySelector('.sale-item-total').value = total.toFixed(2);
+                calculateSaleGrandTotal();
             };
 
-            window.calculateGrandTotal = function() {
-                const rows = document.querySelectorAll('.item-row');
+            window.calculateSaleGrandTotal = function() {
+                const rows = document.querySelectorAll('#itemsContainer .item-row');
                 let grandTotal = 0;
                 rows.forEach(row => {
-                    const total = parseFloat(row.querySelector('.item-total').value) || 0;
+                    const total = parseFloat(row.querySelector('.sale-item-total').value) || 0;
                     grandTotal += total;
                 });
                 document.getElementById('grandTotalDisplay').textContent = 'UGX ' + grandTotal.toLocaleString();
             };
 
-            window.updateItemCounter = function() {
-                const count = document.querySelectorAll('.item-row').length;
+            window.updateSaleItemCounter = function() {
+                const count = document.querySelectorAll('#itemsContainer .item-row').length;
                 document.getElementById('itemCounter').textContent = `(${count})`;
             };
 
-            window.populateAllItemSelects = function(site) {
-                const selects = document.querySelectorAll('.item-select');
+            window.populateSaleItemSelects = function(site) {
+                const selects = document.querySelectorAll('.sale-item-select');
                 const items = getItemsForSite(site);
                 selects.forEach(select => {
                     const currentValue = select.value;
@@ -1557,9 +1985,6 @@
                         const selected = currentValue === item.name ? 'selected' : '';
                         select.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}" ${selected}>${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
                     });
-                    if (currentValue) {
-                        select.value = currentValue;
-                    }
                 });
             };
 
@@ -1571,7 +1996,7 @@
             const siteField = document.getElementById('modalSite');
             if (!canChooseSite) siteField.value = currentSite;
             siteField.onchange = function() { 
-                populateAllItemSelects(this.value); 
+                populateSaleItemSelects(this.value); 
             };
             
             togglePaymentType();
@@ -1641,15 +2066,15 @@
             const notes = document.getElementById('modalNotes')?.value || '';
 
             // Collect all items
-            const rows = document.querySelectorAll('.item-row');
+            const rows = document.querySelectorAll('#itemsContainer .item-row');
             const items = [];
             let totalAmount = 0;
             let allValid = true;
 
             rows.forEach(row => {
-                const item = row.querySelector('.item-select').value;
-                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const item = row.querySelector('.sale-item-select').value;
+                const qty = parseFloat(row.querySelector('.sale-item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.sale-item-price').value) || 0;
                 const amount = qty * price;
 
                 if (!item || qty <= 0 || price <= 0) {
@@ -1657,7 +2082,7 @@
                     return;
                 }
 
-                // Check stock for each item
+                // Check stock
                 const stock = getItemStock(site, item);
                 if (qty > stock && stock > 0 && !systemSettings.allowNegativeStock) {
                     toast(`⚠️ Only ${stock} units of ${item} available`, 'error');
@@ -1674,7 +2099,6 @@
                 return;
             }
 
-            // Create one transaction with multiple items combined
             const itemNames = items.map(i => i.item).join(' + ');
             const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
 
@@ -1684,7 +2108,7 @@
                 site: site,
                 item: itemNames,
                 qty: totalQty,
-                price: totalAmount / totalQty,
+                price: totalQty > 0 ? totalAmount / totalQty : 0,
                 amount: totalAmount,
                 customer: customerName,
                 contact: customerContact,
@@ -1701,7 +2125,7 @@
                 dispatch: { loaded: false },
                 customerId: customerId,
                 notes: notes,
-                items: items // Store individual items for reference
+                items: items
             };
             transactions.push(trans);
 
@@ -1748,7 +2172,7 @@
                 </div>
                 <div id="customerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
                 <div class="row2">
-                    <div><label>Opening Balance (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Adjustment Amount (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
                     <div><label>Mode of Payment</label>
                         <select id="adjPaymentMode">
                             <option value="cash">Cash</option>
@@ -2169,7 +2593,8 @@
                 paymentMode: 'cash',
                 dispatch: { loaded: false },
                 customerId: null,
-                notes: description
+                notes: description,
+                items: [{ item: category + ': ' + description, qty: qty, price: amount, amount: amount }]
             };
             transactions.push(trans);
             
@@ -2383,7 +2808,6 @@
         // ── Print Dispatch Note ──
         function printDispatchNote(trans) {
             const today = new Date().toISOString().split('T')[0];
-            // Format items for display
             let itemsHtml = '';
             if (trans.items && trans.items.length > 0) {
                 trans.items.forEach((item, idx) => {
@@ -2522,9 +2946,6 @@
                 const newReceiptNumber = generateReceiptNumber();
                 const oldDocNumber = trans.docNumber;
                 
-                // Store original payment info before clearing
-                const wasCashSale = trans.payment === 'cash' && trans.paid === true;
-                const wasCustomerDeposit = trans.payment === 'customer' && trans.paid === true;
                 const wasUnpaidCustomer = trans.payment === 'customer' && trans.paid === false;
                 
                 trans.status = 'cleared';
@@ -2542,14 +2963,11 @@
                 trans.clearedBy = currentUser?.name || 'System';
                 trans.clearedDate = new Date().toISOString();
                 
-                // Update customer balance if this was a customer transaction
                 if (trans.customerId && trans.payment === 'customer') {
                     const customer = customers.find(c => c.id === trans.customerId);
                     if (customer) {
                         if (wasUnpaidCustomer && paidStatus === 'paid') {
                             // The customer's credit is reduced by the amount
-                            // Since we already deducted when creating the invoice
-                            // No additional change needed
                         }
                     }
                 }
@@ -2558,10 +2976,7 @@
                 addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name}`);
                 addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
                 renderTable();
-                
-                // Print dispatch note
                 printDispatchNote(trans);
-                
                 toast(`✔️ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
             });
         }
@@ -2573,7 +2988,6 @@
             if (trans.docType === 'expense') { toast('Cannot cancel expenses', 'error'); return; }
             if (trans.status === 'completed') { toast('Cannot cancel completed/dispatched document', 'error'); return; }
             
-            // Check if this is a cleared receipt that needs financial reversal
             const isClearedReceipt = trans.status === 'cleared' && trans.docType === 'receipt';
             
             let warningMessage = `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`;
@@ -2582,14 +2996,10 @@
             }
             
             showConfirm('Cancel Invoice', warningMessage, 'danger', function() {
-                // Financial reversal for cleared receipts
                 if (isClearedReceipt) {
-                    // Reverse the financial impact based on payment type
                     if (trans.payment === 'cash' && trans.paid === true) {
-                        // Cash sale reversal - Cash at Hand decreases
                         addAudit('Cash Sale Reversed', `Cancelled cash sale ${trans.docNumber} - UGX ${trans.amount.toLocaleString()} reversed from Cash at Hand`);
                     } else if (trans.payment === 'customer' && trans.paid === true) {
-                        // Customer deposit reversal - Restore customer balance
                         if (trans.customerId) {
                             const customer = customers.find(c => c.id === trans.customerId);
                             if (customer) {
@@ -2598,7 +3008,6 @@
                             }
                         }
                     } else if (trans.payment === 'customer' && trans.paid === false) {
-                        // Unpaid customer transaction - restore credit
                         if (trans.customerId) {
                             const customer = customers.find(c => c.id === trans.customerId);
                             if (customer) {
@@ -2613,7 +3022,6 @@
                 trans.cancelledDate = new Date().toISOString();
                 trans.cancelledBy = currentUser?.name || 'System';
                 
-                // Return stock if not dispatched
                 if (!trans.dispatch?.loaded) {
                     updateStock(trans.site, trans.item, trans.qty, 'add');
                 }
@@ -2637,31 +3045,6 @@
                 renderTable();
                 toast('Transaction deleted', 'warning');
             });
-        }
-
-        function editTrans(id) {
-            const trans = transactions.find(t => t.id === id);
-            if (!trans) return;
-            if (trans.docType === 'receipt' || trans.status === 'cleared') {
-                toast('Cannot edit cleared/receipted transactions', 'error');
-                return;
-            }
-            const newQty = prompt('Edit quantity:', trans.qty);
-            if (newQty === null) return;
-            const qty = parseFloat(newQty);
-            if (isNaN(qty) || qty < 0) { toast('Invalid quantity', 'error'); return; }
-            const newAmount = prompt('Edit amount (UGX):', trans.amount);
-            if (newAmount === null) return;
-            const amount = parseFloat(newAmount);
-            if (isNaN(amount) || amount < 0) { toast('Invalid amount', 'error'); return; }
-            trans.qty = qty;
-            trans.amount = amount;
-            trans.price = qty > 0 ? amount / qty : 0;
-            saveData();
-            addAudit('Transaction Edited', `Edited ${trans.docNumber} - ${trans.item}`);
-            addActivity('system', `Transaction edited: ${trans.docNumber}`);
-            renderTable();
-            toast('Transaction updated!', 'success');
         }
 
         // ── REFUND REQUEST Modal ──
@@ -2836,14 +3219,14 @@
                         dispatch: { loaded: false },
                         refundReason: request.reason,
                         originalReceipt: request.docNumber,
-                        customerId: null
+                        customerId: null,
+                        items: [{ item: 'REFUND: ' + request.item, qty: request.qty, price: -request.amount, amount: -request.amount }]
                     };
                     transactions.push(refund);
                     
                     const original = transactions.find(t => t.id === request.invoiceId);
                     if (original) {
                         original.status = 'refund';
-                        // Reverse stock
                         updateStock(original.site, original.item, original.qty, 'add');
                     }
                     
@@ -3882,11 +4265,11 @@
         // ═══════════════════════════════════════════════════════════════
 
         function populateItems(site) {
-            // This is now handled by populateAllItemSelects
+            // This is now handled by populateSaleItemSelects
         }
 
         function updatePrice() {
-            // This is now handled by updateItemTotal
+            // This is now handled by updateSaleItemTotal
         }
 
         function updateDispatchInfo() {
@@ -3913,7 +4296,6 @@
             }
         }
 
-        // ── SAVE TRANSACTION ── (Legacy - kept for compatibility)
         function saveTransaction(type) {
             // This is now handled by saveMultiItemSale
         }
@@ -3950,7 +4332,7 @@
         window.clearInvoice = clearInvoice;
         window.cancelInvoice = cancelInvoice;
         window.deleteTrans = deleteTrans;
-        window.editTrans = editTrans;
+        window.editTransaction = editTransaction;
         window.exportBackup = exportBackup;
         window.logout = logout;
         window.populateItems = populateItems;
@@ -3971,15 +4353,15 @@
         window.printReport = printReport;
         window.clearReportFilters = clearReportFilters;
         window.filterCustomers = filterCustomers;
-        window.addItemRow = addItemRow;
-        window.removeItemRow = removeItemRow;
-        window.updateItemTotal = updateItemTotal;
-        window.calculateGrandTotal = calculateGrandTotal;
-        window.updateItemCounter = updateItemCounter;
-        window.populateAllItemSelects = populateAllItemSelects;
+        window.addSaleItemRow = addSaleItemRow;
+        window.removeSaleItemRow = removeSaleItemRow;
+        window.updateSaleItemTotal = updateSaleItemTotal;
+        window.calculateSaleGrandTotal = calculateSaleGrandTotal;
+        window.updateSaleItemCounter = updateSaleItemCounter;
+        window.populateSaleItemSelects = populateSaleItemSelects;
 
         renderTable();
-        console.log('✔️ Kajana Enterprises Ltd v11.0 - Complete System with Multi-Item Support');
+        console.log('✔️ Kajana Enterprises Ltd v11.0 - Complete System with Full Edit Rights for GM & Manager');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} customers`);
     </script>
 </body>
