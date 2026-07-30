@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kajana Enterprises Ltd · Management System</title>
+    <title>Kajana Enterprises · Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -19,7 +19,7 @@
 
         /* LOGIN */
         .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%); padding: 1rem; }
-        .login-card { background: #fff; padding: 2.8rem 3.2rem; border-radius: 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-width: 400px; width: 100%; border-top: 8px solid var(--yellow); }
+        .login-card { background: #fff; padding: 2.8rem 3.2rem; border-radius: 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-width: 420px; width: 100%; border-top: 8px solid var(--yellow); }
         .login-card h1 { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
         .login-card h1 span { background: var(--yellow); padding: 0.1rem 0.8rem; border-radius: 40px; font-size: 1rem; }
         .login-card .sub { color: #555; margin-bottom: 1.8rem; font-weight: 500; }
@@ -48,7 +48,6 @@
         .user-badge .role-tag { background: var(--black); color: #fff; font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.9rem; border-radius: 30px; }
         .user-badge .site-tag { background: var(--yellow); color: var(--black); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.9rem; border-radius: 30px; }
         .user-badge .logout-btn { color: var(--red); cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
-        .user-badge .logout-btn:hover { transform: scale(1.15); }
 
         /* SITE SELECTOR */
         .site-selector { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.2rem 0 1.8rem 0; background: #fff; padding: 0.5rem 1.2rem; border-radius: 80px; box-shadow: var(--shadow); }
@@ -252,6 +251,28 @@
         .report-summary .summary-item .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
         .report-summary .summary-item .value { font-size: 1.2rem; font-weight: 700; }
         .report-chart-container { height: 250px; margin: 1rem 0; display: none; background: #fff; border-radius: 16px; padding: 1rem; }
+
+        /* CONFIRM DIALOG - THEMED */
+        .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 1rem; }
+        .confirm-box { background: #fff; max-width: 440px; width: 100%; padding: 2.5rem 2.5rem 2rem; border-radius: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); border-top: 8px solid var(--yellow); text-align: center; animation: confirmPop 0.3s ease; }
+        @keyframes confirmPop { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .confirm-box .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .confirm-box .icon.danger { color: var(--red); }
+        .confirm-box .icon.success { color: #1a7a3a; }
+        .confirm-box .icon.warning { color: #b8870a; }
+        .confirm-box .icon.info { color: var(--yellow); }
+        .confirm-box h4 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--black); }
+        .confirm-box p { color: #666; font-size: 0.95rem; margin-bottom: 1.8rem; line-height: 1.6; }
+        .confirm-box .btn-group { display: flex; gap: 0.8rem; justify-content: center; }
+        .confirm-box .btn-group .btn { min-width: 120px; justify-content: center; padding: 0.6rem 1.5rem; font-weight: 600; }
+        .confirm-box .btn-group .btn-cancel { background: #f5f3f0; border: 1px solid #d6d2cc; color: var(--black); }
+        .confirm-box .btn-group .btn-cancel:hover { background: #e8e5e0; }
+        .confirm-box .btn-group .btn-confirm { background: var(--red); border-color: var(--red); color: #fff; }
+        .confirm-box .btn-group .btn-confirm:hover { background: #b3151d; }
+        .confirm-box .btn-group .btn-confirm-success { background: #1a7a3a; border-color: #1a7a3a; color: #fff; }
+        .confirm-box .btn-group .btn-confirm-success:hover { background: #0f5e2c; }
+        .confirm-box .btn-group .btn-confirm-warning { background: #b8870a; border-color: #b8870a; color: #fff; }
+        .confirm-box .btn-group .btn-confirm-warning:hover { background: #9a7408; }
     </style>
 </head>
 <body>
@@ -277,12 +298,25 @@
         </div>
     </div>
 
+    <!-- THEMED CONFIRM DIALOG -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="icon" id="confirmIcon">⚠️</div>
+            <h4 id="confirmTitle">Confirm Action</h4>
+            <p id="confirmMessage">Are you sure you want to proceed?</p>
+            <div class="btn-group">
+                <button class="btn btn-cancel" id="confirmCancelBtn" onclick="closeConfirm()">Cancel</button>
+                <button class="btn" id="confirmOkBtn" onclick="confirmOk()">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN APP -->
     <div id="appContainer" class="container hidden">
         <div class="header">
             <div class="logo">
                 <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
-                <div class="subtitle">concrete · stone · mining · complete management v10.9</div>
+                <div class="subtitle">concrete · stone · mining · complete management v11.0</div>
             </div>
             <div class="user-badge">
                 <i class="fas fa-user-circle"></i>
@@ -336,8 +370,8 @@
                 <button class="btn btn-warning" id="btnRefundRequests" onclick="openModal('refundRequests')" style="background:#ffc107;border-color:#ffc107;color:#000;"><i class="fas fa-clipboard-list"></i> Refund Requests</button>
             </div>
             <div>
-                <button class="btn" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
-                <button class="btn" onclick="exportBackup()"><i class="fas fa-download"></i> Backup</button>
+                <button class="btn" id="btnEReceipt" onclick="openModal('receipt')"><i class="fas fa-envelope"></i> E-receipt</button>
+                <button class="btn" id="btnBackup" onclick="exportBackup()"><i class="fas fa-download"></i> Backup</button>
             </div>
         </div>
 
@@ -359,7 +393,7 @@
         </div>
 
         <div class="footer-flag">
-            <div><i class="fas fa-flag"></i> Kajana Enterprise Ltd </div>
+            <div><i class="fas fa-flag"></i> Kajana Enterprises Ltd</div>
             <div class="flag-stripes-mini"><span class="b"></span><span class="y"></span><span class="r"></span></div>
         </div>
     </div>
@@ -372,10 +406,10 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════
-        // DATA LAYER - UNIFIED CUSTOMERS
+        // DATA LAYER
         // ═══════════════════════════════════════════════════════════════
 
-        const STORAGE_KEY = 'kajana_data_v10';
+        const STORAGE_KEY = 'kajana_data_v11';
         let transactions = [];
         let auditLog = [];
         let loadingOrders = [];
@@ -452,6 +486,58 @@
             { id: 5, name: 'City Council', contact: '+256 700 555', email: 'procurement@citycouncil.com', address: 'Adyel', company: 'Govt', balance: 0 },
             { id: 6, name: 'David Otieno', contact: '+256 700 666', email: 'david@otieno.com', address: 'Adyel', company: 'Otieno Constructions', balance: 2500000 },
         ];
+
+        // ── Confirm Dialog ──
+        let confirmCallback = null;
+        let confirmData = null;
+
+        function showConfirm(title, message, type = 'warning', callback, data = null) {
+            const overlay = document.getElementById('confirmOverlay');
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const icon = document.getElementById('confirmIcon');
+            const okBtn = document.getElementById('confirmOkBtn');
+            
+            if (type === 'danger') {
+                icon.textContent = '🔴';
+                icon.className = 'icon danger';
+                okBtn.className = 'btn btn-confirm';
+                okBtn.textContent = 'Yes, Proceed';
+            } else if (type === 'success') {
+                icon.textContent = '✅';
+                icon.className = 'icon success';
+                okBtn.className = 'btn btn-confirm-success';
+                okBtn.textContent = 'Yes, Proceed';
+            } else if (type === 'warning') {
+                icon.textContent = '⚠️';
+                icon.className = 'icon warning';
+                okBtn.className = 'btn btn-confirm-warning';
+                okBtn.textContent = 'Yes, Proceed';
+            } else {
+                icon.textContent = 'ℹ️';
+                icon.className = 'icon info';
+                okBtn.className = 'btn btn-confirm';
+                okBtn.textContent = 'Yes, Proceed';
+            }
+            
+            overlay.style.display = 'flex';
+            confirmCallback = callback;
+            confirmData = data;
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').style.display = 'none';
+            confirmCallback = null;
+            confirmData = null;
+        }
+
+        function confirmOk() {
+            const cb = confirmCallback;
+            const data = confirmData;
+            closeConfirm();
+            if (cb) cb(data);
+        }
 
         // ── Data Functions ──
         function loadData() {
@@ -652,8 +738,6 @@
         function canRequestRefund() { return isGM() || isManager() || isCashier(); }
         function canApproveRefund() { return isGM() || isManager() || isAccountant(); }
         function canManageCustomers() { return isGM() || isManager() || isAccountant() || isCashier(); }
-
-        // ── Permissions ──
         function canCreateExpense() { return isGM() || isManager() || isCashier(); }
         function canDispatch() { return isGM() || isManager() || isDispatch(); }
         function canManageInventory() { return isGM() || isManager() || isDispatch(); }
@@ -664,6 +748,8 @@
         function canViewReports() { return isGM() || isManager() || isAccountant(); }
         function canSetExpenseLimit() { return isGM(); }
         function canEditPrices() { return isGM() || isManager(); }
+        function canViewEReceipt() { return isGM() || isManager(); }
+        function canBackup() { return isGM(); }
 
         // ═══════════════════════════════════════════════════════════════
         // LOGIN
@@ -710,6 +796,7 @@
                 b.classList.toggle('active', b.dataset.site === currentSite);
             });
 
+            // Show/hide buttons based on role
             document.getElementById('btnNewSale').style.display = canCreateSale() ? 'inline-flex' : 'none';
             document.getElementById('btnExpense').style.display = canCreateExpense() ? 'inline-flex' : 'none';
             document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
@@ -722,6 +809,8 @@
             document.getElementById('btnRefund').style.display = canRequestRefund() ? 'inline-flex' : 'none';
             document.getElementById('btnRefundRequests').style.display = canApproveRefund() ? 'inline-flex' : 'none';
             document.getElementById('btnSettings').style.display = isGM() ? 'inline-flex' : 'none';
+            document.getElementById('btnEReceipt').style.display = canViewEReceipt() ? 'inline-flex' : 'none';
+            document.getElementById('btnBackup').style.display = canBackup() ? 'inline-flex' : 'none';
 
             document.getElementById('dashboardCharts').classList.toggle('hidden', !isGM());
 
@@ -743,14 +832,36 @@
         });
 
         function logout() {
-            if (confirm('Logout?')) {
+            showConfirm('Logout', 'Are you sure you want to logout?', 'danger', function() {
                 addAudit('Logout', `User ${currentUser?.name} logged out`);
                 addActivity('system', `${currentUser?.name} logged out`);
                 currentUser = null;
                 document.getElementById('loginPage').classList.remove('hidden');
                 document.getElementById('appContainer').classList.add('hidden');
-                location.reload();
+                document.getElementById('loginUser').value = 'gm@kajana.com';
+                document.getElementById('loginPass').value = 'password';
+                document.getElementById('toastContainer').innerHTML = '';
+            });
+        }
+
+        function exportBackup() {
+            if (!canBackup()) {
+                toast('Only GM can backup the system', 'error');
+                return;
             }
+            showConfirm('Backup', 'Download full system backup?', 'warning', function() {
+                const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, nextCustomerId, inventory: inventoryItems, users, customers, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kajana_backup_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                addAudit('Backup', 'Full system backup downloaded');
+                addActivity('system', 'System backup downloaded');
+                toast('Backup downloaded!', 'success');
+            });
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -795,12 +906,41 @@
             const today = new Date().toISOString().split('T')[0];
             const month = today.slice(0, 7);
             
-            const todaySales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
-            const todayCashSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund' && t.payment === 'cash').reduce((s, o) => s + o.amount, 0);
-            const todayCustomerSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund' && t.payment === 'customer').reduce((s, o) => s + o.amount, 0);
+            // TODAY'S FINANCIAL CALCULATIONS
+            // Today's Cash Sales: Cash payments (walk-in customers paying cash)
+            const todayCashSales = siteData.filter(t => 
+                t.date === today && 
+                (t.docType === 'invoice' || t.docType === 'receipt') && 
+                t.status !== 'cancelled' && 
+                t.status !== 'refund' && 
+                t.payment === 'cash' &&
+                t.paid === true
+            ).reduce((s, o) => s + o.amount, 0);
+            
+            // Today's Customer Deposits: Customer account payments/deposits
+            const todayCustomerDeposits = siteData.filter(t => 
+                t.date === today && 
+                (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && 
+                t.status !== 'cancelled' && 
+                t.status !== 'refund' && 
+                (t.payment === 'customer' || t.payment === 'deposit' || t.payment === 'bank_deposit') &&
+                t.paid === true
+            ).reduce((s, o) => s + o.amount, 0);
+            
+            // Today's Expenses
+            const todayExpenses = siteData.filter(t => 
+                t.date === today && 
+                t.docType === 'expense' && 
+                t.status !== 'cancelled'
+            ).reduce((s, o) => s + o.amount, 0);
+            
+            // Cash at Hand = Today's Cash Sales + Today's Customer Deposits - Today's Expenses
+            const cashAtHand = todayCashSales + todayCustomerDeposits - todayExpenses;
+            
+            // Other metrics
+            const todayTotalSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const monthSales = siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
-            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
-            const dailyExp = siteData.filter(t => t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
+            const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense' && t.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
             const pending = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && t.status === 'pending').length;
             const clearedForDispatch = siteData.filter(t => (t.docType === 'invoice' || t.docType === 'receipt') && (t.status === 'cleared' || t.status === 'partial') && (!t.dispatch?.loaded || t.dispatch?.balanceQty > 0)).length;
             
@@ -808,13 +948,11 @@
             const totalCreditBalance = customers.filter(c => c.balance < 0).reduce((s, c) => s + Math.abs(c.balance), 0);
             const pendingRefunds = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite).length;
 
-            const hideFinancials = isSales() || isDispatch();
             const role = getUserRole();
 
             let statsHTML = '';
 
             if (role === 'sales') {
-                // Sales - NO Today's Sales amount, just transaction count
                 statsHTML = `
                     <div class="stat-card"><div class="label">📊 Today's Sales</div><div class="value">${siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length}</div><div class="sub">transactions</div></div>
                     <div class="stat-card"><div class="label">📋 Pending Dispatch</div><div class="value">${pending}</div><div class="sub">${pending > 0 ? 'Ready for clearance' : 'All cleared'}</div></div>
@@ -827,34 +965,31 @@
                     <div class="stat-card"><div class="label">⏳ Pending Invoices</div><div class="value">${pending}</div><div class="sub">Awaiting clearance</div></div>
                 `;
             } else if (role === 'cashier') {
-                // Cashier - Daily Cash Sales + Daily Customer Sales
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">👤 Daily Customer Sales</div><div class="value">UGX ${todayCustomerSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.paid).length} transactions</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
+                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers with deposits</div></div>
-                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers with credit</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                 `;
             } else if (role === 'accountant') {
-                // Accountant - Total Cash Today = Customer Deposits + Daily Cash Sales
-                const totalCashToday = totalDepositBalance + todayCashSales;
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Total Cash Today</div><div class="value">UGX ${totalCashToday.toLocaleString()}</div><div class="sub">Deposits + Cash Sales</div></div>
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">👤 Daily Customer Sales</div><div class="value">UGX ${todayCustomerSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'customer' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} transactions</div></div>
-                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Daily Expenses</div><div class="value">UGX ${dailyExp.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${dailyExp <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
+                    <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✅ Within limit' : '⚠️ Exceeds limit'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
-                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers with deposits</div></div>
-                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers with credit</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
+                    <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting approval</div></div>
                 `;
             } else {
-                // GM, Manager - full dashboard
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todaySales.toLocaleString()}</div><div class="sub">${todaySales > 0 ? '📈 Active' : 'No sales today'}</div></div>
-                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices/receipts</div></div>
-                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense').length} entries</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todayTotalSales.toLocaleString()}</div><div class="sub">${todayTotalSales > 0 ? '📈 Active' : 'No sales today'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices</div></div>
+                    <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense' && t.status !== 'cancelled').length} entries</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
@@ -1029,7 +1164,7 @@
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-        // ── SALE Modal ── FIXED: Removed Initial Balance field from new customer ──
+        // ── SALE Modal ──
         function buildSaleModal(card) {
             if (!canCreateSale()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1053,7 +1188,7 @@
             <h3><i class="fas fa-cart-plus"></i> New Sale</h3>
             <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
                 <i class="fas fa-info-circle"></i> <strong>Cash</strong> = Walk-in customer paying immediately.<br>
-                <strong>Customer</strong> = Existing customer (deposit or credit). Their balance will be adjusted.
+                <strong>Customer</strong> = Existing customer (deposit or credit).
             </div>
             <form id="modalForm">
                 <div class="row2">
@@ -1081,7 +1216,6 @@
                     </div>
                     <div id="customerDetails" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;display:none;"></div>
                     
-                    <!-- New Customer Form - NO Initial Balance field -->
                     <div class="new-customer-form" id="newCustomerForm">
                         <div style="font-weight:600;margin-bottom:0.5rem;color:#6610f2;">📝 New Customer Details</div>
                         <div class="row2">
@@ -1209,7 +1343,6 @@
                     return;
                 }
 
-                // New customer starts with zero balance
                 const newCustomer = {
                     id: nextCustomerId++,
                     name: name,
@@ -1294,10 +1427,107 @@
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // CUSTOMERS MODAL - FIXED: Search bar + Deposit/Credit display
-        // ═══════════════════════════════════════════════════════════════
+        // ── ADJUST BALANCE MODAL ──
+        function buildAdjustBalanceModal(card) {
+            const customerOptions = customers.map(c => {
+                const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString();
+                return `<option value="${c.id}">${c.name} (${balanceDisplay})</option>`;
+            }).join('');
 
+            card.innerHTML = `
+            <h3><i class="fas fa-coins"></i> Adjust Customer Balance</h3>
+            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> Negative adjustment = Customer deposits money (increases balance).<br>
+                Positive adjustment = Customer takes credit (decreases balance).
+            </div>
+            <form id="modalForm">
+                <div><label>Select Customer</label>
+                    <select id="adjCustomer" required>
+                        <option value="">-- Select Customer --</option>
+                        ${customerOptions}
+                    </select>
+                </div>
+                <div id="customerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Adjustment Amount (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Mode of Payment</label>
+                        <select id="adjPaymentMode">
+                            <option value="cash">Cash</option>
+                            <option value="bank_deposit">Bank Deposit</option>
+                        </select>
+                    </div>
+                </div>
+                <div><label>Reason / Notes</label><input id="adjNotes" placeholder="Reason for adjustment" /></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Apply </button>
+                </div>
+            </form>
+          `;
+
+            document.getElementById('adjCustomer').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('customerInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const customer = customers.find(c => c.id === id);
+                if (customer) {
+                    const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : 'UGX -' + Math.abs(customer.balance).toLocaleString();
+                    info.innerHTML = `<strong>${customer.name}</strong> | Current Balance: ${balanceDisplay}`;
+                }
+            };
+
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('adjCustomer').value);
+                const amount = parseFloat(document.getElementById('adjAmount').value);
+                const paymentMode = document.getElementById('adjPaymentMode').value;
+                const notes = document.getElementById('adjNotes').value.trim();
+
+                if (!id || !amount || amount <= 0) { toast('Select customer and enter valid amount', 'error'); return; }
+                const customer = customers.find(c => c.id === id);
+                if (!customer) { toast('Customer not found', 'error'); return; }
+
+                const newBalance = customer.balance + amount;
+
+                const docNumber = amount >= 0 ? 'DEP-ADJ-' + String(nextInvoiceId++).padStart(4, '0') : 'CRD-ADJ-' + String(nextInvoiceId++).padStart(4, '0');
+                const trans = {
+                    id: nextInvoiceId++,
+                    date: new Date().toISOString().split('T')[0],
+                    site: currentSite,
+                    item: amount >= 0 ? 'DEPOSIT ADJUSTMENT' : 'CREDIT ADJUSTMENT',
+                    qty: 1,
+                    price: Math.abs(amount),
+                    amount: Math.abs(amount),
+                    customer: customer.name,
+                    contact: customer.contact || '',
+                    address: customer.address || '',
+                    company: customer.company || '',
+                    payment: amount >= 0 ? 'deposit' : 'customer',
+                    deposit: 0,
+                    balance: 0,
+                    docNumber: docNumber,
+                    docType: 'adjustment',
+                    status: 'completed',
+                    paid: true,
+                    paymentMode: paymentMode,
+                    dispatch: { loaded: false },
+                    customerId: customer.id,
+                    notes: notes || (amount >= 0 ? 'Deposit adjustment' : 'Credit adjustment')
+                };
+                transactions.push(trans);
+
+                customer.balance = newBalance;
+                saveData();
+                addAudit('Balance Adjusted', `${customer.name}: ${amount >= 0 ? '+' : '-'}UGX ${Math.abs(amount).toLocaleString()} (${paymentMode}) - ${notes || 'No reason'}`);
+                addActivity('system', `Balance adjusted for ${customer.name}: ${amount >= 0 ? '+' : '-'}UGX ${Math.abs(amount).toLocaleString()} (${paymentMode})`);
+                renderTable();
+                closeModal();
+                const newBalanceDisplay = newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : 'UGX -' + Math.abs(newBalance).toLocaleString();
+                toast(`✅ ${customer.name}'s balance updated to ${newBalanceDisplay}`, 'success');
+            };
+        }
+
+        // ── CUSTOMERS MODAL ──
         function buildCustomersModal(card) {
             if (!canManageCustomers()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage customers.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1331,7 +1561,6 @@
                 <button class="btn btn-success" onclick="openModal('adjustBalance')"><i class="fas fa-coins"></i> Make Deposit</button>
             </div>
             
-            <!-- Customer Search Bar -->
             <div class="customer-search-container">
                 <input type="text" id="customerSearchInput" placeholder="🔍 Search customers by name..." oninput="filterCustomers()" />
             </div>
@@ -1343,18 +1572,14 @@
                 html += `<p style="color:#888;padding:1rem 0;">No customers found.</p>`;
             } else {
                 customers.forEach(c => {
-                    // For deposits: show as negative (money owed to customer)
-                    // For credits: show as positive (customer owes us)
                     let displayBalance, balanceClass, statusLabel, statusClass;
                     
                     if (c.balance > 0) {
-                        // Deposit - show as negative (UGX -XXX)
                         displayBalance = `UGX -${c.balance.toLocaleString()}`;
                         balanceClass = 'balance-deposit';
                         statusLabel = '💰 Deposit';
                         statusClass = 'deposit';
                     } else if (c.balance < 0) {
-                        // Credit - show as positive (UGX XXX)
                         displayBalance = `UGX ${Math.abs(c.balance).toLocaleString()}`;
                         balanceClass = 'balance-credit';
                         statusLabel = '💳 Credit';
@@ -1452,19 +1677,96 @@
                     toast('Cannot delete customer with transaction history', 'error');
                     return;
                 }
-                if (confirm(`Delete ${customer.name}?`)) {
+                showConfirm('Delete Customer', `Delete ${customer.name}? This action cannot be undone.`, 'danger', function() {
                     customers = customers.filter(c => c.id !== id);
                     saveData();
                     addAudit('Customer Deleted', `Deleted ${customer.name}`);
                     toast('Customer deleted', 'warning');
                     buildCustomersModal(card);
-                }
+                });
             };
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // REST OF FUNCTIONS (Expense, Dispatch, Reports, etc.)
-        // ═══════════════════════════════════════════════════════════════
+        // ── NEW CUSTOMER Modal ──
+        function buildNewCustomerModal(card) {
+            card.innerHTML = `
+            <h3><i class="fas fa-user-plus"></i> Add New Customer</h3>
+            <form id="modalForm">
+                <div class="row2">
+                    <div><label>Customer Name *</label><input id="custName" placeholder="Full name" required /></div>
+                    <div><label>Contact</label><input id="custContact" placeholder="Phone/Email" /></div>
+                </div>
+                <div class="row2">
+                    <div><label>Email</label><input id="custEmail" placeholder="email@example.com" /></div>
+                    <div><label>Company</label><input id="custCompany" placeholder="Company name" /></div>
+                </div>
+                <div><label>Address</label><input id="custAddress" placeholder="Location" /></div>
+                <div class="row2">
+                    <div><label>Initial Balance (UGX)</label>
+                        <input id="custBalance" type="number" step="any" placeholder="0" value="0" />
+                        <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">Positive = Deposit, Negative = Credit</div>
+                    </div>
+                    <div><label>Balance Type</label>
+                        <select id="custBalanceType" onchange="setBalanceValue()">
+                            <option value="0">Neutral (0)</option>
+                            <option value="deposit">Deposit (Positive)</option>
+                            <option value="credit">Credit (Negative)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:#6610f2;border-color:#6610f2;"><i class="fas fa-save"></i> Add Customer</button>
+                </div>
+            </form>
+          `;
+
+            window.setBalanceValue = function() {
+                const type = document.getElementById('custBalanceType').value;
+                const balField = document.getElementById('custBalance');
+                const currentVal = parseFloat(balField.value) || 0;
+                if (type === 'deposit' && currentVal < 0) {
+                    balField.value = Math.abs(currentVal);
+                } else if (type === 'credit' && currentVal > 0) {
+                    balField.value = -Math.abs(currentVal);
+                } else if (type === '0') {
+                    balField.value = 0;
+                }
+            };
+
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const name = document.getElementById('custName').value.trim();
+                const contact = document.getElementById('custContact').value.trim();
+                const email = document.getElementById('custEmail').value.trim();
+                const company = document.getElementById('custCompany').value.trim();
+                const address = document.getElementById('custAddress').value.trim();
+                const balance = parseFloat(document.getElementById('custBalance').value) || 0;
+
+                if (!name) { toast('Customer name required', 'error'); return; }
+                if (customers.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                    toast('Customer already exists!', 'warning');
+                    return;
+                }
+
+                const newCustomer = {
+                    id: nextCustomerId++,
+                    name: name,
+                    contact: contact,
+                    email: email,
+                    address: address,
+                    company: company,
+                    balance: balance
+                };
+                customers.push(newCustomer);
+                saveData();
+                addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()}`);
+                addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
+                toast(`✅ Customer ${name} added!`, 'success');
+                closeModal();
+                buildCustomersModal(document.getElementById('modalCard'));
+            };
+        }
 
         // ── EXPENSE Modal ──
         function buildExpenseModal(card) {
@@ -1481,7 +1783,7 @@
             let limitWarning = '';
             if (isCashier()) {
                 const today = new Date().toISOString().split('T')[0];
-                const todayExpenses = transactions.filter(t => t.site === currentSite && t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
+                const todayExpenses = transactions.filter(t => t.site === currentSite && t.date === today && t.docType === 'expense' && t.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
                 const remaining = dailyExpenseLimit - todayExpenses;
                 limitWarning = `<div style="background:#fef3cd;padding:0.5rem 1rem;border-radius:12px;margin-bottom:0.5rem;font-size:0.8rem;">💰 Daily expense limit: UGX ${dailyExpenseLimit.toLocaleString()} | Remaining: UGX ${Math.max(0, remaining).toLocaleString()}</div>`;
             }
@@ -1539,7 +1841,7 @@
 
             if (isCashier()) {
                 const today = new Date().toISOString().split('T')[0];
-                const todayExpenses = transactions.filter(t => t.site === site && t.date === today && t.docType === 'expense').reduce((s, o) => s + o.amount, 0);
+                const todayExpenses = transactions.filter(t => t.site === site && t.date === today && t.docType === 'expense' && t.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
                 if (todayExpenses + amount > dailyExpenseLimit) {
                     toast(`❌ Expense exceeds daily limit of UGX ${dailyExpenseLimit.toLocaleString()}`, 'error');
                     return;
@@ -1609,7 +1911,7 @@
             card.innerHTML = `
             <h3><i class="fas fa-truck"></i> Dispatch Loading</h3>
             <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
-                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} document(s) cleared/partial and ready for dispatch
+                <i class="fas fa-info-circle"></i> ${clearedDocuments.length} invoice(s) cleared/partial and ready for dispatch
             </div>
             <form id="modalForm">
                 <div><label>Cleared/Partial Document</label>
@@ -1687,10 +1989,788 @@
             toast(`✅ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // REPORT MODAL
-        // ═══════════════════════════════════════════════════════════════
+        // ── RECEIPT Modal (E-receipt) ──
+        function buildReceiptModal(card) {
+            if (!canViewEReceipt()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM and Manager can send E-receipts.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
 
+            card.innerHTML = `
+            <h3><i class="fas fa-envelope"></i> Send E-Receipt</h3>
+            <form id="modalForm">
+              <div><label>Document Number</label><input id="receiptNumber" placeholder="Enter INV-XXXX or RPT-XXXX" required /></div>
+              <div><label>Customer Email</label><input id="customerEmail" placeholder="customer@example.com" required /></div>
+              <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-paper-plane"></i> Send</button>
+              </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const docNumber = document.getElementById('receiptNumber').value.trim();
+                const email = document.getElementById('customerEmail').value.trim();
+                const trans = transactions.find(t => t.docNumber === docNumber);
+                if (!trans) { toast('Document not found!', 'error'); return; }
+                if (!email.includes('@')) { toast('Invalid email', 'error'); return; }
+                toast(`📧 E-receipt ${docNumber} sent to ${email}`, 'success');
+                addAudit('E-Receipt', `Sent receipt ${docNumber} to ${email}`);
+                addActivity('system', `E-receipt sent: ${docNumber}`);
+                closeModal();
+            };
+        }
+
+        // ── CLEAR/RECEIPT Modal ──
+        function buildClearModal(card) {
+            const pendingInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.status === 'pending' || t.status === 'partial') &&
+                (t.docType === 'invoice' || t.docType === 'receipt') &&
+                t.status !== 'cancelled'
+            );
+
+            let options = '<option value="">-- Select Document to Clear --</option>';
+            pendingInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (UGX ${t.amount.toLocaleString()})</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-check-double"></i> Clear → Receipt</h3>
+            <form id="modalForm">
+                <div><label>Select Document</label>
+                    <select id="clearInvoiceSelect" required>
+                        ${options}
+                    </select>
+                </div>
+                <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div class="row2">
+                    <div><label>Payment Status</label>
+                        <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
+                    </div>
+                    <div><label>Payment Mode</label>
+                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="customer">Customer</option></select>
+                    </div>
+                </div>
+                <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
+                    <i class="fas fa-info-circle"></i> This will convert to a receipt (RPT-XXXX) and make it available for Dispatch
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear </button>
+                </div>
+            </form>
+          `;
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
+                const paidStatus = document.getElementById('clearPaidStatus').value;
+                const paymentMode = document.getElementById('clearPaymentMode').value;
+                if (!id) { toast('Select a document', 'error'); return; }
+                clearInvoice(id, paidStatus, paymentMode);
+                closeModal();
+            };
+            document.getElementById('clearInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('clearInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
+                }
+            };
+        }
+
+        function clearInvoice(id, paidStatus, paymentMode) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            if (trans.status === 'cleared' || trans.status === 'completed') {
+                toast('Already cleared', 'warning');
+                return;
+            }
+            if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot clear expense or refund', 'error'); return; }
+            if (trans.status === 'cancelled') { toast('Cannot clear cancelled document', 'error'); return; }
+            
+            showConfirm('Clear Invoice', `Clear ${trans.docNumber} for ${trans.customer || 'N/A'} and Generate a dispatch note.`, 'success', function() {
+                const newReceiptNumber = generateReceiptNumber();
+                const oldDocNumber = trans.docNumber;
+                
+                trans.status = 'cleared';
+                trans.paid = paidStatus === 'paid';
+                trans.paymentMode = paymentMode || trans.paymentMode || 'cash';
+                trans.docNumber = newReceiptNumber;
+                trans.docType = 'receipt';
+                
+                if (trans.paid) {
+                    trans.balance = 0;
+                    trans.deposit = trans.amount;
+                }
+                
+                trans.originalInvoice = oldDocNumber;
+                
+                saveData();
+                addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name}`);
+                addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
+                renderTable();
+                toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
+            });
+        }
+
+        function cancelInvoice(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            if (trans.status === 'cancelled') { toast('Already cancelled', 'warning'); return; }
+            if (trans.docType === 'expense') { toast('Cannot cancel expenses', 'error'); return; }
+            if (trans.status === 'completed') { toast('Cannot cancel completed/dispatched document', 'error'); return; }
+            
+            showConfirm('Cancel Invoice', `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`, 'danger', function() {
+                trans.status = 'cancelled';
+                if (!trans.dispatch?.loaded) {
+                    updateStock(trans.site, trans.item, trans.qty, 'add');
+                }
+                saveData();
+                addAudit('Document Cancelled', `Cancelled ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
+                addActivity('system', `Document cancelled: ${trans.docNumber}`);
+                renderTable();
+                toast(`✅ ${trans.docNumber} cancelled`, 'warning');
+            });
+        }
+
+        function deleteTrans(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            showConfirm('Delete Transaction', `Delete ${trans.docNumber || 'transaction'} for ${trans.customer || 'N/A'}? This action cannot be undone.`, 'danger', function() {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                addAudit('Transaction Deleted', `Deleted ${trans?.docNumber || 'unknown'}`);
+                addActivity('system', `Transaction deleted: ${trans?.docNumber}`);
+                renderTable();
+                toast('Transaction deleted', 'warning');
+            });
+        }
+
+        function editTrans(id) {
+            const trans = transactions.find(t => t.id === id);
+            if (!trans) return;
+            if (trans.docType === 'receipt' || trans.status === 'cleared') {
+                toast('Cannot edit cleared/receipted transactions', 'error');
+                return;
+            }
+            const newQty = prompt('Edit quantity:', trans.qty);
+            if (newQty === null) return;
+            const qty = parseFloat(newQty);
+            if (isNaN(qty) || qty < 0) { toast('Invalid quantity', 'error'); return; }
+            const newAmount = prompt('Edit amount (UGX):', trans.amount);
+            if (newAmount === null) return;
+            const amount = parseFloat(newAmount);
+            if (isNaN(amount) || amount < 0) { toast('Invalid amount', 'error'); return; }
+            trans.qty = qty;
+            trans.amount = amount;
+            trans.price = qty > 0 ? amount / qty : 0;
+            saveData();
+            addAudit('Transaction Edited', `Edited ${trans.docNumber} - ${trans.item}`);
+            addActivity('system', `Transaction edited: ${trans.docNumber}`);
+            renderTable();
+            toast('Transaction updated!', 'success');
+        }
+
+        // ── REFUND REQUEST Modal ──
+        function buildRefundRequestModal(card) {
+            if (!canRequestRefund()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Manager, and GM can request refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const canChooseSite = isGM();
+            const siteOptions = canChooseSite ?
+                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
+                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
+
+            const refundableInvoices = transactions.filter(t =>
+                t.site === currentSite &&
+                (t.docType === 'invoice' || t.docType === 'receipt') &&
+                (t.status === 'completed' || t.status === 'cleared') &&
+                t.paid === true &&
+                t.status !== 'cancelled' &&
+                t.status !== 'refund'
+            );
+
+            let options = '<option value="">-- Select Document --</option>';
+            refundableInvoices.forEach(t => {
+                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - UGX ${t.amount.toLocaleString()}</option>`;
+            });
+
+            card.innerHTML = `
+            <h3><i class="fas fa-undo-alt"></i> Request Refund</h3>
+            <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Cashier: Submit refund request for approval by Accountant</p>
+            <form id="modalForm">
+                <div class="row2">
+                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
+                    <div><label>Document</label>
+                        <select id="refundInvoiceSelect" required>
+                            ${options}
+                        </select>
+                    </div>
+                </div>
+                <div id="refundInvoiceInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
+                <div><label>Reason for Refund</label><input id="refundReason" placeholder="Reason" required /></div>
+                <div class="row2">
+                    <div><label>Refund Amount (UGX)</label><input id="refundAmount" type="number" step="any" placeholder="0" required /></div>
+                    <div><label>Refund Method</label>
+                        <select id="refundMethod"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option></select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-warning" style="background:#ffc107;border-color:#ffc107;color:#000;"><i class="fas fa-paper-plane"></i> Submit Request</button>
+                </div>
+            </form>
+          `;
+
+            document.getElementById('refundInvoiceSelect').onchange = function() {
+                const id = parseInt(this.value);
+                const info = document.getElementById('refundInvoiceInfo');
+                if (!id) { info.innerHTML = ''; return; }
+                const trans = transactions.find(t => t.id === id);
+                if (trans) {
+                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
+                    document.getElementById('refundAmount').value = trans.amount;
+                }
+            };
+
+            document.getElementById('modalForm').onsubmit = function(e) {
+                e.preventDefault();
+                const site = document.getElementById('modalSite').value;
+                const invoiceId = parseInt(document.getElementById('refundInvoiceSelect').value);
+                const reason = document.getElementById('refundReason').value.trim();
+                const amount = parseFloat(document.getElementById('refundAmount').value);
+                const method = document.getElementById('refundMethod').value;
+
+                if (!invoiceId || !reason || !amount || amount <= 0) { toast('Fill all fields', 'error'); return; }
+                const original = transactions.find(t => t.id === invoiceId);
+                if (!original) { toast('Document not found', 'error'); return; }
+                if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
+
+                const request = {
+                    id: Date.now(),
+                    invoiceId: invoiceId,
+                    docNumber: original.docNumber,
+                    site: site,
+                    customer: original.customer || 'N/A',
+                    item: original.item,
+                    qty: original.qty,
+                    amount: amount,
+                    reason: reason,
+                    method: method,
+                    requestedBy: currentUser?.name || 'Cashier',
+                    requestedDate: new Date().toISOString().split('T')[0],
+                    status: 'pending',
+                    originalTransaction: original
+                };
+                refundRequests.push(request);
+                saveData();
+                addAudit('Refund Request', `Refund requested for ${original.docNumber} - ${reason} - UGX ${amount}`);
+                addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
+                renderTable();
+                closeModal();
+                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
+            };
+        }
+
+        // ── REFUND APPROVAL Modal ──
+        function buildRefundApprovalModal(card) {
+            if (!canApproveRefund()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Accountant, Manager, and GM can approve refund requests.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const pendingRequests = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite);
+
+            let html = `<h3><i class="fas fa-clipboard-list"></i> Refund Requests - ${currentSite.toUpperCase()}</h3>
+            <div style="max-height:400px;overflow-y:auto;">`;
+
+            if (!pendingRequests.length) {
+                html += `<p style="color:#888;padding:1rem 0;">No pending refund requests</p>`;
+            } else {
+                pendingRequests.forEach((req, idx) => {
+                    html += `
+                        <div style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:12px;margin-bottom:0.8rem;border-left:4px solid #ffc107;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                <div>
+                                    <strong>${req.docNumber}</strong> - ${req.customer}
+                                    <div style="font-size:0.8rem;color:#888;">${req.item} x${req.qty} | Amount: UGX ${req.amount.toLocaleString()}</div>
+                                    <div style="font-size:0.8rem;color:#888;">Reason: ${req.reason} | Method: ${req.method}</div>
+                                    <div style="font-size:0.7rem;color:#999;">Requested: ${req.requestedDate} by ${req.requestedBy}</div>
+                                </div>
+                                <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+                                    <button class="btn btn-success" onclick="approveRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-check"></i> Approve</button>
+                                    <button class="btn btn-danger" onclick="rejectRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-times"></i> Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            window.approveRefund = function(idx) {
+                const request = refundRequests[idx];
+                if (!request) return;
+                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
+                
+                showConfirm('Approve Refund', `Approve refund for ${request.docNumber} - UGX ${request.amount.toLocaleString()}?`, 'success', function() {
+                    request.status = 'approved';
+                    
+                    const refund = {
+                        id: nextInvoiceId++,
+                        date: new Date().toISOString().split('T')[0],
+                        site: request.site,
+                        item: 'REFUND: ' + request.item,
+                        qty: request.qty,
+                        price: -request.amount,
+                        amount: -request.amount,
+                        customer: request.customer || 'Refund',
+                        contact: '',
+                        address: '',
+                        company: '',
+                        payment: request.method,
+                        deposit: 0,
+                        balance: 0,
+                        docNumber: 'REF-' + request.docNumber,
+                        docType: 'refund',
+                        status: 'refund',
+                        paid: true,
+                        paymentMode: request.method,
+                        dispatch: { loaded: false },
+                        refundReason: request.reason,
+                        originalReceipt: request.docNumber,
+                        customerId: null
+                    };
+                    transactions.push(refund);
+                    
+                    const original = transactions.find(t => t.id === request.invoiceId);
+                    if (original) {
+                        original.status = 'refund';
+                        updateStock(original.site, original.item, original.qty, 'add');
+                    }
+                    
+                    saveData();
+                    addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()}`);
+                    addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
+                    renderTable();
+                    buildRefundApprovalModal(card);
+                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
+                });
+            };
+
+            window.rejectRefund = function(idx) {
+                const request = refundRequests[idx];
+                if (!request) return;
+                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
+                
+                showConfirm('Reject Refund', `Reject refund for ${request.docNumber}?`, 'danger', function() {
+                    request.status = 'rejected';
+                    saveData();
+                    addAudit('Refund Rejected', `Refund ${request.docNumber} rejected by ${currentUser?.name}`);
+                    addActivity('refund', `Refund rejected: ${request.docNumber}`);
+                    renderTable();
+                    buildRefundApprovalModal(card);
+                    toast(`❌ Refund ${request.docNumber} rejected`, 'warning');
+                });
+            };
+        }
+
+        // ── INVENTORY Modal ──
+        function buildInventoryModal(card) {
+            if (!canManageInventory()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const isGMOrManager = isGM() || isManager();
+            const siteItems = getItemsForSite(currentSite);
+
+            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management - ${currentSite.toUpperCase()}</h3>
+            <div style="margin-bottom:1rem;">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8rem;">`;
+
+            siteItems.forEach((item, idx) => {
+                const isLow = item.stock <= (item.minStock || 0);
+                html += `
+              <div style="background:#f5f3f0;padding:0.8rem 1rem;border-radius:16px;text-align:center;border-left:4px solid ${isLow ? 'var(--red)' : 'var(--yellow)'};">
+                <div style="font-weight:600;font-size:0.85rem;">${item.name} ${isLow ? '⚠️' : ''}</div>
+                <div style="font-size:1.2rem;font-weight:700;">${item.stock || 0}</div>
+                <div style="font-size:0.7rem;color:#888;">units (min: ${item.minStock || 0})</div>
+                <div style="font-size:0.7rem;color:#888;">
+                    UGX ${item.price.toLocaleString()}
+                    ${isGMOrManager ? `<button class="btn btn-sm" style="padding:0.1rem 0.5rem;font-size:0.65rem;background:#6c757d;color:#fff;border:none;border-radius:20px;cursor:pointer;margin-left:0.3rem;" onclick="editPrice('${currentSite}',${idx})"><i class="fas fa-edit"></i></button>` : ''}
+                </div>
+                ${isGMOrManager ? `<button class="btn btn-danger" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.3rem;" onclick="deleteInventoryItem('${currentSite}',${idx})"><i class="fas fa-trash"></i></button>` : ''}
+              </div>`;
+            });
+
+            html += `</div>
+            ${isGMOrManager ? `
+              <button class="btn btn-primary" onclick="addInventoryItem()" style="margin-top:0.5rem;"><i class="fas fa-plus"></i> Add Item</button>
+              <div style="margin-top:0.8rem;">
+                <label>Update Stock</label>
+                <div class="row2">
+                  <select id="stockItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;"><option value="">-- Select Item --</option>${siteItems.map((i,idx) => `<option value="${idx}">${i.name}</option>`).join('')}</select>
+                  <div style="display:flex;gap:0.5rem;">
+                    <input id="stockQty" type="number" placeholder="Qty" style="flex:1;padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    <button class="btn btn-success" onclick="updateStockItem()"><i class="fas fa-sync"></i> Update</button>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+            card.innerHTML = html;
+
+            window.editPrice = function(site, idx) {
+                const items = inventoryItems[site];
+                if (!items || !items[idx]) return;
+                const newPrice = prompt(`Edit price for ${items[idx].name}:`, items[idx].price);
+                if (newPrice !== null) {
+                    const p = parseFloat(newPrice);
+                    if (isNaN(p) || p < 0) { toast('Invalid price', 'error'); return; }
+                    items[idx].price = p;
+                    saveData();
+                    addAudit('Price Update', `Updated ${items[idx].name} price to UGX ${p}`);
+                    addActivity('system', `Price updated: ${items[idx].name} → UGX ${p}`);
+                    toast(`Price updated for ${items[idx].name}`, 'success');
+                    buildInventoryModal(card);
+                }
+            };
+
+            window.addInventoryItem = function() {
+                const name = prompt('Enter item name:');
+                if (!name) return;
+                const price = prompt('Enter unit price (UGX):');
+                if (price === null) return;
+                const p = parseFloat(price);
+                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
+                const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
+                if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
+                inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
+                saveData();
+                addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
+                addActivity('system', `Added inventory item: ${name}`);
+                toast('Item added!', 'success');
+                buildInventoryModal(card);
+            };
+
+            window.updateStockItem = function() {
+                const idx = parseInt(document.getElementById('stockItemSelect').value);
+                const qty = parseFloat(document.getElementById('stockQty').value);
+                if (isNaN(idx) || !qty || qty < 0) { toast('Invalid input', 'error'); return; }
+                const items = inventoryItems[currentSite];
+                if (items && items[idx]) {
+                    items[idx].stock = (items[idx].stock || 0) + qty;
+                    saveData();
+                    addAudit('Stock Update', `Updated ${items[idx].name}: +${qty} units`);
+                    addActivity('system', `Updated stock: ${items[idx].name} +${qty}`);
+                    toast(`Stock updated! ${items[idx].name}: ${items[idx].stock}`, 'success');
+                    buildInventoryModal(card);
+                }
+            };
+
+            window.deleteInventoryItem = function(site, idx) {
+                const item = inventoryItems[site]?.[idx];
+                if (!item) return;
+                showConfirm('Delete Inventory Item', `Delete ${item.name} from ${site}? This action cannot be undone.`, 'danger', function() {
+                    inventoryItems[site].splice(idx, 1);
+                    saveData();
+                    addAudit('Inventory Delete', `Deleted ${item.name} from ${site}`);
+                    toast('Item deleted', 'warning');
+                    buildInventoryModal(card);
+                });
+            };
+        }
+
+        // ── PRODUCTION Modal ──
+        function buildProductionModal(card) {
+            if (!canManageProduction()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Dispatch can manage production & materials.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const siteItems = getItemsForSite(currentSite);
+            const recentProd = productionLog.filter(p => p.site === currentSite).slice(-10).reverse();
+
+            let html = `<h3><i class="fas fa-industry"></i> Production & Materials - ${currentSite.toUpperCase()}</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
+                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📦 Record Production</h4>
+                    <div class="row2" style="gap:0.5rem;">
+                        <select id="prodItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;">
+                            <option value="">-- Select Item --</option>
+                            ${siteItems.map(i => `<option value="${i.name}">${i.name}</option>`).join('')}
+                        </select>
+                        <input id="prodQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    </div>
+                    <button class="btn btn-primary" onclick="recordProductionStock()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-plus"></i> Add Production</button>
+                </div>
+                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
+                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📥 Materials Received</h4>
+                    <div class="row2" style="gap:0.5rem;">
+                        <input id="matName" placeholder="Material name" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                        <input id="matQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
+                    </div>
+                    <button class="btn btn-success" onclick="recordMaterialsReceived()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-box"></i> Record Received</button>
+                </div>
+            </div>
+            <div style="max-height:200px;overflow-y:auto;border-top:1px solid #efedea;padding-top:0.5rem;">
+                <h4 style="font-size:0.8rem;color:#555;margin-bottom:0.3rem;">📋 Recent Activity</h4>
+                ${recentProd.length ? recentProd.map(p => `
+                    <div class="audit-entry" style="font-size:0.8rem;">
+                        <span class="time">${new Date(p.timestamp).toLocaleString()}</span>
+                        <strong>${p.type}</strong>: ${p.item} x${p.qty}
+                        ${p.note ? `(${p.note})` : ''}
+                    </div>
+                `).join('') : '<div style="color:#888;font-size:0.8rem;padding:0.5rem;">No recent activity</div>'}
+            </div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+
+            card.innerHTML = html;
+
+            window.recordProductionStock = function() {
+                const item = document.getElementById('prodItemSelect').value;
+                const qty = parseFloat(document.getElementById('prodQty').value);
+                if (!item || !qty || qty <= 0) { toast('Select item and enter quantity', 'error'); return; }
+                const found = getItemsForSite(currentSite).find(i => i.name === item);
+                if (found) {
+                    found.stock = (found.stock || 0) + qty;
+                    productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Production', item, qty, note: 'Added to stock' });
+                    saveData();
+                    addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
+                    addActivity('system', `Production: ${item} +${qty}`);
+                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
+                    buildProductionModal(card);
+                    renderTable();
+                } else {
+                    toast('Item not found in inventory', 'error');
+                }
+            };
+
+            window.recordMaterialsReceived = function() {
+                const name = document.getElementById('matName').value.trim();
+                const qty = parseFloat(document.getElementById('matQty').value);
+                if (!name || !qty || qty <= 0) { toast('Enter material name and quantity', 'error'); return; }
+                const items = inventoryItems[currentSite];
+                let found = items.find(i => i.name.toLowerCase() === name.toLowerCase());
+                if (found) {
+                    found.stock = (found.stock || 0) + qty;
+                } else {
+                    items.push({ name: name, price: 0, stock: qty, minStock: 0 });
+                }
+                productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Materials Received', item: name, qty, note: 'Added to inventory' });
+                saveData();
+                addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
+                addActivity('system', `Materials received: ${name} +${qty}`);
+                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
+                buildProductionModal(card);
+                renderTable();
+            };
+        }
+
+        // ── USERS Modal ──
+        function buildUsersModal(card) {
+            if (!canManageUsers()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            let html = `<h3><i class="fas fa-users-cog"></i> User Management</h3>
+            <form id="userForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
+              <div class="row2">
+                <div><label>Username</label><input id="userUsername" placeholder="username" required /></div>
+                <div><label>Password</label><input id="userPassword" placeholder="password" required /></div>
+              </div>
+              <div class="row2">
+                <div><label>Full Name</label><input id="userName" placeholder="Full name" required /></div>
+                <div><label>Role</label><select id="userRole">
+                  <option value="gm">General Manager</option>
+                  <option value="manager">Manager</option>
+                  <option value="accountant">Accountant</option>
+                  <option value="cashier">Cashier</option>
+                  <option value="sales">Sales Agent</option>
+                  <option value="dispatch">Dispatch Agent</option>
+                </select></div>
+              </div>
+              <div><label>Sites (comma separated: workshop,ngetta,adyel)</label><input id="userSites" placeholder="workshop,ngetta" value="workshop" /></div>
+              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
+            </form>
+
+            <h4 style="margin:1rem 0 0.5rem;">User Permissions</h4>
+            <div style="max-height:300px;overflow-y:auto;margin-bottom:1rem;">
+              <table style="font-size:0.8rem;min-width:auto;">
+                <thead><tr><th>User</th><th>Role</th><th style="text-align:center;">Permissions</th></tr></thead>
+                <tbody>
+          `;
+            users.forEach(u => {
+                const perms = userPermissions[u.username] || {};
+                const permCount = Object.values(perms).filter(v => v).length;
+                html += `<tr><td>${u.username}</td><td>${u.role}</td>
+              <td style="text-align:center;">
+                <button class="btn btn-sm" style="padding:0.1rem 0.8rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')">
+                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✅ ' + permCount : 'Set'}
+                </button>
+              </td></tr>`;
+            });
+            html += `</tbody></table></div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+            card.innerHTML = html;
+
+            document.getElementById('userForm').onsubmit = function(e) {
+                e.preventDefault();
+                const username = document.getElementById('userUsername').value.trim();
+                const password = document.getElementById('userPassword').value.trim();
+                const name = document.getElementById('userName').value.trim();
+                const role = document.getElementById('userRole').value;
+                const sites = document.getElementById('userSites').value.split(',').map(s => s.trim()).filter(Boolean);
+                if (!username || !password || !name || !sites.length) { toast('Fill all fields', 'error'); return; }
+                if (users.find(u => u.username === username)) { toast('Username exists', 'error'); return; }
+                users.push({ username, password, role, name, sites });
+                saveData();
+                addAudit('User Add', `Added user: ${username} (${role})`);
+                addActivity('system', `Added user: ${username}`);
+                toast('User added!', 'success');
+                buildUsersModal(card);
+            };
+
+            window.editPermissions = function(username) {
+                const perms = userPermissions[username] || {};
+                const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_customers', 'view_reports',
+                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice'];
+                let currentPerms = {};
+                let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
+                actions.forEach(a => {
+                    const status = perms[a] ? '✅' : '❌';
+                    msg += `${status} ${a}\n`;
+                    currentPerms[a] = perms[a] || false;
+                });
+                msg += '\nEnter which actions to enable (comma separated):\n' + actions.join(', ');
+                const input = prompt(msg, actions.filter(a => perms[a]).join(', '));
+                if (input !== null) {
+                    const enabled = input.split(',').map(s => s.trim());
+                    actions.forEach(a => { userPermissions[username] = userPermissions[username] || {}; userPermissions[username][a] = enabled.includes(a); });
+                    saveData();
+                    addAudit('Permissions Update', `Updated permissions for ${username}`);
+                    toast('Permissions updated!', 'success');
+                    buildUsersModal(card);
+                }
+            };
+        }
+
+        // ── AUDIT Modal ──
+        function buildAuditModal(card) {
+            if (!canViewAudit()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view audit logs.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            const recentLogs = auditLog.slice(-50).reverse();
+            let html = `<h3><i class="fas fa-history"></i> Audit Log</h3>
+            <div style="max-height:400px;overflow-y:auto;">`;
+            recentLogs.forEach(log => {
+                html += `<div class="audit-entry">
+              <span class="time">${new Date(log.timestamp).toLocaleString()}</span>
+              <strong>${log.user}</strong> - ${log.action}
+              <span style="color:#888;font-size:0.8rem;">${log.details || ''}</span>
+              ${log.site ? `<span class="badge-site ${log.site}" style="font-size:0.6rem;">${log.site}</span>` : ''}
+            </div>`;
+            });
+            html += `</div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button>
+            ${isGM() ? `<button class="btn btn-danger" onclick="clearAudit()">Clear Log</button>` : ''}</div>`;
+            card.innerHTML = html;
+
+            window.clearAudit = function() {
+                showConfirm('Clear Audit Log', 'Clear all audit logs? This action cannot be undone.', 'danger', function() {
+                    auditLog = [];
+                    saveData();
+                    toast('Audit log cleared', 'warning');
+                    buildAuditModal(card);
+                });
+            };
+        }
+
+        // ── SETTINGS Modal ──
+        function buildSettingsModal(card) {
+            if (!isGM()) {
+                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can access settings.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
+                return;
+            }
+
+            card.innerHTML = `
+            <h3><i class="fas fa-cog"></i> System Settings</h3>
+            <div class="settings-group">
+                <h4>🔔 Notifications</h4>
+                <div class="toggle-container">
+                    <div class="toggle ${systemSettings.enableNotifications ? 'active' : ''}" onclick="toggleSetting('enableNotifications')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Enable Notifications</span>
+                </div>
+                <div class="toggle-container">
+                    <div class="toggle ${systemSettings.lowStockAlert ? 'active' : ''}" onclick="toggleSetting('lowStockAlert')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Low Stock Alerts</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h4>📦 Inventory</h4>
+                <div class="toggle-container">
+                    <div class="toggle ${systemSettings.allowNegativeStock ? 'active' : ''}" onclick="toggleSetting('allowNegativeStock')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Allow Negative Stock</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h4>💾 Backup</h4>
+                <div class="toggle-container">
+                    <div class="toggle ${systemSettings.autoBackup ? 'active' : ''}" onclick="toggleSetting('autoBackup')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Auto Backup</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h4>💰 Financial</h4>
+                <div class="row2">
+                    <div><label>Daily Expense Limit (UGX)</label>
+                        <input id="expenseLimitSetting" type="number" value="${dailyExpenseLimit}" />
+                        <button class="btn btn-primary" onclick="updateExpenseLimitSetting()" style="margin-top:0.5rem;"><i class="fas fa-save"></i> Update Limit</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
+          `;
+
+            window.toggleSetting = function(key) {
+                systemSettings[key] = !systemSettings[key];
+                saveData();
+                toast(`${key} set to ${systemSettings[key] ? 'ON' : 'OFF'}`, 'success');
+                buildSettingsModal(card);
+            };
+
+            window.updateExpenseLimitSetting = function() {
+                const newLimit = parseFloat(document.getElementById('expenseLimitSetting').value);
+                if (isNaN(newLimit) || newLimit < 0) { toast('Invalid limit', 'error'); return; }
+                dailyExpenseLimit = newLimit;
+                saveData();
+                addAudit('Expense Limit', `Updated daily expense limit to UGX ${newLimit}`);
+                toast('Expense limit updated!', 'success');
+                buildSettingsModal(card);
+            };
+        }
+
+        // ── REPORT MODAL ──
         function buildReportModal(card) {
             if (!canViewReports()) {
                 card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view reports.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -2306,956 +3386,6 @@
             toast('Filters reset', 'success');
         }
 
-        // ── RECEIPT Modal ──
-        function buildReceiptModal(card) {
-            card.innerHTML = `
-            <h3><i class="fas fa-envelope"></i> Send E-Receipt</h3>
-            <form id="modalForm">
-              <div><label>Document Number</label><input id="receiptNumber" placeholder="Enter INV-XXXX or RPT-XXXX" required /></div>
-              <div><label>Customer Email</label><input id="customerEmail" placeholder="customer@example.com" required /></div>
-              <div class="modal-actions">
-                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-paper-plane"></i> Send</button>
-              </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const docNumber = document.getElementById('receiptNumber').value.trim();
-                const email = document.getElementById('customerEmail').value.trim();
-                const trans = transactions.find(t => t.docNumber === docNumber);
-                if (!trans) { toast('Document not found!', 'error'); return; }
-                if (!email.includes('@')) { toast('Invalid email', 'error'); return; }
-                toast(`📧 E-receipt ${docNumber} sent to ${email}`, 'success');
-                addAudit('E-Receipt', `Sent receipt ${docNumber} to ${email}`);
-                addActivity('system', `E-receipt sent: ${docNumber}`);
-                closeModal();
-            };
-        }
-
-        // ── CLEAR/RECEIPT Modal ──
-        function buildClearModal(card) {
-            const pendingInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                (t.status === 'pending' || t.status === 'partial') &&
-                (t.docType === 'invoice' || t.docType === 'receipt') &&
-                t.status !== 'cancelled'
-            );
-
-            let options = '<option value="">-- Select Document to Clear --</option>';
-            pendingInvoices.forEach(t => {
-                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - ${t.item} (UGX ${t.amount.toLocaleString()})</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-check-double"></i> Clear → Receipt</h3>
-            <form id="modalForm">
-                <div><label>Select Document</label>
-                    <select id="clearInvoiceSelect" required>
-                        ${options}
-                    </select>
-                </div>
-                <div id="clearInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-                <div class="row2">
-                    <div><label>Payment Status</label>
-                        <select id="clearPaidStatus"><option value="paid">Paid</option><option value="unpaid">Unpaid (Credit)</option></select>
-                    </div>
-                    <div><label>Payment Mode</label>
-                        <select id="clearPaymentMode"><option value="cash">Cash</option><option value="customer">Customer</option></select>
-                    </div>
-                </div>
-                <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:#e8f5e9;border-radius:12px;font-size:0.85rem;">
-                    <i class="fas fa-info-circle"></i> This will convert to a receipt (RPT-XXXX) and make it available for Dispatch
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Clear & Convert to Receipt</button>
-                </div>
-            </form>
-          `;
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const id = parseInt(document.getElementById('clearInvoiceSelect').value);
-                const paidStatus = document.getElementById('clearPaidStatus').value;
-                const paymentMode = document.getElementById('clearPaymentMode').value;
-                if (!id) { toast('Select a document', 'error'); return; }
-                clearInvoice(id, paidStatus, paymentMode);
-                closeModal();
-            };
-            document.getElementById('clearInvoiceSelect').onchange = function() {
-                const id = parseInt(this.value);
-                const info = document.getElementById('clearInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const trans = transactions.find(t => t.id === id);
-                if (trans) {
-                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
-                }
-            };
-        }
-
-        function clearInvoice(id, paidStatus, paymentMode) {
-            const trans = transactions.find(t => t.id === id);
-            if (!trans) return;
-            if (trans.status === 'cleared' || trans.status === 'completed') {
-                toast('Already cleared', 'warning');
-                return;
-            }
-            if (trans.docType === 'expense' || trans.docType === 'refund') { toast('Cannot clear expense or refund', 'error'); return; }
-            if (trans.status === 'cancelled') { toast('Cannot clear cancelled document', 'error'); return; }
-            
-            const newReceiptNumber = generateReceiptNumber();
-            const oldDocNumber = trans.docNumber;
-            
-            trans.status = 'cleared';
-            trans.paid = paidStatus === 'paid';
-            trans.paymentMode = paymentMode || trans.paymentMode || 'cash';
-            trans.docNumber = newReceiptNumber;
-            trans.docType = 'receipt';
-            
-            if (trans.paid) {
-                trans.balance = 0;
-                trans.deposit = trans.amount;
-            }
-            
-            trans.originalInvoice = oldDocNumber;
-            
-            saveData();
-            addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name} | Paid: ${trans.paid} | Mode: ${trans.paymentMode}`);
-            addActivity('system', `Document cleared: ${oldDocNumber} → ${newReceiptNumber}`);
-            renderTable();
-            toast(`✅ ${oldDocNumber} cleared! Receipt: ${newReceiptNumber}`, 'success');
-        }
-
-        function cancelInvoice(id) {
-            const trans = transactions.find(t => t.id === id);
-            if (!trans) return;
-            if (trans.status === 'cancelled') { toast('Already cancelled', 'warning'); return; }
-            if (trans.docType === 'expense') { toast('Cannot cancel expenses', 'error'); return; }
-            if (trans.status === 'completed') { toast('Cannot cancel completed/dispatched document', 'error'); return; }
-            
-            if (confirm(`Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}?`)) {
-                trans.status = 'cancelled';
-                if (!trans.dispatch?.loaded) {
-                    updateStock(trans.site, trans.item, trans.qty, 'add');
-                }
-                saveData();
-                addAudit('Document Cancelled', `Cancelled ${trans.docNumber} - ${trans.customer} by ${currentUser?.name}`);
-                addActivity('system', `Document cancelled: ${trans.docNumber}`);
-                renderTable();
-                toast(`✅ ${trans.docNumber} cancelled`, 'warning');
-            }
-        }
-
-        function deleteTrans(id) {
-            if (!confirm('Delete this transaction?')) return;
-            const trans = transactions.find(t => t.id === id);
-            transactions = transactions.filter(t => t.id !== id);
-            saveData();
-            addAudit('Transaction Deleted', `Deleted ${trans?.docNumber || 'unknown'}`);
-            addActivity('system', `Transaction deleted: ${trans?.docNumber}`);
-            renderTable();
-            toast('Deleted', 'warning');
-        }
-
-        function editTrans(id) {
-            const trans = transactions.find(t => t.id === id);
-            if (!trans) return;
-            if (trans.docType === 'receipt' || trans.status === 'cleared') {
-                toast('Cannot edit cleared/receipted transactions', 'error');
-                return;
-            }
-            const newQty = prompt('Edit quantity:', trans.qty);
-            if (newQty === null) return;
-            const qty = parseFloat(newQty);
-            if (isNaN(qty) || qty < 0) { toast('Invalid quantity', 'error'); return; }
-            const newAmount = prompt('Edit amount (UGX):', trans.amount);
-            if (newAmount === null) return;
-            const amount = parseFloat(newAmount);
-            if (isNaN(amount) || amount < 0) { toast('Invalid amount', 'error'); return; }
-            trans.qty = qty;
-            trans.amount = amount;
-            trans.price = qty > 0 ? amount / qty : 0;
-            saveData();
-            addAudit('Transaction Edited', `Edited ${trans.docNumber} - ${trans.item}`);
-            addActivity('system', `Transaction edited: ${trans.docNumber}`);
-            renderTable();
-            toast('Transaction updated!', 'success');
-        }
-
-        // ── REFUND REQUEST Modal (Cashier) ──
-        function buildRefundRequestModal(card) {
-            if (!canRequestRefund()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Manager, and GM can request refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const canChooseSite = isGM();
-            const siteOptions = canChooseSite ?
-                `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
-                `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
-
-            const refundableInvoices = transactions.filter(t =>
-                t.site === currentSite &&
-                (t.docType === 'invoice' || t.docType === 'receipt') &&
-                (t.status === 'completed' || t.status === 'cleared') &&
-                t.paid === true &&
-                t.status !== 'cancelled' &&
-                t.status !== 'refund'
-            );
-
-            let options = '<option value="">-- Select Document --</option>';
-            refundableInvoices.forEach(t => {
-                options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - UGX ${t.amount.toLocaleString()}</option>`;
-            });
-
-            card.innerHTML = `
-            <h3><i class="fas fa-undo-alt"></i> Request Refund</h3>
-            <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Cashier: Submit refund request for approval by Accountant</p>
-            <form id="modalForm">
-                <div class="row2">
-                    <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
-                    <div><label>Document</label>
-                        <select id="refundInvoiceSelect" required>
-                            ${options}
-                        </select>
-                    </div>
-                </div>
-                <div id="refundInvoiceInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-                <div><label>Reason for Refund</label><input id="refundReason" placeholder="Reason" required /></div>
-                <div class="row2">
-                    <div><label>Refund Amount (UGX)</label><input id="refundAmount" type="number" step="any" placeholder="0" required /></div>
-                    <div><label>Refund Method</label>
-                        <select id="refundMethod"><option value="cash">Cash</option><option value="mobile_money">Mobile Money</option><option value="bank_transfer">Bank Transfer</option></select>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-warning" style="background:#ffc107;border-color:#ffc107;color:#000;"><i class="fas fa-paper-plane"></i> Submit Request</button>
-                </div>
-            </form>
-          `;
-
-            document.getElementById('refundInvoiceSelect').onchange = function() {
-                const id = parseInt(this.value);
-                const info = document.getElementById('refundInvoiceInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const trans = transactions.find(t => t.id === id);
-                if (trans) {
-                    info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()}`;
-                    document.getElementById('refundAmount').value = trans.amount;
-                }
-            };
-
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const site = document.getElementById('modalSite').value;
-                const invoiceId = parseInt(document.getElementById('refundInvoiceSelect').value);
-                const reason = document.getElementById('refundReason').value.trim();
-                const amount = parseFloat(document.getElementById('refundAmount').value);
-                const method = document.getElementById('refundMethod').value;
-
-                if (!invoiceId || !reason || !amount || amount <= 0) { toast('Fill all fields', 'error'); return; }
-                const original = transactions.find(t => t.id === invoiceId);
-                if (!original) { toast('Document not found', 'error'); return; }
-                if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
-
-                const request = {
-                    id: Date.now(),
-                    invoiceId: invoiceId,
-                    docNumber: original.docNumber,
-                    site: site,
-                    customer: original.customer || 'N/A',
-                    item: original.item,
-                    qty: original.qty,
-                    amount: amount,
-                    reason: reason,
-                    method: method,
-                    requestedBy: currentUser?.name || 'Cashier',
-                    requestedDate: new Date().toISOString().split('T')[0],
-                    status: 'pending',
-                    originalTransaction: original
-                };
-                refundRequests.push(request);
-                saveData();
-                addAudit('Refund Request', `Refund requested for ${original.docNumber} - ${reason} - UGX ${amount}`);
-                addActivity('refund', `Refund request submitted for ${original.docNumber} by ${currentUser?.name}`);
-                renderTable();
-                closeModal();
-                toast(`✅ Refund request submitted for ${original.docNumber}`, 'success');
-            };
-        }
-
-        // ── REFUND APPROVAL Modal (Accountant) ──
-        function buildRefundApprovalModal(card) {
-            if (!canApproveRefund()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Accountant, Manager, and GM can approve refund requests.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const pendingRequests = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite);
-
-            let html = `<h3><i class="fas fa-clipboard-list"></i> Refund Requests - ${currentSite.toUpperCase()}</h3>
-            <div style="max-height:400px;overflow-y:auto;">`;
-
-            if (!pendingRequests.length) {
-                html += `<p style="color:#888;padding:1rem 0;">No pending refund requests</p>`;
-            } else {
-                pendingRequests.forEach((req, idx) => {
-                    html += `
-                        <div style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:12px;margin-bottom:0.8rem;border-left:4px solid #ffc107;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
-                                <div>
-                                    <strong>${req.docNumber}</strong> - ${req.customer}
-                                    <div style="font-size:0.8rem;color:#888;">${req.item} x${req.qty} | Amount: UGX ${req.amount.toLocaleString()}</div>
-                                    <div style="font-size:0.8rem;color:#888;">Reason: ${req.reason} | Method: ${req.method}</div>
-                                    <div style="font-size:0.7rem;color:#999;">Requested: ${req.requestedDate} by ${req.requestedBy}</div>
-                                </div>
-                                <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-                                    <button class="btn btn-success" onclick="approveRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-check"></i> Approve</button>
-                                    <button class="btn btn-danger" onclick="rejectRefund(${idx})" style="padding:0.3rem 1rem;font-size:0.8rem;"><i class="fas fa-times"></i> Reject</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            html += `</div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-            card.innerHTML = html;
-
-            window.approveRefund = function(idx) {
-                const request = refundRequests[idx];
-                if (!request) return;
-                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
-                
-                if (confirm(`Approve refund for ${request.docNumber} - UGX ${request.amount.toLocaleString()}?`)) {
-                    request.status = 'approved';
-                    
-                    const refund = {
-                        id: nextInvoiceId++,
-                        date: new Date().toISOString().split('T')[0],
-                        site: request.site,
-                        item: 'REFUND: ' + request.item,
-                        qty: request.qty,
-                        price: -request.amount,
-                        amount: -request.amount,
-                        customer: request.customer || 'Refund',
-                        contact: '',
-                        address: '',
-                        company: '',
-                        payment: request.method,
-                        deposit: 0,
-                        balance: 0,
-                        docNumber: 'REF-' + request.docNumber,
-                        docType: 'refund',
-                        status: 'refund',
-                        paid: true,
-                        paymentMode: request.method,
-                        dispatch: { loaded: false },
-                        refundReason: request.reason,
-                        originalReceipt: request.docNumber,
-                        customerId: null
-                    };
-                    transactions.push(refund);
-                    
-                    const original = transactions.find(t => t.id === request.invoiceId);
-                    if (original) {
-                        original.status = 'refund';
-                        updateStock(original.site, original.item, original.qty, 'add');
-                    }
-                    
-                    saveData();
-                    addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()}`);
-                    addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
-                    renderTable();
-                    buildRefundApprovalModal(card);
-                    toast(`✅ Refund ${request.docNumber} approved!`, 'success');
-                }
-            };
-
-            window.rejectRefund = function(idx) {
-                const request = refundRequests[idx];
-                if (!request) return;
-                if (request.status !== 'pending') { toast('Already processed', 'warning'); return; }
-                
-                if (confirm(`Reject refund for ${request.docNumber}?`)) {
-                    request.status = 'rejected';
-                    saveData();
-                    addAudit('Refund Rejected', `Refund ${request.docNumber} rejected by ${currentUser?.name}`);
-                    addActivity('refund', `Refund rejected: ${request.docNumber}`);
-                    renderTable();
-                    buildRefundApprovalModal(card);
-                    toast(`❌ Refund ${request.docNumber} rejected`, 'warning');
-                }
-            };
-        }
-
-        // ── NEW CUSTOMER Modal ──
-        function buildNewCustomerModal(card) {
-            card.innerHTML = `
-            <h3><i class="fas fa-user-plus"></i> Add New Customer</h3>
-            <form id="modalForm">
-                <div class="row2">
-                    <div><label>Customer Name *</label><input id="custName" placeholder="Full name" required /></div>
-                    <div><label>Contact</label><input id="custContact" placeholder="Phone/Email" /></div>
-                </div>
-                <div class="row2">
-                    <div><label>Email</label><input id="custEmail" placeholder="email@example.com" /></div>
-                    <div><label>Company</label><input id="custCompany" placeholder="Company name" /></div>
-                </div>
-                <div><label>Address</label><input id="custAddress" placeholder="Location" /></div>
-                <div class="row2">
-                    <div><label>Initial Balance (UGX)</label>
-                        <input id="custBalance" type="number" step="any" placeholder="0" value="0" />
-                        <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">Positive = Deposit, Negative = Credit</div>
-                    </div>
-                    <div><label>Balance Type</label>
-                        <select id="custBalanceType" onchange="setBalanceValue()">
-                            <option value="0">Neutral (0)</option>
-                            <option value="deposit">Deposit (Positive)</option>
-                            <option value="credit">Credit (Negative)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="background:#6610f2;border-color:#6610f2;"><i class="fas fa-save"></i> Add Customer</button>
-                </div>
-            </form>
-          `;
-
-            window.setBalanceValue = function() {
-                const type = document.getElementById('custBalanceType').value;
-                const balField = document.getElementById('custBalance');
-                const currentVal = parseFloat(balField.value) || 0;
-                if (type === 'deposit' && currentVal < 0) {
-                    balField.value = Math.abs(currentVal);
-                } else if (type === 'credit' && currentVal > 0) {
-                    balField.value = -Math.abs(currentVal);
-                } else if (type === '0') {
-                    balField.value = 0;
-                }
-            };
-
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const name = document.getElementById('custName').value.trim();
-                const contact = document.getElementById('custContact').value.trim();
-                const email = document.getElementById('custEmail').value.trim();
-                const company = document.getElementById('custCompany').value.trim();
-                const address = document.getElementById('custAddress').value.trim();
-                const balance = parseFloat(document.getElementById('custBalance').value) || 0;
-
-                if (!name) { toast('Customer name required', 'error'); return; }
-                if (customers.find(c => c.name.toLowerCase() === name.toLowerCase())) {
-                    toast('Customer already exists!', 'warning');
-                    return;
-                }
-
-                const newCustomer = {
-                    id: nextCustomerId++,
-                    name: name,
-                    contact: contact,
-                    email: email,
-                    address: address,
-                    company: company,
-                    balance: balance
-                };
-                customers.push(newCustomer);
-                saveData();
-                addAudit('Customer Added', `Added ${name} with balance UGX ${balance.toLocaleString()}`);
-                addActivity('system', `New customer: ${name} (${balance >= 0 ? 'Deposit' : 'Credit'})`);
-                toast(`✅ Customer ${name} added!`, 'success');
-                closeModal();
-                buildCustomersModal(document.getElementById('modalCard'));
-            };
-        }
-
-        // ── ADJUST BALANCE Modal ──
-        function buildAdjustBalanceModal(card) {
-            const customerOptions = customers.map(c => 
-                `<option value="${c.id}">${c.name} (${c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString()})</option>`
-            ).join('');
-
-            card.innerHTML = `
-            <h3><i class="fas fa-coins"></i> Adjust Customer Balance</h3>
-            <div style="background:#e8f5e9;padding:0.5rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:0.85rem;">
-                <i class="fas fa-info-circle"></i> Positive adjustment = Customer deposits money (increases balance).<br>
-                Negative adjustment = Customer takes credit (decreases balance).
-            </div>
-            <form id="modalForm">
-                <div><label>Select Customer</label>
-                    <select id="adjCustomer" required>
-                        <option value="">-- Select Customer --</option>
-                        ${customerOptions}
-                    </select>
-                </div>
-                <div id="customerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
-                <div class="row2">
-                    <div><label>Adjustment Amount (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
-                    <div><label>Type</label>
-                        <select id="adjType">
-                            <option value="deposit">Deposit (Customer pays us)</option>
-                            <option value="credit">Credit (Customer owes us)</option>
-                        </select>
-                    </div>
-                </div>
-                <div><label>Reason / Notes</label><input id="adjNotes" placeholder="Reason for adjustment" /></div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="background:var(--red);border-color:var(--red);"><i class="fas fa-save"></i> Apply Adjustment</button>
-                </div>
-            </form>
-          `;
-
-            document.getElementById('adjCustomer').onchange = function() {
-                const id = parseInt(this.value);
-                const info = document.getElementById('customerInfo');
-                if (!id) { info.innerHTML = ''; return; }
-                const customer = customers.find(c => c.id === id);
-                if (customer) {
-                    const balanceDisplay = customer.balance >= 0 ? 'UGX ' + customer.balance.toLocaleString() : 'UGX -' + Math.abs(customer.balance).toLocaleString();
-                    info.innerHTML = `<strong>${customer.name}</strong> | Current Balance: ${balanceDisplay}`;
-                }
-            };
-
-            document.getElementById('modalForm').onsubmit = function(e) {
-                e.preventDefault();
-                const id = parseInt(document.getElementById('adjCustomer').value);
-                const amount = parseFloat(document.getElementById('adjAmount').value);
-                const type = document.getElementById('adjType').value;
-                const notes = document.getElementById('adjNotes').value.trim();
-
-                if (!id || !amount || amount <= 0) { toast('Select customer and enter valid amount', 'error'); return; }
-                const customer = customers.find(c => c.id === id);
-                if (!customer) { toast('Customer not found', 'error'); return; }
-
-                const adjustment = type === 'deposit' ? amount : -amount;
-                const newBalance = customer.balance + adjustment;
-
-                const docNumber = type === 'deposit' ? 'DEP-ADJ-' + String(nextInvoiceId++).padStart(4, '0') : 'CRD-ADJ-' + String(nextInvoiceId++).padStart(4, '0');
-                const trans = {
-                    id: nextInvoiceId++,
-                    date: new Date().toISOString().split('T')[0],
-                    site: currentSite,
-                    item: type === 'deposit' ? 'DEPOSIT ADJUSTMENT' : 'CREDIT ADJUSTMENT',
-                    qty: 1,
-                    price: Math.abs(adjustment),
-                    amount: Math.abs(adjustment),
-                    customer: customer.name,
-                    contact: customer.contact || '',
-                    address: customer.address || '',
-                    company: customer.company || '',
-                    payment: 'customer',
-                    deposit: 0,
-                    balance: 0,
-                    docNumber: docNumber,
-                    docType: 'adjustment',
-                    status: 'completed',
-                    paid: true,
-                    paymentMode: 'customer',
-                    dispatch: { loaded: false },
-                    customerId: customer.id,
-                    notes: notes || (type === 'deposit' ? 'Deposit adjustment' : 'Credit adjustment')
-                };
-                transactions.push(trans);
-
-                customer.balance = newBalance;
-                saveData();
-                addAudit('Balance Adjusted', `${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()} (${notes || 'No reason'})`);
-                addActivity('system', `Balance adjusted for ${customer.name}: ${type === 'deposit' ? '+' : '-'}UGX ${amount.toLocaleString()}`);
-                renderTable();
-                closeModal();
-                const newBalanceDisplay = newBalance >= 0 ? 'UGX ' + newBalance.toLocaleString() : 'UGX -' + Math.abs(newBalance).toLocaleString();
-                toast(`✅ ${customer.name}'s balance updated to ${newBalanceDisplay}`, 'success');
-            };
-        }
-
-        // ── INVENTORY Modal ──
-        function buildInventoryModal(card) {
-            if (!canManageInventory()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const isGMOrManager = isGM() || isManager();
-            const siteItems = getItemsForSite(currentSite);
-
-            let html = `<h3><i class="fas fa-boxes"></i> Inventory Management - ${currentSite.toUpperCase()}</h3>
-            <div style="margin-bottom:1rem;">
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8rem;">`;
-
-            siteItems.forEach((item, idx) => {
-                const isLow = item.stock <= (item.minStock || 0);
-                html += `
-              <div style="background:#f5f3f0;padding:0.8rem 1rem;border-radius:16px;text-align:center;border-left:4px solid ${isLow ? 'var(--red)' : 'var(--yellow)'};">
-                <div style="font-weight:600;font-size:0.85rem;">${item.name} ${isLow ? '⚠️' : ''}</div>
-                <div style="font-size:1.2rem;font-weight:700;">${item.stock || 0}</div>
-                <div style="font-size:0.7rem;color:#888;">units (min: ${item.minStock || 0})</div>
-                <div style="font-size:0.7rem;color:#888;">
-                    UGX ${item.price.toLocaleString()}
-                    ${isGMOrManager ? `<button class="btn btn-sm" style="padding:0.1rem 0.5rem;font-size:0.65rem;background:#6c757d;color:#fff;border:none;border-radius:20px;cursor:pointer;margin-left:0.3rem;" onclick="editPrice('${currentSite}',${idx})"><i class="fas fa-edit"></i></button>` : ''}
-                </div>
-                ${isGMOrManager ? `<button class="btn btn-danger" style="padding:0.2rem 0.6rem;font-size:0.7rem;margin-top:0.3rem;" onclick="deleteInventoryItem('${currentSite}',${idx})"><i class="fas fa-trash"></i></button>` : ''}
-              </div>`;
-            });
-
-            html += `</div>
-            ${isGMOrManager ? `
-              <button class="btn btn-primary" onclick="addInventoryItem()" style="margin-top:0.5rem;"><i class="fas fa-plus"></i> Add Item</button>
-              <div style="margin-top:0.8rem;">
-                <label>Update Stock</label>
-                <div class="row2">
-                  <select id="stockItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;"><option value="">-- Select Item --</option>${siteItems.map((i,idx) => `<option value="${idx}">${i.name}</option>`).join('')}</select>
-                  <div style="display:flex;gap:0.5rem;">
-                    <input id="stockQty" type="number" placeholder="Qty" style="flex:1;padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
-                    <button class="btn btn-success" onclick="updateStockItem()"><i class="fas fa-sync"></i> Update</button>
-                  </div>
-                </div>
-              </div>
-            ` : ''}
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
-          `;
-            card.innerHTML = html;
-
-            window.editPrice = function(site, idx) {
-                const items = inventoryItems[site];
-                if (!items || !items[idx]) return;
-                const newPrice = prompt(`Edit price for ${items[idx].name}:`, items[idx].price);
-                if (newPrice !== null) {
-                    const p = parseFloat(newPrice);
-                    if (isNaN(p) || p < 0) { toast('Invalid price', 'error'); return; }
-                    items[idx].price = p;
-                    saveData();
-                    addAudit('Price Update', `Updated ${items[idx].name} price to UGX ${p}`);
-                    addActivity('system', `Price updated: ${items[idx].name} → UGX ${p}`);
-                    toast(`Price updated for ${items[idx].name}`, 'success');
-                    buildInventoryModal(card);
-                }
-            };
-
-            window.addInventoryItem = function() {
-                const name = prompt('Enter item name:');
-                if (!name) return;
-                const price = prompt('Enter unit price (UGX):');
-                if (price === null) return;
-                const p = parseFloat(price);
-                if (isNaN(p) || p <= 0) { toast('Invalid price', 'error'); return; }
-                const minStock = parseInt(prompt('Enter minimum stock level:', '0')) || 0;
-                if (!inventoryItems[currentSite]) inventoryItems[currentSite] = [];
-                inventoryItems[currentSite].push({ name: name.trim(), price: p, stock: 0, minStock });
-                saveData();
-                addAudit('Inventory Add', `Added item: ${name} at UGX ${p}`);
-                addActivity('system', `Added inventory item: ${name}`);
-                toast('Item added!', 'success');
-                buildInventoryModal(card);
-            };
-
-            window.updateStockItem = function() {
-                const idx = parseInt(document.getElementById('stockItemSelect').value);
-                const qty = parseFloat(document.getElementById('stockQty').value);
-                if (isNaN(idx) || !qty || qty < 0) { toast('Invalid input', 'error'); return; }
-                const items = inventoryItems[currentSite];
-                if (items && items[idx]) {
-                    items[idx].stock = (items[idx].stock || 0) + qty;
-                    saveData();
-                    addAudit('Stock Update', `Updated ${items[idx].name}: +${qty} units`);
-                    addActivity('system', `Updated stock: ${items[idx].name} +${qty}`);
-                    toast(`Stock updated! ${items[idx].name}: ${items[idx].stock}`, 'success');
-                    buildInventoryModal(card);
-                }
-            };
-
-            window.deleteInventoryItem = function(site, idx) {
-                if (!confirm('Delete this item?')) return;
-                inventoryItems[site].splice(idx, 1);
-                saveData();
-                addAudit('Inventory Delete', `Deleted item from ${site}`);
-                toast('Item deleted', 'warning');
-                buildInventoryModal(card);
-            };
-        }
-
-        // ── PRODUCTION Modal ──
-        function buildProductionModal(card) {
-            if (!canManageProduction()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Dispatch can manage production & materials.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const siteItems = getItemsForSite(currentSite);
-            const recentProd = productionLog.filter(p => p.site === currentSite).slice(-10).reverse();
-
-            let html = `<h3><i class="fas fa-industry"></i> Production & Materials - ${currentSite.toUpperCase()}</h3>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
-                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📦 Record Production</h4>
-                    <div class="row2" style="gap:0.5rem;">
-                        <select id="prodItemSelect" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;">
-                            <option value="">-- Select Item --</option>
-                            ${siteItems.map(i => `<option value="${i.name}">${i.name}</option>`).join('')}
-                        </select>
-                        <input id="prodQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
-                    </div>
-                    <button class="btn btn-primary" onclick="recordProductionStock()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-plus"></i> Add Production</button>
-                </div>
-                <div style="background:#f5f3f0;padding:1rem;border-radius:16px;">
-                    <h4 style="margin-bottom:0.5rem;font-size:0.9rem;">📥 Materials Received</h4>
-                    <div class="row2" style="gap:0.5rem;">
-                        <input id="matName" placeholder="Material name" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
-                        <input id="matQty" type="number" placeholder="Quantity" style="padding:0.5rem 1rem;border-radius:40px;border:1px solid #d6d2cc;" />
-                    </div>
-                    <button class="btn btn-success" onclick="recordMaterialsReceived()" style="margin-top:0.5rem;width:100%;"><i class="fas fa-box"></i> Record Received</button>
-                </div>
-            </div>
-            <div style="max-height:200px;overflow-y:auto;border-top:1px solid #efedea;padding-top:0.5rem;">
-                <h4 style="font-size:0.8rem;color:#555;margin-bottom:0.3rem;">📋 Recent Activity</h4>
-                ${recentProd.length ? recentProd.map(p => `
-                    <div class="audit-entry" style="font-size:0.8rem;">
-                        <span class="time">${new Date(p.timestamp).toLocaleString()}</span>
-                        <strong>${p.type}</strong>: ${p.item} x${p.qty}
-                        ${p.note ? `(${p.note})` : ''}
-                    </div>
-                `).join('') : '<div style="color:#888;font-size:0.8rem;padding:0.5rem;">No recent activity</div>'}
-            </div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-
-            card.innerHTML = html;
-
-            window.recordProductionStock = function() {
-                const item = document.getElementById('prodItemSelect').value;
-                const qty = parseFloat(document.getElementById('prodQty').value);
-                if (!item || !qty || qty <= 0) { toast('Select item and enter quantity', 'error'); return; }
-                const found = getItemsForSite(currentSite).find(i => i.name === item);
-                if (found) {
-                    found.stock = (found.stock || 0) + qty;
-                    productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Production', item, qty, note: 'Added to stock' });
-                    saveData();
-                    addAudit('Production', `Produced ${qty} units of ${item} at ${currentSite}`);
-                    addActivity('system', `Production: ${item} +${qty}`);
-                    toast(`✅ Production recorded: ${item} +${qty}`, 'success');
-                    buildProductionModal(card);
-                    renderTable();
-                } else {
-                    toast('Item not found in inventory', 'error');
-                }
-            };
-
-            window.recordMaterialsReceived = function() {
-                const name = document.getElementById('matName').value.trim();
-                const qty = parseFloat(document.getElementById('matQty').value);
-                if (!name || !qty || qty <= 0) { toast('Enter material name and quantity', 'error'); return; }
-                const items = inventoryItems[currentSite];
-                let found = items.find(i => i.name.toLowerCase() === name.toLowerCase());
-                if (found) {
-                    found.stock = (found.stock || 0) + qty;
-                } else {
-                    items.push({ name: name, price: 0, stock: qty, minStock: 0 });
-                }
-                productionLog.push({ timestamp: new Date().toISOString(), site: currentSite, type: 'Materials Received', item: name, qty, note: 'Added to inventory' });
-                saveData();
-                addAudit('Materials Received', `Received ${qty} units of ${name} at ${currentSite}`);
-                addActivity('system', `Materials received: ${name} +${qty}`);
-                toast(`✅ Materials recorded: ${name} +${qty}`, 'success');
-                buildProductionModal(card);
-                renderTable();
-            };
-        }
-
-        // ── USERS Modal ──
-        function buildUsersModal(card) {
-            if (!canManageUsers()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            let html = `<h3><i class="fas fa-users-cog"></i> User Management</h3>
-            <form id="userForm" style="background:#f5f3f0;padding:1.2rem;border-radius:20px;margin-bottom:1.5rem;">
-              <div class="row2">
-                <div><label>Username</label><input id="userUsername" placeholder="username" required /></div>
-                <div><label>Password</label><input id="userPassword" placeholder="password" required /></div>
-              </div>
-              <div class="row2">
-                <div><label>Full Name</label><input id="userName" placeholder="Full name" required /></div>
-                <div><label>Role</label><select id="userRole">
-                  <option value="gm">General Manager</option>
-                  <option value="manager">Manager</option>
-                  <option value="accountant">Accountant</option>
-                  <option value="cashier">Cashier</option>
-                  <option value="sales">Sales Agent</option>
-                  <option value="dispatch">Dispatch Agent</option>
-                </select></div>
-              </div>
-              <div><label>Sites (comma separated: workshop,ngetta,adyel)</label><input id="userSites" placeholder="workshop,ngetta" value="workshop" /></div>
-              <button type="submit" class="btn btn-primary" style="margin-top:0.8rem;"><i class="fas fa-user-plus"></i> Add User</button>
-            </form>
-
-            <h4 style="margin:1rem 0 0.5rem;">User Permissions</h4>
-            <div style="max-height:300px;overflow-y:auto;margin-bottom:1rem;">
-              <table style="font-size:0.8rem;min-width:auto;">
-                <thead><tr><th>User</th><th>Role</th><th style="text-align:center;">Permissions</th></tr></thead>
-                <tbody>
-          `;
-            users.forEach(u => {
-                const perms = userPermissions[u.username] || {};
-                const permCount = Object.values(perms).filter(v => v).length;
-                html += `<tr><td>${u.username}</td><td>${u.role}</td>
-              <td style="text-align:center;">
-                <button class="btn btn-sm" style="padding:0.1rem 0.8rem;font-size:0.7rem;" onclick="editPermissions('${u.username}')">
-                    <i class="fas fa-cog"></i> ${permCount > 0 ? '✅ ' + permCount : 'Set'}
-                </button>
-              </td></tr>`;
-            });
-            html += `</tbody></table></div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-            card.innerHTML = html;
-
-            document.getElementById('userForm').onsubmit = function(e) {
-                e.preventDefault();
-                const username = document.getElementById('userUsername').value.trim();
-                const password = document.getElementById('userPassword').value.trim();
-                const name = document.getElementById('userName').value.trim();
-                const role = document.getElementById('userRole').value;
-                const sites = document.getElementById('userSites').value.split(',').map(s => s.trim()).filter(Boolean);
-                if (!username || !password || !name || !sites.length) { toast('Fill all fields', 'error'); return; }
-                if (users.find(u => u.username === username)) { toast('Username exists', 'error'); return; }
-                users.push({ username, password, role, name, sites });
-                saveData();
-                addAudit('User Add', `Added user: ${username} (${role})`);
-                addActivity('system', `Added user: ${username}`);
-                toast('User added!', 'success');
-                buildUsersModal(card);
-            };
-
-            window.editPermissions = function(username) {
-                const perms = userPermissions[username] || {};
-                const actions = ['create_sale', 'create_expense', 'clear_invoice', 'manage_inventory', 'manage_customers', 'view_reports',
-                    'delete_transactions', 'edit_transactions', 'view_audit', 'dispatch', 'manage_production', 'request_refund', 'approve_refund', 'cancel_invoice'];
-                let currentPerms = {};
-                let msg = `🔐 Set permissions for ${username}\n\nCurrent permissions:\n`;
-                actions.forEach(a => {
-                    const status = perms[a] ? '✅' : '❌';
-                    msg += `${status} ${a}\n`;
-                    currentPerms[a] = perms[a] || false;
-                });
-                msg += '\nEnter which actions to enable (comma separated):\n' + actions.join(', ');
-                const input = prompt(msg, actions.filter(a => perms[a]).join(', '));
-                if (input !== null) {
-                    const enabled = input.split(',').map(s => s.trim());
-                    actions.forEach(a => { userPermissions[username] = userPermissions[username] || {}; userPermissions[username][a] = enabled.includes(a); });
-                    saveData();
-                    addAudit('Permissions Update', `Updated permissions for ${username}`);
-                    toast('Permissions updated!', 'success');
-                    buildUsersModal(card);
-                }
-            };
-        }
-
-        // ── AUDIT Modal ──
-        function buildAuditModal(card) {
-            if (!canViewAudit()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view audit logs.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            const recentLogs = auditLog.slice(-50).reverse();
-            let html = `<h3><i class="fas fa-history"></i> Audit Log</h3>
-            <div style="max-height:400px;overflow-y:auto;">`;
-            recentLogs.forEach(log => {
-                html += `<div class="audit-entry">
-              <span class="time">${new Date(log.timestamp).toLocaleString()}</span>
-              <strong>${log.user}</strong> - ${log.action}
-              <span style="color:#888;font-size:0.8rem;">${log.details || ''}</span>
-              ${log.site ? `<span class="badge-site ${log.site}" style="font-size:0.6rem;">${log.site}</span>` : ''}
-            </div>`;
-            });
-            html += `</div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button>
-            ${isGM() ? `<button class="btn btn-danger" onclick="clearAudit()">Clear Log</button>` : ''}</div>`;
-            card.innerHTML = html;
-
-            window.clearAudit = function() {
-                if (confirm('Clear all audit logs?')) {
-                    auditLog = [];
-                    saveData();
-                    toast('Audit log cleared', 'warning');
-                    buildAuditModal(card);
-                }
-            };
-        }
-
-        // ── SETTINGS Modal ──
-        function buildSettingsModal(card) {
-            if (!isGM()) {
-                card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can access settings.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
-                return;
-            }
-
-            card.innerHTML = `
-            <h3><i class="fas fa-cog"></i> System Settings</h3>
-            <div class="settings-group">
-                <h4>🔔 Notifications</h4>
-                <div class="toggle-container">
-                    <div class="toggle ${systemSettings.enableNotifications ? 'active' : ''}" onclick="toggleSetting('enableNotifications')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                    <span class="toggle-label">Enable Notifications</span>
-                </div>
-                <div class="toggle-container">
-                    <div class="toggle ${systemSettings.lowStockAlert ? 'active' : ''}" onclick="toggleSetting('lowStockAlert')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                    <span class="toggle-label">Low Stock Alerts</span>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h4>📦 Inventory</h4>
-                <div class="toggle-container">
-                    <div class="toggle ${systemSettings.allowNegativeStock ? 'active' : ''}" onclick="toggleSetting('allowNegativeStock')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                    <span class="toggle-label">Allow Negative Stock</span>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h4>💾 Backup</h4>
-                <div class="toggle-container">
-                    <div class="toggle ${systemSettings.autoBackup ? 'active' : ''}" onclick="toggleSetting('autoBackup')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                    <span class="toggle-label">Auto Backup</span>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h4>💰 Financial</h4>
-                <div class="row2">
-                    <div><label>Daily Expense Limit (UGX)</label>
-                        <input id="expenseLimitSetting" type="number" value="${dailyExpenseLimit}" />
-                        <button class="btn btn-primary" onclick="updateExpenseLimitSetting()" style="margin-top:0.5rem;"><i class="fas fa-save"></i> Update Limit</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>
-          `;
-
-            window.toggleSetting = function(key) {
-                systemSettings[key] = !systemSettings[key];
-                saveData();
-                toast(`${key} set to ${systemSettings[key] ? 'ON' : 'OFF'}`, 'success');
-                buildSettingsModal(card);
-            };
-
-            window.updateExpenseLimitSetting = function() {
-                const newLimit = parseFloat(document.getElementById('expenseLimitSetting').value);
-                if (isNaN(newLimit) || newLimit < 0) { toast('Invalid limit', 'error'); return; }
-                dailyExpenseLimit = newLimit;
-                saveData();
-                addAudit('Expense Limit', `Updated daily expense limit to UGX ${newLimit}`);
-                toast('Expense limit updated!', 'success');
-                buildSettingsModal(card);
-            };
-        }
-
         // ═══════════════════════════════════════════════════════════════
         // HELPERS
         // ═══════════════════════════════════════════════════════════════
@@ -3318,21 +3448,6 @@
             }
         }
 
-        // ── BACKUP ──
-        function exportBackup() {
-            const data = { transactions, auditLog, loadingOrders, refundRequests, productionLog, nextInvoiceId, nextReceiptId, nextCustomerId, inventory: inventoryItems, users, customers, userPermissions, dailyExpenseLimit, systemSettings, exportedAt: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `kajana_backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            addAudit('Backup', 'Full system backup downloaded');
-            addActivity('system', 'System backup downloaded');
-            toast('Backup downloaded!', 'success');
-        }
-
         // ── SAVE TRANSACTION ──
         function saveTransaction(type) {
             const canChooseSite = isGM();
@@ -3393,9 +3508,16 @@
 
             const stock = getItemStock(site, item);
             if (qty > stock && stock > 0 && !systemSettings.allowNegativeStock) {
-                if (!confirm(`⚠️ Only ${stock} units in stock. Continue?`)) return;
+                showConfirm('Low Stock', `⚠️ Only ${stock} units in stock. Continue with the sale?`, 'warning', function() {
+                    proceedWithSale(site, item, qty, amount, paymentType, customerName, customerContact, customerAddress, customerCompany, docNumber, customerId);
+                });
+                return;
             }
 
+            proceedWithSale(site, item, qty, amount, paymentType, customerName, customerContact, customerAddress, customerCompany, docNumber, customerId);
+        }
+
+        function proceedWithSale(site, item, qty, amount, paymentType, customerName, customerContact, customerAddress, customerCompany, docNumber, customerId) {
             const notes = document.getElementById('modalNotes')?.value || '';
 
             const trans = {
@@ -3496,8 +3618,8 @@
         window.filterCustomers = filterCustomers;
 
         renderTable();
-        console.log('✅ Kajana Enterprises Ltd');
-        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} unified customers`);
+        console.log('✅ Kajana Enterprises Ltd v11.0 - Complete System');
+        console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} customers`);
     </script>
 </body>
 </html>
