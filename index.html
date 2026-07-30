@@ -982,6 +982,7 @@
             const month = today.slice(0, 7);
             
             // TODAY'S FINANCIAL CALCULATIONS
+            // Today's Cash Sales: Cash payments (walk-in customers paying cash)
             const todayCashSales = siteData.filter(t => 
                 t.date === today && 
                 (t.docType === 'invoice' || t.docType === 'receipt') && 
@@ -991,6 +992,7 @@
                 t.paid === true
             ).reduce((s, o) => s + o.amount, 0);
             
+            // Today's Customer Deposits: Customer account payments/deposits
             const todayCustomerDeposits = siteData.filter(t => 
                 t.date === today && 
                 (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && 
@@ -1000,14 +1002,24 @@
                 t.paid === true
             ).reduce((s, o) => s + o.amount, 0);
             
+            // Today's Expenses
             const todayExpenses = siteData.filter(t => 
                 t.date === today && 
                 t.docType === 'expense' && 
                 t.status !== 'cancelled'
             ).reduce((s, o) => s + o.amount, 0);
             
-            const cashAtHand = todayCashSales + todayCustomerDeposits - todayExpenses;
+            // Today's Refunds - SUBTRACT from Cash at Hand
+            const todayRefunds = siteData.filter(t => 
+                t.date === today && 
+                t.docType === 'refund' && 
+                t.status !== 'cancelled'
+            ).reduce((s, o) => s + o.amount, 0);
             
+            // Cash at Hand = Cash Sales + Customer Deposits - Expenses - Refunds
+            const cashAtHand = todayCashSales + todayCustomerDeposits - todayExpenses + todayRefunds;
+            
+            // Other metrics
             const todayTotalSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const monthSales = siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
             const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense' && t.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
@@ -1036,19 +1048,21 @@
                 `;
             } else if (role === 'cashier') {
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses - Refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.paid).length} transactions</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
                     <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Today's Refunds</div><div class="value">UGX ${Math.abs(todayRefunds).toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.docType === 'refund' && t.status !== 'cancelled').length} refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Pending Refunds</div><div class="value">${pendingRefunds}</div><div class="sub">Awaiting accountant approval</div></div>
                 `;
             } else if (role === 'accountant') {
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses - Refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
                     <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
+                    <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Today's Refunds</div><div class="value">UGX ${Math.abs(todayRefunds).toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.docType === 'refund' && t.status !== 'cancelled').length} refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">📋 Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready for loading' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
@@ -1056,10 +1070,11 @@
                 `;
             } else {
                 statsHTML = `
-                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses</div></div>
+                    <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses - Refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">Today's Sales</div><div class="value">UGX ${todayTotalSales.toLocaleString()}</div><div class="sub">${todayTotalSales > 0 ? '📈 Active' : 'No sales today'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Sales</div><div class="value">UGX ${monthSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled').length} invoices</div></div>
                     <div class="stat-card clickable" onclick="openModal('report')"><div class="label">Month Expenses</div><div class="value">UGX ${monthExp.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense' && t.status !== 'cancelled').length} entries</div></div>
+                    <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Today's Refunds</div><div class="value">UGX ${Math.abs(todayRefunds).toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.docType === 'refund' && t.status !== 'cancelled').length} refunds</div></div>
                     <div class="stat-card clickable" onclick="openModal('dispatch')"><div class="label">Ready for Dispatch</div><div class="value">${clearedForDispatch}</div><div class="sub">${clearedForDispatch > 0 ? 'Cleared/Partial ready' : 'No cleared documents'}</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💰 Customer Deposits</div><div class="value">UGX ${totalDepositBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance > 0).length} customers</div></div>
                     <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">💳 Customer Credits</div><div class="value">UGX ${totalCreditBalance.toLocaleString()}</div><div class="sub">${customers.filter(c => c.balance < 0).length} customers</div></div>
@@ -3283,14 +3298,15 @@
                 showConfirm('Approve Refund', `Approve refund for ${request.docNumber} - UGX ${request.amount.toLocaleString()}?`, 'success', function() {
                     request.status = 'approved';
                     
+                    // Create refund transaction with NEGATIVE amount to reduce Cash at Hand
                     const refund = {
                         id: nextInvoiceId++,
                         date: new Date().toISOString().split('T')[0],
                         site: request.site,
                         item: 'REFUND: ' + request.item,
                         qty: request.qty,
-                        price: -request.amount,
-                        amount: -request.amount,
+                        price: -request.amount, // Negative price
+                        amount: -request.amount, // Negative amount to reduce Cash at Hand
                         customer: request.customer || 'Refund',
                         contact: '',
                         address: '',
@@ -3314,15 +3330,16 @@
                     const original = transactions.find(t => t.id === request.invoiceId);
                     if (original) {
                         original.status = 'refund';
+                        // Return stock
                         updateStock(original.site, original.item, original.qty, 'add');
                     }
                     
                     saveData();
-                    addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()}`);
-                    addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name}`);
+                    addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()} (reduces Cash at Hand)`);
+                    addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name} - UGX ${request.amount.toLocaleString()}`);
                     renderTable();
                     buildRefundApprovalModal(card);
-                    toast(`✔️ Refund ${request.docNumber} approved!`, 'success');
+                    toast(`✔️ Refund ${request.docNumber} approved! UGX ${request.amount.toLocaleString()} deducted from Cash at Hand`, 'success');
                 });
             };
 
@@ -4451,7 +4468,7 @@
         window.generateBarcodeSVG = generateBarcodeSVG;
 
         renderTable();
-        console.log('✔️ Kajana Enterprises Ltd - Red Theme with Auto-Price on Item Select');
+        console.log('✔️ Kajana Enterprises Ltd - Refunds now reduce Cash at Hand');
         console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} customers`);
     </script>
 </body>
