@@ -17,7 +17,6 @@
     ::-webkit-scrollbar-thumb { background: var(--yellow); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #e8c815; }
 
-    /* LOGIN */
     .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%); padding: 1rem; }
     .login-card { background: #fff; padding: 2.8rem 3.2rem; border-radius: 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-width: 420px; width: 100%; border-top: 8px solid var(--yellow); }
     .login-card h1 { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
@@ -35,10 +34,8 @@
     .flag-stripes .r { background: var(--red); }
     .demo-creds { font-size: 0.7rem; color: #888; margin-top: 1rem; text-align: center; line-height: 1.7; }
 
-    /* LAYOUT */
     .container { max-width: 1440px; margin: 0 auto; padding: 1.5rem 2rem; }
 
-    /* HEADER */
     .header { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0 1.2rem 0; border-bottom: 3px solid var(--yellow); flex-wrap: wrap; gap: 1rem; }
     .logo h1 { font-weight: 700; font-size: 1.9rem; letter-spacing: -0.5px; }
     .logo h1 span { color: var(--red); background: var(--yellow); padding: 0.1rem 0.8rem; border-radius: 40px; font-size: 1rem; margin-left: 0.3rem; }
@@ -49,7 +46,6 @@
     .user-badge .site-tag { background: var(--yellow); color: var(--black); font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.9rem; border-radius: 30px; }
     .user-badge .logout-btn { color: var(--red); cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
 
-    /* SITE SELECTOR */
     .site-selector { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.2rem 0 1.8rem 0; background: #fff; padding: 0.5rem 1.2rem; border-radius: 80px; box-shadow: var(--shadow); }
     .site-selector.hidden { display: none; }
     .site-btn { background: transparent; border: none; padding: 0.5rem 1.4rem; border-radius: 40px; font-weight: 600; font-size: 0.9rem; color: #3a3a3a; transition: var(--transition); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -58,7 +54,6 @@
     .site-btn.active i { color: var(--yellow); }
     .site-btn:hover:not(.active) { background: #ecebe7; }
 
-    /* STATS */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem; }
     .stat-card { background: #fff; padding: 1rem 1.5rem; border-radius: 24px; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); cursor: default; position: relative; overflow: hidden; }
     .stat-card.clickable { cursor: pointer; }
@@ -67,7 +62,6 @@
     .stat-card .value { font-weight: 700; font-size: 1.5rem; margin-top: 0.1rem; }
     .stat-card .sub { font-size: 0.7rem; color: #888; }
 
-    /* TOOLBAR */
     .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin: 1.5rem 0 1.2rem 0; gap: 0.8rem; }
     .toolbar .left { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     .btn { background: #fff; border: 1px solid #d0ceca; padding: 0.45rem 1.3rem; border-radius: 40px; font-weight: 500; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -98,7 +92,6 @@
     .btn-indigo { background: #6610f2; border-color: #6610f2; color: #fff; }
     .btn-indigo:hover { background: #520dc2; }
 
-    /* TABLE */
     .table-wrap { background: #fff; border-radius: var(--radius); padding: 0.2rem; box-shadow: var(--shadow); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 700px; }
     th { text-align: left; padding: 0.9rem 1rem 0.5rem 1rem; color: #3d3d3d; font-weight: 600; border-bottom: 2px solid #efedea; background: #faf8f5; }
@@ -127,7 +120,6 @@
     .action-icons i.text-success:hover { color: #1a7a3a; }
     .action-icons i.text-danger:hover { color: var(--red); }
 
-    /* MODAL */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 999; padding: 1rem; }
     .modal-card { background: #fff; max-width: 900px; width: 100%; padding: 2rem 2.5rem; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-top: 8px solid var(--yellow); max-height: 92vh; overflow-y: auto; }
     .modal-card h3 { font-weight: 700; margin-bottom: 1.5rem; display: flex; gap: 10px; align-items: center; }
@@ -141,7 +133,6 @@
     .modal-divider { border: none; border-top: 2px dashed #ddd; margin: 1.2rem 0; }
     .modal-card .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
 
-    /* TOGGLE SWITCH */
     .toggle-container { display: flex; align-items: center; gap: 0.8rem; margin: 0.3rem 0; }
     .toggle { position: relative; width: 50px; height: 26px; background: #ccc; border-radius: 30px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
     .toggle.active { background: #1a7a3a; }
@@ -149,7 +140,6 @@
     .toggle.active .toggle-slider { left: 27px; }
     .toggle-label { font-size: 0.85rem; }
 
-    /* INVENTORY DISPLAY */
     .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; margin: 0.5rem 0; }
     .inv-item { background: #f5f3f0; padding: 0.6rem 0.8rem; border-radius: 12px; text-align: center; border-left: 4px solid var(--yellow); transition: var(--transition); cursor: pointer; }
     .inv-item:hover { transform: scale(1.03); box-shadow: var(--shadow); }
@@ -160,14 +150,12 @@
     .stock-section { margin-bottom: 1.5rem; }
     .stock-section h4 { font-size: 0.9rem; color: #555; margin-bottom: 0.5rem; }
 
-    /* SETTINGS */
     .settings-group { background: #f5f3f0; padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
     .settings-group h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
     .settings-group .perm-item { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid #efedea; }
     .settings-group .perm-item:last-child { border-bottom: none; }
     .settings-group .perm-item .perm-label { font-size: 0.8rem; }
 
-    /* CUSTOMER CARDS */
     .customer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
     .customer-card { background: #fff; border-radius: 16px; padding: 1rem 1.2rem; box-shadow: var(--shadow); border-left: 6px solid var(--yellow); transition: var(--transition); }
     .customer-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
@@ -180,7 +168,6 @@
     .customer-card .status-badge.credit { background: #d4edda; color: #155724; }
     .customer-card .status-badge.neutral { background: #e9ecef; color: #6c757d; }
 
-    /* SEARCH DROPDOWN */
     .searchable-dropdown { position: relative; }
     .searchable-dropdown input[type="text"] { width: 100%; padding: 0.6rem 1rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; font-size: 0.9rem; }
     .searchable-dropdown input[type="text"]:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
@@ -192,16 +179,13 @@
     .searchable-dropdown .dropdown-list .dropdown-item.add-new { background: #e8f5e9; font-weight: 600; border-top: 2px solid var(--yellow); }
     .searchable-dropdown .dropdown-list .no-results { padding: 0.5rem 1rem; color: #888; font-size: 0.85rem; text-align: center; }
 
-    /* NEW CUSTOMER FORM */
     .new-customer-form { background: #f8f9fa; padding: 1rem; border-radius: 16px; margin-top: 0.5rem; border: 1px dashed #ccc; display: none; }
     .new-customer-form.show { display: block; }
 
-    /* CUSTOMER SEARCH */
     .customer-search-container { margin-bottom: 1rem; }
     .customer-search-container input { width: 100%; padding: 0.6rem 1rem; border-radius: 60px; border: 1px solid #d6d2cc; background: #fcfbf9; font-size: 0.9rem; }
     .customer-search-container input:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
 
-    /* FOOTER */
     .footer-flag { margin-top: 2.5rem; padding: 1rem 0; border-top: 2px solid var(--yellow); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.8rem; color: #3c3c3c; }
     .flag-stripes-mini { display: flex; gap: 2px; }
     .flag-stripes-mini span { width: 36px; height: 10px; border-radius: 6px; display: inline-block; }
@@ -209,7 +193,6 @@
     .flag-stripes-mini .y { background: var(--yellow); }
     .flag-stripes-mini .r { background: var(--red); }
 
-    /* TOAST */
     .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.6rem; }
     .toast { padding: 0.9rem 1.8rem; border-radius: 60px; background: var(--black); color: #fff; box-shadow: var(--shadow-hover); font-weight: 500; font-size: 0.9rem; animation: slideIn 0.3s ease; max-width: 400px; }
     .toast.success { background: #1a7a3a; }
@@ -217,7 +200,6 @@
     .toast.warning { background: #b8870a; }
     @keyframes slideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* CHARTS */
     .chart-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
     .chart-box { background: #fff; padding: 1.2rem; border-radius: 20px; box-shadow: var(--shadow); }
     .chart-box h4 { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
@@ -231,11 +213,9 @@
     .activity-feed { max-height: 200px; overflow-y: auto; }
     .activity-item { padding: 0.5rem 0.8rem; border-bottom: 1px solid #efedea; font-size: 0.8rem; display: flex; align-items: center; gap: 0.8rem; }
 
-    /* RESPONSIVE */
     @media (max-width: 768px) { .container { padding: 1rem; } .login-card { padding: 2rem 1.5rem; } .modal-card { padding: 1.5rem; } .modal-card .row2, .modal-card .row3 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: start; } .user-badge { width: 100%; justify-content: center; } .site-selector { border-radius: 20px; justify-content: center; } .toolbar .left { width: 100%; justify-content: center; } .stats-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
 
-    /* REPORT STYLES */
     .report-filters { background: #f5f3f0; padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; }
     .report-filters .filter-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
     .report-filters select, .report-filters input { padding: 0.5rem 1rem; border-radius: 40px; border: 1px solid #d6d2cc; background: #fff; font-size: 0.9rem; width: 100%; }
@@ -252,7 +232,6 @@
     .report-summary .summary-item .value { font-size: 1.2rem; font-weight: 700; }
     .report-chart-container { height: 250px; margin: 1rem 0; display: none; background: #fff; border-radius: 16px; padding: 1rem; }
 
-    /* CONFIRM DIALOG - THEMED */
     .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 1rem; }
     .confirm-box { background: #fff; max-width: 440px; width: 100%; padding: 2.5rem 2.5rem 2rem; border-radius: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); border-top: 8px solid var(--yellow); text-align: center; animation: confirmPop 0.3s ease; }
     @keyframes confirmPop { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -274,7 +253,6 @@
     .confirm-box .btn-group .btn-confirm-warning { background: #b8870a; border-color: #b8870a; color: #fff; }
     .confirm-box .btn-group .btn-confirm-warning:hover { background: #9a7408; }
 
-    /* DISPATCH NOTE PRINT STYLES - REDESIGNED */
     .dispatch-note { font-family: 'Courier New', monospace; padding: 20px; max-width: 700px; margin: 0 auto; background: #fff; border: 2px solid #000; border-radius: 8px; position: relative; }
     .dispatch-note .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
     .dispatch-note .header h2 { font-size: 20px; margin: 0; letter-spacing: 2px; }
@@ -296,7 +274,6 @@
     .dispatch-note .tracking-id { font-size: 10px; color: #666; text-align: center; margin-top: 3px; }
     .dispatch-note .clearance-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 60px; font-weight: bold; color: rgba(0,0,0,0.08); letter-spacing: 10px; pointer-events: none; white-space: nowrap; }
 
-    /* MULTI-ITEM SALE STYLES - RED THEME */
     .item-row { background: #fff5f5; padding: 12px 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--red); position: relative; border: 1px solid #fde2e2; }
     .item-row .remove-item { position: absolute; top: 8px; right: 12px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
     .item-row .remove-item:hover { transform: scale(1.1); }
@@ -311,12 +288,10 @@
     .add-item-btn { background: var(--red); color: #fff; border: none; padding: 0.5rem 1.5rem; border-radius: 40px; font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
     .add-item-btn:hover { background: #b3151d; transform: translateY(-2px); }
     .item-counter { font-size: 0.75rem; color: #ffcccc; margin-left: 0.5rem; }
-
     .edit-badge { background: #6f42c1; color: #fff; padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.6rem; margin-left: 0.3rem; }
   </style>
 </head>
 <body>
-  <!-- LOGIN -->
   <div id="loginPage" class="login-page">
     <div class="login-card">
       <h1>⛰️ Kajana <span>Enterprises Ltd</span></h1>
@@ -338,7 +313,6 @@
     </div>
   </div>
 
-  <!-- THEMED CONFIRM DIALOG -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
       <div class="icon" id="confirmIcon">⚠️</div>
@@ -351,7 +325,6 @@
     </div>
   </div>
 
-  <!-- MAIN APP -->
   <div id="appContainer" class="container hidden">
     <div class="header">
       <div class="logo">
@@ -527,7 +500,6 @@
       { id: 6, name: 'David Otieno', contact: '+256 700 666', email: 'david@otieno.com', address: 'Adyel', company: 'Otieno Constructions', balance: 2500000 },
     ];
 
-    // ── Confirm Dialog ──
     let confirmCallback = null;
     let confirmData = null;
 
@@ -579,7 +551,6 @@
       if (cb) cb(data);
     }
 
-    // ── Data Functions ──
     function loadData() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -717,7 +688,6 @@
       saveData();
     }
 
-    // ── Initialize Data ──
     if (!loadData()) {
       seedData();
     } else {
@@ -731,7 +701,6 @@
       }
     }
 
-    // ── Helpers ──
     function getItemsForSite(site) { return inventoryItems[site] || []; }
     function getItemPrice(site, name) { const found = getItemsForSite(site).find(i => i.name === name); return found ? found.price : 0; }
     function getItemStock(site, name) { const found = getItemsForSite(site).find(i => i.name === name); return found ? found.stock || 0 : 0; }
@@ -760,7 +729,6 @@
       setTimeout(() => { el.remove(); }, 4000);
     }
 
-    // ── Generate Tracking ID for Dispatch Note ──
     function generateTrackingId(trans) {
       const prefix = 'KJN';
       const date = new Date().toISOString().slice(2, 10).replace(/-/g, '');
@@ -769,7 +737,6 @@
       return `${prefix}-${date}-${docPart}-${random}`;
     }
 
-    // ── Generate QR/SVG Barcode ──
     function generateBarcodeSVG(trackingId) {
       const chars = trackingId.split('');
       let bars = '';
@@ -795,7 +762,6 @@
       `;
     }
 
-    // ── Role Detection ──
     function getUserRole() { return currentUser ? currentUser.role : null; }
     function isGM() { return getUserRole() === 'gm'; }
     function isManager() { return getUserRole() === 'manager'; }
@@ -825,10 +791,6 @@
     function canEditPrices() { return isGM() || isManager(); }
     function canViewEReceipt() { return isGM() || isManager(); }
     function canBackup() { return isGM(); }
-
-    // ═══════════════════════════════════════════════════════════════
-    // LOGIN
-    // ═══════════════════════════════════════════════════════════════
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -871,7 +833,6 @@
         b.classList.toggle('active', b.dataset.site === currentSite);
       });
 
-      // Show/hide buttons based on role
       document.getElementById('btnNewSale').style.display = canCreateSale() ? 'inline-flex' : 'none';
       document.getElementById('btnExpense').style.display = canCreateExpense() ? 'inline-flex' : 'none';
       document.getElementById('btnDispatch').style.display = canDispatch() ? 'inline-flex' : 'none';
@@ -939,10 +900,6 @@
       });
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // RENDER FUNCTIONS
-    // ═══════════════════════════════════════════════════════════════
-
     function renderStock() {
       const grid = document.getElementById('stockGrid');
       const items = getItemsForSite(currentSite);
@@ -981,8 +938,7 @@
       const today = new Date().toISOString().split('T')[0];
       const month = today.slice(0, 7);
       
-      // TODAY'S FINANCIAL CALCULATIONS (FIXED)
-      // Today's Cash Sales: Cash payments (walk-in customers paying cash) - only cleared/completed cash sales
+      // TODAY'S FINANCIAL CALCULATIONS - FIXED: includes cleared and completed sales
       const todayCashSales = siteData.filter(t => 
         t.date === today && 
         (t.docType === 'invoice' || t.docType === 'receipt') && 
@@ -993,7 +949,6 @@
         t.paid === true
       ).reduce((s, o) => s + o.amount, 0);
       
-      // Today's Customer Deposits: Customer account payments/deposits
       const todayCustomerDeposits = siteData.filter(t => 
         t.date === today && 
         (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && 
@@ -1004,14 +959,12 @@
         t.paid === true
       ).reduce((s, o) => s + o.amount, 0);
       
-      // Today's Expenses
       const todayExpenses = siteData.filter(t => 
         t.date === today && 
         t.docType === 'expense' && 
         t.status !== 'cancelled'
       ).reduce((s, o) => s + o.amount, 0);
       
-      // Today's Refunds - SUBTRACT from Cash at Hand (only approved refunds)
       const todayRefunds = siteData.filter(t => 
         t.date === today && 
         t.docType === 'refund' && 
@@ -1019,10 +972,8 @@
         t.status !== 'cancelled'
       ).reduce((s, o) => s + o.amount, 0);
       
-      // Cash at Hand = Cash Sales + Customer Deposits - Expenses - Refunds (refunds are negative)
       const cashAtHand = todayCashSales + todayCustomerDeposits - todayExpenses + todayRefunds;
       
-      // Other metrics
       const todayTotalSales = siteData.filter(t => t.date === today && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
       const monthSales = siteData.filter(t => t.date.startsWith(month) && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.status !== 'refund').reduce((s, o) => s + o.amount, 0);
       const monthExp = siteData.filter(t => t.date.startsWith(month) && t.docType === 'expense' && t.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
@@ -1052,7 +1003,7 @@
       } else if (role === 'cashier') {
         statsHTML = `
           <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💵 Cash at Hand</div><div class="value">UGX ${cashAtHand.toLocaleString()}</div><div class="sub">Cash Sales + Deposits - Expenses - Refunds</div></div>
-          <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Cash Sales</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.paid && (t.status === 'cleared' || t.status === 'completed')).length} transactions</div></div>
+          <div class="stat-card clickable" onclick="openModal('sale')"><div class="label">💰 Today's Cash Sale</div><div class="value">UGX ${todayCashSales.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.payment === 'cash' && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled' && t.paid && (t.status === 'cleared' || t.status === 'completed')).length} transactions</div></div>
           <div class="stat-card clickable" onclick="openModal('customers')"><div class="label">🏦 Today's Customer Deposits</div><div class="value">UGX ${todayCustomerDeposits.toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && (t.payment === 'customer' || t.payment === 'deposit') && (t.docType === 'invoice' || t.docType === 'receipt' || t.docType === 'adjustment') && t.status !== 'cancelled' && t.paid).length} deposits</div></div>
           <div class="stat-card clickable" onclick="openModal('expense')"><div class="label">📊 Today's Expenses</div><div class="value">UGX ${todayExpenses.toLocaleString()}</div><div class="sub">Limit: UGX ${dailyExpenseLimit.toLocaleString()} | ${todayExpenses <= dailyExpenseLimit ? '✔️ Within limit' : '⚠️ Exceeds limit'}</div></div>
           <div class="stat-card clickable" onclick="openModal('refundRequests')"><div class="label">🔄 Today's Refunds</div><div class="value">UGX ${Math.abs(todayRefunds).toLocaleString()}</div><div class="sub">${siteData.filter(t => t.date === today && t.docType === 'refund' && t.status === 'refund' && t.status !== 'cancelled').length} refunds</div></div>
@@ -1176,10 +1127,6 @@
       if (isGM()) renderCharts();
       if (isGM()) updateActivityFeed();
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    // EDIT TRANSACTION - FULL EDIT FOR GM AND MANAGER
-    // ═══════════════════════════════════════════════════════════════
 
     function editTransaction(id) {
       if (!canEditTransaction()) {
@@ -1541,13 +1488,11 @@
         }
       }
 
-      // Reverse old stock changes
       const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
       oldItems.forEach(item => {
         updateStock(trans.site, item.item, item.qty, 'add');
       });
 
-      // Reverse old customer balance
       if (trans.customerId && (trans.payment === 'customer' || trans.payment === 'deposit')) {
         const oldCustomer = customers.find(c => c.id === trans.customerId);
         if (oldCustomer) {
@@ -1559,12 +1504,10 @@
         }
       }
 
-      // Apply new stock changes
       items.forEach(item => {
         updateStock(site, item.item, item.qty, 'subtract');
       });
 
-      // Apply new customer balance
       if (customerId && (paymentType === 'customer' || paymentType === 'deposit')) {
         const customer = customers.find(c => c.id === customerId);
         if (customer) {
@@ -1608,10 +1551,6 @@
       closeModal();
       toast(`✔️ ${trans.docNumber} updated successfully!`, 'success');
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    // REDESIGNED DISPATCH NOTE - NO FINANCIALS, WITH QR/BARCODE
-    // ═══════════════════════════════════════════════════════════════
 
     function printDispatchNote(trans) {
       const today = new Date().toISOString().split('T')[0];
@@ -1759,10 +1698,6 @@
       printWindow.document.close();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // CHARTS
-    // ═══════════════════════════════════════════════════════════════
-
     let chartInstances = {};
 
     function renderCharts() {
@@ -1806,10 +1741,6 @@
       });
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // MODAL SYSTEM
-    // ═══════════════════════════════════════════════════════════════
-
     function openModal(type) {
       const overlay = document.getElementById('modalOverlay');
       const card = document.getElementById('modalCard');
@@ -1835,7 +1766,6 @@
 
     function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-    // ── SALE Modal (Multi-Item Support - RED THEME) ──
     function buildSaleModal(card) {
       if (!canCreateSale()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create sales. Only Sales Agents, Managers, and GM can create sales.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -1937,7 +1867,6 @@
         </form>
       `;
 
-      // Initialize with first item row
       setTimeout(() => {
         addSaleItemRow();
         const site = document.getElementById('modalSite').value;
@@ -2093,7 +2022,6 @@
         }
       };
 
-      // Sale item functions - RED THEME with auto-price
       window.addSaleItemRow = function() {
         const container = document.getElementById('itemsContainer');
         const site = document.getElementById('modalSite').value;
@@ -2168,7 +2096,6 @@
         document.getElementById('itemCounter').textContent = `(${count})`;
       };
 
-      // Auto-populate price when item is selected
       window.populateSaleItemSelects = function(site) {
         const selects = document.querySelectorAll('.sale-item-select');
         const items = getItemsForSite(site);
@@ -2180,10 +2107,8 @@
             const selected = currentValue === item.name ? 'selected' : '';
             select.innerHTML += `<option value="${item.name}" data-price="${item.price}" data-stock="${stock}" ${selected}>${item.name} (UGX ${item.price.toLocaleString()}) - Stock: ${stock}</option>`;
           });
-          // If there was a selected value, trigger the change to populate price
           if (currentValue) {
             select.value = currentValue;
-            // Find the option and set price
             const option = select.querySelector(`option[value="${currentValue}"]`);
             if (option) {
               const price = option.dataset.price || 0;
@@ -2191,7 +2116,6 @@
               const priceInput = row.querySelector('.sale-item-price');
               if (priceInput) {
                 priceInput.value = price;
-                // Recalculate total
                 const qtyInput = row.querySelector('.sale-item-qty');
                 const qty = parseFloat(qtyInput.value) || 1;
                 const total = qty * price;
@@ -2203,7 +2127,6 @@
         calculateSaleGrandTotal();
       };
 
-      // Override the select change to auto-populate price
       document.addEventListener('change', function(e) {
         if (e.target.classList.contains('sale-item-select')) {
           const select = e.target;
@@ -2247,7 +2170,6 @@
       });
     }
 
-    // ── Save Multi-Item Sale ──
     function saveMultiItemSale() {
       const canChooseSite = isGM();
       const site = canChooseSite ? document.getElementById('modalSite').value : currentSite;
@@ -2382,7 +2304,6 @@
       toast(`✔️ Invoice ${docNumber} saved! Total: UGX ${totalAmount.toLocaleString()}`, 'success');
     }
 
-    // ── ADJUST BALANCE MODAL ──
     function buildAdjustBalanceModal(card) {
       const customerOptions = customers.map(c => {
         const balanceDisplay = c.balance >= 0 ? 'UGX ' + c.balance.toLocaleString() : 'UGX -' + Math.abs(c.balance).toLocaleString();
@@ -2404,7 +2325,7 @@
           </div>
           <div id="customerInfo" style="background:#f5f3f0;padding:0.8rem 1.2rem;border-radius:16px;margin:0.5rem 0;font-size:0.9rem;"></div>
           <div class="row2">
-            <div><label> Opening Balance (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
+            <div><label>Adjustment Amount (UGX) *</label><input id="adjAmount" type="number" step="any" placeholder="0" required /></div>
             <div><label>Mode of Payment</label>
               <select id="adjPaymentMode">
                 <option value="cash">Cash</option>
@@ -2482,7 +2403,6 @@
       };
     }
 
-    // ── CUSTOMERS MODAL ──
     function buildCustomersModal(card) {
       if (!canManageCustomers()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage customers.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -2642,7 +2562,6 @@
       };
     }
 
-    // ── NEW CUSTOMER Modal ──
     function buildNewCustomerModal(card) {
       card.innerHTML = `
         <h3><i class="fas fa-user-plus"></i> Add New Customer</h3>
@@ -2723,7 +2642,6 @@
       };
     }
 
-    // ── EXPENSE Modal ──
     function buildExpenseModal(card) {
       if (!canCreateExpense()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to create expenses.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -2838,7 +2756,6 @@
       toast(`✔️ Expense recorded!`, 'success');
     }
 
-    // ── DISPATCH Modal ──
     function buildDispatchModal(card) {
       if (!canDispatch()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to dispatch.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -2945,7 +2862,6 @@
       toast(`✔️ Dispatch confirmed! Loaded: ${loadedQty}, Balance: ${balanceQty}`, 'success');
     }
 
-    // ── RECEIPT Modal (E-receipt) ──
     function buildReceiptModal(card) {
       if (!canViewEReceipt()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM and Manager can send E-receipts.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -2977,7 +2893,6 @@
       };
     }
 
-    // ── CLEAR/RECEIPT Modal ──
     function buildClearModal(card) {
       const pendingInvoices = transactions.filter(t =>
         t.site === currentSite &&
@@ -3051,8 +2966,6 @@
         const newReceiptNumber = generateReceiptNumber();
         const oldDocNumber = trans.docNumber;
         
-        const wasUnpaidCustomer = trans.payment === 'customer' && trans.paid === false;
-        
         trans.status = 'cleared';
         trans.paid = paidStatus === 'paid';
         trans.paymentMode = paymentMode || trans.paymentMode || 'cash';
@@ -3067,15 +2980,6 @@
         trans.originalInvoice = oldDocNumber;
         trans.clearedBy = currentUser?.name || 'System';
         trans.clearedDate = new Date().toISOString();
-        
-        if (trans.customerId && trans.payment === 'customer') {
-          const customer = customers.find(c => c.id === trans.customerId);
-          if (customer) {
-            if (wasUnpaidCustomer && paidStatus === 'paid') {
-              // The customer's credit is reduced by the amount
-            }
-          }
-        }
         
         saveData();
         addAudit('Document Cleared → Receipt', `Converted ${oldDocNumber} to ${newReceiptNumber} - ${trans.customer} by ${currentUser?.name}`);
@@ -3093,36 +2997,7 @@
       if (trans.docType === 'expense') { toast('Cannot cancel expenses', 'error'); return; }
       if (trans.status === 'completed') { toast('Cannot cancel completed/dispatched document', 'error'); return; }
       
-      const isClearedReceipt = trans.status === 'cleared' && trans.docType === 'receipt';
-      
-      let warningMessage = `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`;
-      if (isClearedReceipt) {
-        warningMessage += `\n\n⚠️ This will REVERSE the financial impact:\n• If it was a CASH SALE: Cash at Hand will decrease by UGX ${trans.amount.toLocaleString()}\n• If it was a CUSTOMER DEPOSIT: Customer balance will be restored`;
-      }
-      
-      showConfirm('Cancel Invoice', warningMessage, 'danger', function() {
-        if (isClearedReceipt) {
-          if (trans.payment === 'cash' && trans.paid === true) {
-            addAudit('Cash Sale Reversed', `Cancelled cash sale ${trans.docNumber} - UGX ${trans.amount.toLocaleString()} reversed from Cash at Hand`);
-          } else if (trans.payment === 'customer' && trans.paid === true) {
-            if (trans.customerId) {
-              const customer = customers.find(c => c.id === trans.customerId);
-              if (customer) {
-                customer.balance = (customer.balance || 0) + trans.amount;
-                addAudit('Customer Balance Restored', `Restored UGX ${trans.amount.toLocaleString()} to ${customer.name} (cancelled receipt ${trans.docNumber})`);
-              }
-            }
-          } else if (trans.payment === 'customer' && trans.paid === false) {
-            if (trans.customerId) {
-              const customer = customers.find(c => c.id === trans.customerId);
-              if (customer) {
-                customer.balance = (customer.balance || 0) + trans.amount;
-                addAudit('Customer Credit Restored', `Restored UGX ${trans.amount.toLocaleString()} credit to ${customer.name} (cancelled receipt ${trans.docNumber})`);
-              }
-            }
-          }
-        }
-        
+      showConfirm('Cancel Invoice', `Cancel ${trans.docNumber} for ${trans.customer || 'N/A'}? This action cannot be undone.`, 'danger', function() {
         trans.status = 'cancelled';
         trans.cancelledDate = new Date().toISOString();
         trans.cancelledBy = currentUser?.name || 'System';
@@ -3152,7 +3027,7 @@
       });
     }
 
-    // ── REFUND REQUEST Modal ──
+    // ── REFUND REQUEST Modal (only pending receipts not dispatched) ──
     function buildRefundRequestModal(card) {
       if (!canRequestRefund()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Cashier, Manager, and GM can request refunds.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3164,25 +3039,27 @@
         `<option value="workshop">Workshop</option><option value="ngetta">Ngetta Site</option><option value="adyel">Adyel Site</option>` :
         `<option value="${currentSite}">${currentSite.toUpperCase()}</option>`;
 
+      // Only show cleared/completed receipts that are NOT refunded and NOT dispatched (or partial with balance remaining)
       const refundableInvoices = transactions.filter(t =>
         t.site === currentSite &&
         (t.docType === 'invoice' || t.docType === 'receipt') &&
-        (t.status === 'completed' || t.status === 'cleared') &&
+        (t.status === 'cleared' || t.status === 'completed' || t.status === 'partial') &&
         t.paid === true &&
         t.status !== 'cancelled' &&
         t.status !== 'refund' &&
-        // Must not have been dispatched OR if dispatched, not fully loaded (check balanceQty > 0 or not loaded)
+        // Must not be fully dispatched (balanceQty > 0 or not loaded)
         (!t.dispatch?.loaded || (t.dispatch?.loaded && t.dispatch?.balanceQty > 0))
       );
 
       let options = '<option value="">-- Select Document --</option>';
       refundableInvoices.forEach(t => {
-        options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - UGX ${t.amount.toLocaleString()}</option>`;
+        const remaining = t.dispatch?.balanceQty !== undefined ? t.dispatch.balanceQty : t.qty;
+        options += `<option value="${t.id}">${t.docNumber} - ${t.customer || 'N/A'} - UGX ${t.amount.toLocaleString()} (Remaining: ${remaining})</option>`;
       });
 
       card.innerHTML = `
         <h3><i class="fas fa-undo-alt"></i> Request Refund</h3>
-        <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Cashier: Submit refund request for approval by Accountant (only for cleared receipts not yet dispatched)</p>
+        <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Cashier: Submit refund request for approval (only for cleared receipts not yet fully dispatched)</p>
         <form id="modalForm">
           <div class="row2">
             <div><label>Site</label><select id="modalSite" required ${!canChooseSite ? 'disabled' : ''}>${siteOptions}</select></div>
@@ -3213,8 +3090,8 @@
         if (!id) { info.innerHTML = ''; return; }
         const trans = transactions.find(t => t.id === id);
         if (trans) {
-          const balanceQty = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
-          info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()} | Remaining: ${balanceQty} units`;
+          const remaining = trans.dispatch?.balanceQty !== undefined ? trans.dispatch.balanceQty : trans.qty;
+          info.innerHTML = `<strong>${trans.docNumber}</strong> | ${trans.item} x${trans.qty} | Customer: ${trans.customer || 'N/A'} | Amount: UGX ${trans.amount.toLocaleString()} | Remaining: ${remaining} units`;
           document.getElementById('refundAmount').value = trans.amount;
         }
       };
@@ -3231,6 +3108,13 @@
         const original = transactions.find(t => t.id === invoiceId);
         if (!original) { toast('Document not found', 'error'); return; }
         if (original.status === 'refund') { toast('Already refunded', 'warning'); return; }
+        
+        // Check if already has a pending refund request
+        const existingRequest = refundRequests.find(r => r.invoiceId === invoiceId && r.status === 'pending');
+        if (existingRequest) {
+          toast('A pending refund request already exists for this document', 'warning');
+          return;
+        }
         
         // Check if fully dispatched
         if (original.dispatch?.loaded && original.dispatch?.balanceQty === 0) {
@@ -3264,7 +3148,7 @@
       };
     }
 
-    // ── REFUND APPROVAL Modal ──
+    // ── REFUND APPROVAL Modal (only pending) ──
     function buildRefundApprovalModal(card) {
       if (!canApproveRefund()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only Accountant, Manager, and GM can approve refund requests.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3273,7 +3157,7 @@
 
       const pendingRequests = refundRequests.filter(r => r.status === 'pending' && r.site === currentSite);
 
-      let html = `<h3><i class="fas fa-clipboard-list"></i> Refund Requests - ${currentSite.toUpperCase()}</h3>
+      let html = `<h3><i class="fas fa-clipboard-list"></i> Pending Refund Requests - ${currentSite.toUpperCase()}</h3>
         <div style="max-height:400px;overflow-y:auto;">`;
 
       if (!pendingRequests.length) {
@@ -3346,6 +3230,9 @@
             updateStock(original.site, original.item, original.qty, 'add');
           }
           
+          // Remove the request from the list once approved
+          refundRequests = refundRequests.filter(r => r.id !== request.id);
+          
           saveData();
           addAudit('Refund Approved', `Refund ${request.docNumber} approved - UGX ${request.amount.toLocaleString()} (reduces Cash at Hand)`);
           addActivity('refund', `Refund approved: ${request.docNumber} by ${currentUser?.name} - UGX ${request.amount.toLocaleString()}`);
@@ -3362,6 +3249,8 @@
         
         showConfirm('Reject Refund', `Reject refund for ${request.docNumber}?`, 'danger', function() {
           request.status = 'rejected';
+          // Remove from list
+          refundRequests = refundRequests.filter(r => r.id !== request.id);
           saveData();
           addAudit('Refund Rejected', `Refund ${request.docNumber} rejected by ${currentUser?.name}`);
           addActivity('refund', `Refund rejected: ${request.docNumber}`);
@@ -3372,7 +3261,6 @@
       };
     }
 
-    // ── INVENTORY Modal ──
     function buildInventoryModal(card) {
       if (!canManageInventory()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to manage inventory.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3480,7 +3368,6 @@
       };
     }
 
-    // ── PRODUCTION Modal ──
     function buildProductionModal(card) {
       if (!canManageProduction()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only GM, Manager, and Dispatch can manage production & materials.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3566,7 +3453,6 @@
       };
     }
 
-    // ── USERS Modal ──
     function buildUsersModal(card) {
       if (!canManageUsers()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can manage users.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3655,7 +3541,6 @@
       };
     }
 
-    // ── AUDIT Modal ──
     function buildAuditModal(card) {
       if (!canViewAudit()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view audit logs.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3688,7 +3573,6 @@
       };
     }
 
-    // ── SETTINGS Modal ──
     function buildSettingsModal(card) {
       if (!isGM()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>Only General Manager can access settings.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3760,7 +3644,6 @@
       };
     }
 
-    // ── REPORT MODAL ──
     function buildReportModal(card) {
       if (!canViewReports()) {
         card.innerHTML = `<h3><i class="fas fa-lock"></i> Access Denied</h3><p>You don't have permission to view reports.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -3874,7 +3757,6 @@
       setTimeout(generateReport, 200);
     }
 
-    // ── Report Functions ──
     function getFilteredData() {
       const reportType = document.getElementById('reportType').value;
       const from = document.getElementById('reportFrom').value;
@@ -4376,18 +4258,6 @@
       toast('Filters reset', 'success');
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // HELPERS
-    // ═══════════════════════════════════════════════════════════════
-
-    function populateItems(site) {
-      // This is now handled by populateSaleItemSelects
-    }
-
-    function updatePrice() {
-      // This is now handled by updateSaleItemTotal
-    }
-
     function updateDispatchInfo() {
       const receipt = document.getElementById('dispatchReceipt')?.value;
       const info = document.getElementById('dispatchInfo');
@@ -4412,14 +4282,6 @@
       }
     }
 
-    function saveTransaction(type) {
-      // This is now handled by saveMultiItemSale
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // SITE SWITCHER
-    // ═══════════════════════════════════════════════════════════════
-
     document.querySelectorAll('.site-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.site-btn').forEach(b => b.classList.remove('active'));
@@ -4431,18 +4293,8 @@
       });
     });
 
-    // ═══════════════════════════════════════════════════════════════
-    // INIT
-    // ═══════════════════════════════════════════════════════════════
-
     window.openModal = openModal;
     window.closeModal = closeModal;
-    window.calcTotal = calcTotal;
-    window.updatePrice = updatePrice;
-    window.togglePaymentType = togglePaymentType;
-    window.filterCustomerDropdown = filterCustomerDropdown;
-    window.selectCustomer = selectCustomer;
-    window.saveNewCustomerFromSale = saveNewCustomerFromSale;
     window.updateDispatchInfo = updateDispatchInfo;
     window.updateDispatchBalance = updateDispatchBalance;
     window.clearInvoice = clearInvoice;
@@ -4451,17 +4303,7 @@
     window.editTransaction = editTransaction;
     window.exportBackup = exportBackup;
     window.logout = logout;
-    window.populateItems = populateItems;
-    window.recordProductionStock = window.recordProductionStock || function() {};
-    window.recordMaterialsReceived = window.recordMaterialsReceived || function() {};
-    window.toggleSetting = window.toggleSetting || function() {};
-    window.editPrice = window.editPrice || function() {};
-    window.approveRefund = window.approveRefund || function() {};
-    window.rejectRefund = window.rejectRefund || function() {};
     window.showItemDetails = showItemDetails;
-    window.setBalanceValue = window.setBalanceValue || function() {};
-    window.viewCustomer = window.viewCustomer || function() {};
-    window.deleteCustomer = window.deleteCustomer || function() {};
     window.generateReport = generateReport;
     window.exportPDF = exportPDF;
     window.exportCSV = exportCSV;
