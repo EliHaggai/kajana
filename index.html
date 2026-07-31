@@ -289,6 +289,8 @@
     .add-item-btn:hover { background: #b3151d; transform: translateY(-2px); }
     .item-counter { font-size: 0.75rem; color: #ffcccc; margin-left: 0.5rem; }
     .edit-badge { background: #6f42c1; color: #fff; padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.6rem; margin-left: 0.3rem; }
+    .reprint-btn { background: #17a2b8; color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; transition: var(--transition); margin: 0 2px; }
+    .reprint-btn:hover { background: #138496; transform: scale(1.1); }
   </style>
 </head>
 <body>
@@ -785,12 +787,13 @@
     function canManageUsers() { return isGM(); }
     function canViewAudit() { return isGM() || isManager() || isAccountant(); }
     function canDeleteTransaction() { return isGM() || isManager(); }
-    function canEditTransaction() { return isGM() || isManager(); }
+    function canEditTransaction() { return isGM() || isManager() || isCashier(); } // Cashier can now edit (undo cancel)
     function canViewReports() { return isGM() || isManager() || isAccountant(); }
     function canSetExpenseLimit() { return isGM(); }
     function canEditPrices() { return isGM() || isManager(); }
     function canViewEReceipt() { return isGM() || isManager(); }
     function canBackup() { return isGM(); }
+    function canReprintDispatch() { return isGM() || isManager() || isCashier(); } // Cashier, Manager, GM can reprint
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -1086,6 +1089,7 @@
         const canCancel = canCancelInvoice() && (st === 'pending' || st === 'cleared' || st === 'partial') && (t.docType === 'invoice' || t.docType === 'receipt') && t.status !== 'cancelled';
         const canDelete = canDeleteTransaction();
         const canEdit = canEditTransaction() && (t.docType !== 'expense' || isGM());
+        const canReprint = canReprintDispatch() && (st === 'cleared' || st === 'partial' || st === 'completed') && t.docType !== 'expense' && t.docType !== 'refund';
         
         let statusDisplay = statusMap[st] || statusMap.pending;
         if (isSales() || isDispatch()) {
@@ -1114,6 +1118,7 @@
             <td>${statusDisplay} ${t.payment === 'customer' && t.status !== 'cancelled' && !t.paid && showUnpaid ? ' ' + paidStatus : ''}</td>
             <td class="action-icons" style="text-align:center;">
               ${canClear ? `<i class="fas fa-check-circle text-success" onclick="clearInvoice(${t.id})" title="Clear/Receipt"></i>` : ''}
+              ${canReprint ? `<button class="reprint-btn" onclick="reprintDispatchNote(${t.id})" title="Reprint Dispatch Note"><i class="fas fa-print"></i></button>` : ''}
               ${canCancel ? `<i class="fas fa-times-circle text-danger" onclick="cancelInvoice(${t.id})" title="Cancel"></i>` : ''}
               ${canDelete ? `<i class="fas fa-trash-alt" onclick="deleteTrans(${t.id})" title="Delete"></i>` : ''}
               ${canEdit ? `<i class="fas fa-edit text-primary" onclick="editTransaction(${t.id})" title="Edit Transaction" style="color:#6f42c1;"></i>` : ''}
@@ -1128,9 +1133,41 @@
       if (isGM()) updateActivityFeed();
     }
 
+    // REPRINT DISPATCH NOTE - Cashier, Manager, GM can reprint
+    function reprintDispatchNote(id) {
+      const trans = transactions.find(t => t.id === id);
+      if (!trans) {
+        toast('Transaction not found', 'error');
+        return;
+      }
+      
+      if (!canReprintDispatch()) {
+        toast('You do not have permission to reprint dispatch notes', 'error');
+        return;
+      }
+
+      // Check if transaction is cleared, partial, or completed (has dispatch info)
+      if (trans.status !== 'cleared' && trans.status !== 'partial' && trans.status !== 'completed') {
+        toast('Only cleared, partial, or completed transactions can be reprinted', 'warning');
+        return;
+      }
+
+      if (trans.docType === 'expense' || trans.docType === 'refund') {
+        toast('Cannot reprint dispatch note for expenses or refunds', 'warning');
+        return;
+      }
+
+      showConfirm('Reprint Dispatch Note', `Reprint dispatch note for ${trans.docNumber} (${trans.customer || 'N/A'})?`, 'info', function() {
+        printDispatchNote(trans);
+        addAudit('Dispatch Note Reprint', `Reprinted dispatch note for ${trans.docNumber} by ${currentUser?.name}`);
+        addActivity('dispatch', `Dispatch note reprinted: ${trans.docNumber}`);
+        toast(`✔️ Dispatch note for ${trans.docNumber} is being printed`, 'success');
+      });
+    }
+
     function editTransaction(id) {
       if (!canEditTransaction()) {
-        toast('Only GM and Manager can edit transactions', 'error');
+        toast('Only GM, Manager, and Cashier can edit transactions', 'error');
         return;
       }
 
@@ -1208,6 +1245,7 @@
           <i class="fas fa-info-circle"></i> <strong>Editing Transaction:</strong> ${trans.docNumber}<br>
           <span style="font-size:0.75rem;color:#888;">Changes will synchronize with stock, customer balances, and financial reports.</span>
           ${trans.edited ? `<div style="margin-top:0.3rem;font-size:0.75rem;color:#6f42c1;">Previously edited on ${new Date(trans.editedDate).toLocaleString()} by ${trans.editedBy || 'Unknown'}</div>` : ''}
+          ${trans.status === 'cancelled' ? `<div style="margin-top:0.3rem;font-size:0.8rem;color:var(--red);">⚠️ This transaction is CANCELLED. You can undo it by changing the status below.</div>` : ''}
         </div>
         <form id="editModalForm">
           <div class="row2">
@@ -1440,6 +1478,7 @@
         return;
       }
 
+      const oldStatus = trans.status;
       const docType = document.getElementById('editDocType').value;
       const status = document.getElementById('editStatus').value;
       const date = document.getElementById('editDate').value;
@@ -1488,11 +1527,67 @@
         }
       }
 
-      const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
-      oldItems.forEach(item => {
-        updateStock(trans.site, item.item, item.qty, 'add');
-      });
+      // If status is changing from cancelled to something else (undo cancel)
+      if (oldStatus === 'cancelled' && status !== 'cancelled') {
+        // Restore stock if it was deducted when cancelled
+        const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
+        oldItems.forEach(item => {
+          updateStock(trans.site, item.item, item.qty, 'add');
+        });
+        // Restore customer balance if applicable
+        if (trans.customerId && trans.payment === 'customer') {
+          const customer = customers.find(c => c.id === trans.customerId);
+          if (customer) {
+            customer.balance = (customer.balance || 0) - trans.amount;
+          }
+        }
+        addAudit('Transaction Un-Cancelled', `${trans.docNumber} was un-cancelled by ${currentUser?.name}`);
+        addActivity('system', `Transaction ${trans.docNumber} un-cancelled by ${currentUser?.name}`);
+        toast(`✔️ ${trans.docNumber} has been un-cancelled (restored)`, 'success');
+      }
 
+      // If old status was not cancelled and new status is cancelled (normal cancel)
+      if (oldStatus !== 'cancelled' && status === 'cancelled') {
+        // Return stock
+        const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
+        oldItems.forEach(item => {
+          updateStock(trans.site, item.item, item.qty, 'add');
+        });
+        // Return customer balance if applicable
+        if (trans.customerId && trans.payment === 'customer') {
+          const customer = customers.find(c => c.id === trans.customerId);
+          if (customer) {
+            customer.balance = (customer.balance || 0) + trans.amount;
+          }
+        }
+        addAudit('Transaction Cancelled', `${trans.docNumber} cancelled by ${currentUser?.name}`);
+        addActivity('system', `Transaction ${trans.docNumber} cancelled by ${currentUser?.name}`);
+        toast(`✔️ ${trans.docNumber} has been cancelled`, 'warning');
+      }
+
+      // If status changed from cancelled to something else, we already restored stock above
+      // Now handle normal editing (not status change from cancelled)
+      if (oldStatus !== 'cancelled' || status === 'cancelled') {
+        // Only adjust stock if not handling undo cancel above
+        if (oldStatus !== 'cancelled' || status === 'cancelled') {
+          // Remove old items from stock (if not cancelled)
+          if (oldStatus !== 'cancelled') {
+            const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
+            oldItems.forEach(item => {
+              updateStock(trans.site, item.item, item.qty, 'add');
+            });
+          }
+          
+          // Add new items to stock
+          if (status !== 'cancelled') {
+            items.forEach(item => {
+              updateStock(site, item.item, item.qty, 'subtract');
+            });
+          }
+        }
+      }
+
+      // Update customer balance
       if (trans.customerId && (trans.payment === 'customer' || trans.payment === 'deposit')) {
         const oldCustomer = customers.find(c => c.id === trans.customerId);
         if (oldCustomer) {
@@ -1504,11 +1599,7 @@
         }
       }
 
-      items.forEach(item => {
-        updateStock(site, item.item, item.qty, 'subtract');
-      });
-
-      if (customerId && (paymentType === 'customer' || paymentType === 'deposit')) {
+      if (customerId && (paymentType === 'customer' || paymentType === 'deposit') && status !== 'cancelled') {
         const customer = customers.find(c => c.id === customerId);
         if (customer) {
           if (paymentType === 'customer') {
@@ -1545,8 +1636,14 @@
       trans.editedBy = currentUser?.name || 'System';
 
       saveData();
-      addAudit('Transaction Edited', `${trans.docNumber} edited by ${currentUser?.name} - New total: UGX ${totalAmount.toLocaleString()}`);
-      addActivity('system', `Transaction ${trans.docNumber} edited by ${currentUser?.name}`);
+      if (oldStatus !== status && oldStatus === 'cancelled' && status !== 'cancelled') {
+        // Already logged above
+      } else if (oldStatus !== status && status === 'cancelled') {
+        // Already logged above
+      } else {
+        addAudit('Transaction Edited', `${trans.docNumber} edited by ${currentUser?.name} - New total: UGX ${totalAmount.toLocaleString()}`);
+        addActivity('system', `Transaction ${trans.docNumber} edited by ${currentUser?.name}`);
+      }
       renderTable();
       closeModal();
       toast(`✔️ ${trans.docNumber} updated successfully!`, 'success');
@@ -1601,7 +1698,7 @@
             <div><span class="label">Address:</span> ${trans.address || 'N/A'}</div>
             <div><span class="label">Order Date:</span> ${trans.date}</div>
             <div><span class="label">Site:</span> ${trans.site.toUpperCase()}</div>
-            <div><span class="label">Cleared By:</span> ${currentUser?.name || 'System'}</div>
+            <div><span class="label">Cleared By:</span> ${trans.clearedBy || currentUser?.name || 'System'}</div>
           </div>
 
           <table class="items-table">
@@ -3002,8 +3099,20 @@
         trans.cancelledDate = new Date().toISOString();
         trans.cancelledBy = currentUser?.name || 'System';
         
+        // Return stock if not dispatched
         if (!trans.dispatch?.loaded) {
-          updateStock(trans.site, trans.item, trans.qty, 'add');
+          const oldItems = trans.items || [{ item: trans.item, qty: trans.qty }];
+          oldItems.forEach(item => {
+            updateStock(trans.site, item.item, item.qty, 'add');
+          });
+        }
+        
+        // Return customer balance if applicable
+        if (trans.customerId && trans.payment === 'customer') {
+          const customer = customers.find(c => c.id === trans.customerId);
+          if (customer) {
+            customer.balance = (customer.balance || 0) + trans.amount;
+          }
         }
         
         saveData();
@@ -3227,7 +3336,10 @@
           if (original) {
             original.status = 'refund';
             // Return stock
-            updateStock(original.site, original.item, original.qty, 'add');
+            const oldItems = original.items || [{ item: original.item, qty: original.qty }];
+            oldItems.forEach(item => {
+              updateStock(original.site, item.item, item.qty, 'add');
+            });
           }
           
           // Remove the request from the list once approved
@@ -4301,6 +4413,7 @@
     window.cancelInvoice = cancelInvoice;
     window.deleteTrans = deleteTrans;
     window.editTransaction = editTransaction;
+    window.reprintDispatchNote = reprintDispatchNote;
     window.exportBackup = exportBackup;
     window.logout = logout;
     window.showItemDetails = showItemDetails;
@@ -4322,7 +4435,8 @@
     window.generateBarcodeSVG = generateBarcodeSVG;
 
     renderTable();
-    console.log('✔️ Kajana Enterprises Ltd - Refunds now reduce Cash at Hand');
+    console.log('✔️ Kajana Enterprises Ltd - Cashier can undo cancelled transactions via Edit');
+    console.log('✔️ Cashier, Manager, GM can reprint dispatch notes via the print button');
     console.log(`📊 ${transactions.length} transactions, ${users.length} users, ${customers.length} customers`);
   </script>
 </body>
